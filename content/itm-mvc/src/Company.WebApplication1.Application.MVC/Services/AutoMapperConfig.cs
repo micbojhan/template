@@ -1,12 +1,15 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Threading.Tasks;
 
 namespace Company.WebApplication1.Application.MVC.Services
 {
-    public interface IEmailSender
+    public class AutoMapperConfig : AutoMapper.Profile
     {
-        Task SendEmailAsync(string email, string subject, string message);
+        public AutoMapperConfig()
+        {
+        }
     }
 }

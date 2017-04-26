@@ -63,6 +63,11 @@
   </ItemGroup>
 
   <ItemGroup>
+    <PackageReference Include="automapper" Version="6.0.2" />
+  </ItemGroup>
+
+
+  <ItemGroup>
     <ProjectReference Include="..\Company.WebApplication1.Core.Command\Company.WebApplication1.Core.Command.csproj" />
     <ProjectReference Include="..\Company.WebApplication1.Core.Query\Company.WebApplication1.Core.Query.csproj" />
     <ProjectReference Include="..\Company.WebApplication1.Core.Entities\Company.WebApplication1.Core.Entities.csproj" />

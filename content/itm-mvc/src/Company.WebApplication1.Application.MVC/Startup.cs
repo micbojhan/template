@@ -5,6 +5,8 @@ using System.Threading.Tasks;
 using Company.WebApplication1.Infrastructure.DataAccess;
 using Company.WebApplication1.Infrastructure.DataAccess.CsvSeeder;
 using Microsoft.EntityFrameworkCore;
+using Company.WebApplication1.Application.MVC.Services;
+using AutoMapper;
 
 #if (OrganizationalAuth)
 using Microsoft.AspNetCore.Authentication.Cookies;
@@ -29,7 +31,6 @@ using Microsoft.IdentityModel.Tokens;
 #if (IndividualAuth)
 using Company.WebApplication1.Core.Entities;
 using Company.WebApplication1.Models;
-using Company.WebApplication1.Services;
 #endif
 
 namespace Company.WebApplication1
@@ -83,6 +84,11 @@ namespace Company.WebApplication1
 
 #endif
             services.AddMvc();
+
+            var config = new MapperConfiguration(cfg => {
+                cfg.AddProfile(new AutoMapperConfig());
+            });
+            services.AddSingleton<IMapper>(sp => config.CreateMapper());
 #if (IndividualAuth)
 
             // Add application services.

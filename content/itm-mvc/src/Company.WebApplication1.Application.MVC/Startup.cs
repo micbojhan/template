@@ -2,6 +2,10 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Company.WebApplication1.Infrastructure.DataAccess;
+using Company.WebApplication1.Infrastructure.DataAccess.CsvSeeder;
+using Microsoft.EntityFrameworkCore;
+
 #if (OrganizationalAuth)
 using Microsoft.AspNetCore.Authentication.Cookies;
 #endif
@@ -12,7 +16,6 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 #if (IndividualAuth)
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore;
 #endif
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -24,7 +27,7 @@ using Microsoft.IdentityModel.Protocols.OpenIdConnect;
 using Microsoft.IdentityModel.Tokens;
 #endif
 #if (IndividualAuth)
-using Company.WebApplication1.Data;
+using Company.WebApplication1.Core.Entities;
 using Company.WebApplication1.Models;
 using Company.WebApplication1.Services;
 #endif
@@ -69,9 +72,9 @@ namespace Company.WebApplication1
 #if (IndividualAuth)
             services.AddDbContext<ApplicationDbContext>(options =>
   #if (UseLocalDB)
-                options.UseSqlServer(Configuration.GetConnectionString("DefaultConnection")));
+                options.UseSqlServer(Configuration.GetConnectionString("DefaultConnection"), b => b.MigrationsAssembly("Company.WebApplication1.Infrastructure.DataAccess")));
   #else
-                options.UseSqlite(Configuration.GetConnectionString("DefaultConnection")));
+                options.UseSqlite(Configuration.GetConnectionString("DefaultConnection"), b => b.MigrationsAssembly("Company.WebApplication1.Infrastructure.DataAccess")));
   #endif
 
             services.AddIdentity<ApplicationUser, IdentityRole>()
@@ -93,7 +96,7 @@ namespace Company.WebApplication1
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, IHostingEnvironment env, ILoggerFactory loggerFactory)
+        public void Configure(IApplicationBuilder app, IHostingEnvironment env, ILoggerFactory loggerFactory, ApplicationDbContext context)
         {
             loggerFactory.AddConsole(Configuration.GetSection("Logging"));
             loggerFactory.AddDebug();
@@ -187,6 +190,12 @@ namespace Company.WebApplication1
                     name: "default",
                     template: "{controller=Home}/{action=Index}/{id?}");
             });
+
+            context.Database.Migrate();
+
+            if (context.Users.Any() == false)
+                context.Users.SeedFromFile("SeedData/contacts.csv");
+            context.SaveChanges();
         }
     }
 }

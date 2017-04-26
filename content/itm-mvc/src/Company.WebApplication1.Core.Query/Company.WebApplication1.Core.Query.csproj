@@ -1,0 +1,12 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <ItemGroup>
+    <ProjectReference Include="..\Company.WebApplication1.Core.Entities\Company.WebApplication1.Core.Entities.csproj" />
+    <ProjectReference Include="..\Company.WebApplication1.Infrastructure.DataAccess\Company.WebApplication1.Infrastructure.DataAccess.csproj" />
+  </ItemGroup>
+
+  <PropertyGroup>
+    <TargetFramework>netcoreapp1.0</TargetFramework>
+  </PropertyGroup>
+
+</Project>

@@ -6,9 +6,9 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.EntityFrameworkCore.Migrations;
-using itmyosample.Infrastructure.DataAccess.Data;
+using Company.WebApplication1.Infrastructure.DataAccess.Data;
 
-namespace itmyosample.Infrastructure.DataAccess.Data.Migrations
+namespace Company.WebApplication1.Infrastructure.DataAccess.Data.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
     [Migration("00000000000000_CreateIdentitySchema")]
@@ -127,7 +127,7 @@ namespace itmyosample.Infrastructure.DataAccess.Data.Migrations
                     b.ToTable("AspNetUserTokens");
                 });
 
-            modelBuilder.Entity("itmyosample.Core.Entities.ApplicationUser", b =>
+            modelBuilder.Entity("Company.WebApplication1.Core.Entities.ApplicationUser", b =>
                 {
                     b.Property<string>("Id");
 
@@ -186,7 +186,7 @@ namespace itmyosample.Infrastructure.DataAccess.Data.Migrations
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.EntityFrameworkCore.IdentityUserClaim<string>", b =>
                 {
-                    b.HasOne("itmyosample.Core.Entities.ApplicationUser")
+                    b.HasOne("Company.WebApplication1.Core.Entities.ApplicationUser")
                         .WithMany("Claims")
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade);
@@ -194,7 +194,7 @@ namespace itmyosample.Infrastructure.DataAccess.Data.Migrations
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.EntityFrameworkCore.IdentityUserLogin<string>", b =>
                 {
-                    b.HasOne("itmyosample.Core.Entities.ApplicationUser")
+                    b.HasOne("Company.WebApplication1.Core.Entities.ApplicationUser")
                         .WithMany("Logins")
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade);
@@ -207,7 +207,7 @@ namespace itmyosample.Infrastructure.DataAccess.Data.Migrations
                         .HasForeignKey("RoleId")
                         .OnDelete(DeleteBehavior.Cascade);
 
-                    b.HasOne("itmyosample.Core.Entities.ApplicationUser")
+                    b.HasOne("Company.WebApplication1.Core.Entities.ApplicationUser")
                         .WithMany("Roles")
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade);

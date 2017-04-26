@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace itmyosample.Infrastructure.DataAccess.CsvSeeder
+namespace Company.WebApplication1.Infrastructure.DataAccess.CsvSeeder
 {
     /// <summary>
     /// Defines a custom mapping action for a particular column in a CSV file

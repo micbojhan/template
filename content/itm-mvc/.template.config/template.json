@@ -289,7 +289,7 @@
       "defaultValue": "false"
     }
   },
-  "primaryOutputs": [ { "path": "src/Company.WebApplication1.Application.MVC/Company.WebApplication1.Application.MVC.csproj" } ],
+  "primaryOutputs": [ { "path": "Company.WebApplication1.sln" } ],
   "defaultName": "WebApplication1",
   "postActions": [
     {

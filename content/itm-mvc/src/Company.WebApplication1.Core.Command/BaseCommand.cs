@@ -3,9 +3,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
-using itmyosample.Infrastructure.DataAccess;
+using Company.WebApplication1.Infrastructure.DataAccess;
 
-namespace itmyosample.Core.Command
+namespace Company.WebApplication1.Core.Command
 {
     public abstract class BaseCommand
     {

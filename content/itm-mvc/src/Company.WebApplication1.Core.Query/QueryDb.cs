@@ -3,10 +3,10 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
-using itmyosample.Core.Entities;
-using itmyosample.Infrastructure.DataAccess;
+using Company.WebApplication1.Core.Entities;
+using Company.WebApplication1.Infrastructure.DataAccess;
 
-namespace itmyosample.Core.Query
+namespace Company.WebApplication1.Core.Query
 {
     public class QueryDb
     {

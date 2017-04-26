@@ -8,7 +8,7 @@ using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace itmyosample.Infrastructure.DataAccess.CsvSeeder
+namespace Company.WebApplication1.Infrastructure.DataAccess.CsvSeeder
 {
     public static class CsvSeeder
     {

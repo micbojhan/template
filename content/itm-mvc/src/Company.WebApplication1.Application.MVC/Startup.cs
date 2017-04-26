@@ -7,7 +7,7 @@ using Company.WebApplication1.Infrastructure.DataAccess.CsvSeeder;
 using Microsoft.EntityFrameworkCore;
 using Company.WebApplication1.Application.MVC.Services;
 using AutoMapper;
-
+using Serilog;
 #if (OrganizationalAuth)
 using Microsoft.AspNetCore.Authentication.Cookies;
 #endif
@@ -62,6 +62,11 @@ namespace Company.WebApplication1
             builder.AddEnvironmentVariables();
 #endif
             Configuration = builder.Build();
+
+            Log.Logger = new LoggerConfiguration()
+              .Enrich.FromLogContext()
+              .ReadFrom.Configuration(Configuration)
+              .CreateLogger();
         }
 
         public IConfigurationRoot Configuration { get; }
@@ -104,8 +109,8 @@ namespace Company.WebApplication1
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IHostingEnvironment env, ILoggerFactory loggerFactory, ApplicationDbContext context)
         {
-            loggerFactory.AddConsole(Configuration.GetSection("Logging"));
             loggerFactory.AddDebug();
+            loggerFactory.AddSerilog();
 
             if (env.IsDevelopment())
             {

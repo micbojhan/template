@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Company.WebApplication1.Infrastructure.DataAccess;
 using Company.WebApplication1.Infrastructure.DataAccess.CsvSeeder;
+using Company.WebApplication1.Core.Query;
 using Microsoft.EntityFrameworkCore;
 using Company.WebApplication1.Application.MVC.Services;
 using AutoMapper;

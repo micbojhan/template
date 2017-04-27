@@ -1,0 +1,7 @@
+﻿<systemInfo osVersion="6.3" winDir="C:\WINDOWS" machineName="Buildserver" processorArchitecture="x86" msdeployVersion="1.0" buildVersion="7.1.1962.0">
+  <iisSystemInfo iisMajorVersion="0" iisMinorVersion="0">
+    <aspNetVersionInfo>
+      <aspNetVersion version="4.0.30319.0" />
+    </aspNetVersionInfo>
+  </iisSystemInfo>
+</systemInfo>

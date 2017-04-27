@@ -99,6 +99,9 @@ namespace Company.WebApplication1
             // Add application services.
             services.AddTransient<IEmailSender, AuthMessageSender>();
             services.AddTransient<ISmsSender, AuthMessageSender>();
+
+            services.AddScoped<QueryDb, QueryDb>();
+            services.AddScoped<ApplicationDbContext, ApplicationDbContext>();
 #elseif (OrganizationalAuth)
 
             services.AddAuthentication(

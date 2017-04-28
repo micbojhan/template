@@ -31,7 +31,6 @@ using Microsoft.IdentityModel.Tokens;
 #endif
 #if (IndividualAuth)
 using Company.WebApplication1.Core.Entities;
-using Company.WebApplication1.Models;
 #endif
 
 namespace Company.WebApplication1

@@ -38,6 +38,10 @@
       "isHidden": "true",
       "longName": "no-tools"
     },
+    "TargetEditor": {
+      "isHidden": "true",
+      "longName": "target-editor"
+    },
     "skipRestore": {
       "longName": "no-restore",
       "shortName": ""

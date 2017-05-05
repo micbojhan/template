@@ -299,6 +299,22 @@
       "datatype": "bool",
       "description": "If specified, skips the automatic restore of the project on create.",
       "defaultValue": "false"
+    },
+    "TargetEditor": {
+      "type": "parameter",
+      "datatype": "choice",
+      "choices": [
+        {
+          "choice": "dotnetcli",
+          "description": "DotNet CLI"
+        },
+        {
+          "choice": "vs2017",
+          "description": "Visual Studio 2017"
+        }
+      ],
+      "defaultValue": "dotnetcli",
+      "description": "The editor this template is generated for."
     }
   },
   "primaryOutputs": [ { "path": "Company.WebApplication1.sln" } ],

@@ -28,6 +28,7 @@
   ],
   "sources": [
     {
+      "exclude": [".vs/**/*", ".vscode/**/*", "**/[Bb]in/**", "**/[Oo]bj/**", ".template.config/**/*", "**/*.filelist", "**/*.user", "**/*.lock.json"],
       "modifiers": [
         {
           "condition": "(!IndividualAuth && !OrganizationalAuth)",

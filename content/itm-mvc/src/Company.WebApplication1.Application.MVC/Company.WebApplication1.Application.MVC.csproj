@@ -1,5 +1,4 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk.Web">
-
   <PropertyGroup>
     <TargetFramework>netcoreapp1.1</TargetFramework>
     <TargetFramework Condition="'$(TargetFrameworkOverride)' != ''">TargetFrameworkOverride</TargetFramework>
@@ -51,13 +50,12 @@
     <PackageReference Include="Serilog.Sinks.RollingFile" Version="3.3.0" />
   </ItemGroup>
 
-
   <ItemGroup>
+    <ProjectReference Include="..\Company.WebApplication1.Core.Entities\Company.WebApplication1.Core.Entities.csproj" />
+    <ProjectReference Include="..\Company.WebApplication1.Core.DomainServices\Company.WebApplication1.Core.DomainServices.csproj" />
     <ProjectReference Include="..\Company.WebApplication1.Core.Command\Company.WebApplication1.Core.Command.csproj" />
     <ProjectReference Include="..\Company.WebApplication1.Core.Query\Company.WebApplication1.Core.Query.csproj" />
-    <ProjectReference Include="..\Company.WebApplication1.Core.Entities\Company.WebApplication1.Core.Entities.csproj" />
     <ProjectReference Include="..\Company.WebApplication1.Infrastructure.DataAccess\Company.WebApplication1.Infrastructure.DataAccess.csproj" />
-    <ProjectReference Include="..\Company.WebApplication1.Core.DomainServices\Company.WebApplication1.Core.DomainServices.csproj" />
   </ItemGroup>
 
 </Project>

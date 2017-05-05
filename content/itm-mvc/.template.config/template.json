@@ -69,7 +69,7 @@
             "src/Company.WebApplication1.Application.MVC/Views/Manage/VerifyPhoneNumber.cshtml",
             "src/Company.WebApplication1.Application.MVC/Services/**",
             "src/Company.WebApplication1.Application.MVC/Data/**",
-            "src/Company.WebApplication1.Application.MVC/Models/**",
+            "src/Company.WebApplication1.Application.MVC/Models/**"
           ]
         },
         {

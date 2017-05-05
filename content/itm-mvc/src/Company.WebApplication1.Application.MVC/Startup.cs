@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Company.WebApplication1.Core.DomainServices;
 using Company.WebApplication1.Infrastructure.DataAccess;
 using Company.WebApplication1.Infrastructure.DataAccess.CsvSeeder;
 using Company.WebApplication1.Core.Query;
@@ -77,20 +78,22 @@ namespace Company.WebApplication1
             // Add framework services.
 #if (IndividualAuth)
             services.AddDbContext<ApplicationDbContext>(options =>
-  #if (UseLocalDB)
+#if (UseLocalDB)
                 options.UseSqlServer(Configuration.GetConnectionString("DefaultConnection"), b => b.MigrationsAssembly("Company.WebApplication1.Infrastructure.DataAccess")));
-  #else
+#else
                 options.UseSqlite(Configuration.GetConnectionString("DefaultConnection"), b => b.MigrationsAssembly("Company.WebApplication1.Infrastructure.DataAccess")));
-  #endif
+#endif
 
             services.AddIdentity<ApplicationUser, IdentityRole>()
                 .AddEntityFrameworkStores<ApplicationDbContext>()
                 .AddDefaultTokenProviders();
-
+            services.AddScoped(typeof(IGenericRepository<>), typeof(GenericRepository<>));
+            services.AddScoped<IUnitOfWork,UnitOfWork>();
 #endif
             services.AddMvc();
 
-            var config = new MapperConfiguration(cfg => {
+            var config = new MapperConfiguration(cfg =>
+            {
                 cfg.AddProfile(new AutoMapperConfig());
             });
             services.AddSingleton<IMapper>(sp => config.CreateMapper());
@@ -141,20 +144,20 @@ namespace Company.WebApplication1
             app.UseOpenIdConnectAuthentication(new OpenIdConnectOptions
             {
                 ClientId = Configuration["Authentication:AzureAd:ClientId"],
-    #if (OrgReadAccess)
+#if (OrgReadAccess)
                 ClientSecret = Configuration["Authentication:AzureAd:ClientSecret"],
-    #endif
-    #if (MultiOrgAuth)
+#endif
+#if (MultiOrgAuth)
                 Authority = Configuration["Authentication:AzureAd:AADInstance"] + "Common",
-    #elseif (SingleOrgAuth)
+#elseif (SingleOrgAuth)
                 Authority = Configuration["Authentication:AzureAd:AADInstance"] + Configuration["Authentication:AzureAd:TenantId"],
-    #endif
+#endif
 #endif
 #if (MultiOrgAuth)
                 CallbackPath = Configuration["Authentication:AzureAd:CallbackPath"],
-    #if (OrgReadAccess)
+#if (OrgReadAccess)
                 ResponseType = OpenIdConnectResponseType.CodeIdToken,
-    #endif
+#endif
 
                 TokenValidationParameters = new TokenValidationParameters
                 {
@@ -187,12 +190,12 @@ namespace Company.WebApplication1
                     //}
                 }
 #elseif (SingleOrgAuth)
-    #if (OrgReadAccess)
+#if (OrgReadAccess)
                 CallbackPath = Configuration["Authentication:AzureAd:CallbackPath"],
                 ResponseType = OpenIdConnectResponseType.CodeIdToken
-    #else
+#else
                 CallbackPath = Configuration["Authentication:AzureAd:CallbackPath"]
-    #endif
+#endif
 #endif
 #if (OrganizationalAuth)
             });

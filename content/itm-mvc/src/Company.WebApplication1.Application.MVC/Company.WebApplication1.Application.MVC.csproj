@@ -76,6 +76,7 @@
     <ProjectReference Include="..\Company.WebApplication1.Core.Query\Company.WebApplication1.Core.Query.csproj" />
     <ProjectReference Include="..\Company.WebApplication1.Core.Entities\Company.WebApplication1.Core.Entities.csproj" />
     <ProjectReference Include="..\Company.WebApplication1.Infrastructure.DataAccess\Company.WebApplication1.Infrastructure.DataAccess.csproj" />
+    <ProjectReference Include="..\Company.WebApplication1.Core.DomainServices\Company.WebApplication1.Core.DomainServices.csproj" />
   </ItemGroup>
 
 </Project>

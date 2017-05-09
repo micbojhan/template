@@ -24,7 +24,7 @@ using Company.WebApplication1.Models.AccountViewModels;
 using Company.WebApplication1.Application.MVC.Services;
 #endif
 
-namespace Company.WebApplication1.Controllers
+namespace Company.WebApplication1.Application.MVC.Controllers
 {
 #if (IndividualAuth)
     [Authorize]

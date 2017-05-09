@@ -1,0 +1,23 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFramework>netcoreapp1.1</TargetFramework>
+  </PropertyGroup>
+  <ItemGroup>
+    <PackageReference Include="Autofac.Extensions.DependencyInjection" Version="4.1.0" />
+    <PackageReference Include="AutofacSerilogIntegration" Version="2.0.0" />
+    <PackageReference Include="AutoMapper" Version="6.0.2" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.InMemory" Version="1.1.1" />
+    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="15.0.0" />
+    <PackageReference Include="NSubstitute" Version="2.0.3" />
+    <PackageReference Include="xunit" Version="2.2.0" />
+    <PackageReference Include="xunit.runner.visualstudio" Version="2.2.0" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\src\Company.WebApplication1.Application.MVC\Company.WebApplication1.Application.MVC.csproj" />
+    <ProjectReference Include="..\..\src\Company.WebApplication1.Core.Command\Company.WebApplication1.Core.Command.csproj" />
+    <ProjectReference Include="..\..\src\Company.WebApplication1.Core.Entities\Company.WebApplication1.Core.Entities.csproj" />
+    <ProjectReference Include="..\..\src\Company.WebApplication1.Infrastructure.DataAccess\Company.WebApplication1.Infrastructure.DataAccess.csproj" />
+    <ProjectReference Include="..\..\src\Company.WebApplication1.Core.DomainServices\Company.WebApplication1.Core.DomainServices.csproj" />
+    <ProjectReference Include="..\..\src\Company.WebApplication1.Core.Query\Company.WebApplication1.Core.Query.csproj" />
+  </ItemGroup>
+</Project>

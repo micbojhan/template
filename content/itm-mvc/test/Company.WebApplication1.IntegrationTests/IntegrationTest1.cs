@@ -1,9 +1,9 @@
 using System;
 using Xunit;
 
-namespace Company.WebApplication1.UnitTests
+namespace Company.WebApplication1.IntegrationTests
 {
-    public class UnitTest1
+    public class IntegrationTest1
     {
         [Fact]
         public void Test1()

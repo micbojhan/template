@@ -5,19 +5,17 @@ using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using Company.WebApplication1.Core.Entities;
 using Company.WebApplication1.Infrastructure.DataAccess;
+using Company.WebApplication1.Core.DomainServices;
 
 namespace Company.WebApplication1.Core.Query
 {
-    public class QueryDb
+    public class QueryDb<T>
     {
-        private readonly ApplicationDbContext _dbContext;
+        protected readonly IGenericRepository<T> _repo;
 
-        public QueryDb(ApplicationDbContext dbContext)
+        public QueryDb(IGenericRepository<T> repo)
         {
-            _dbContext = dbContext;
-            _dbContext.ChangeTracker.QueryTrackingBehavior = QueryTrackingBehavior.NoTracking;
+            _repo = repo;
         }
-
-        public IQueryable<ApplicationUser> Users => _dbContext.Users.AsQueryable();
     }
 }

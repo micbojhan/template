@@ -1,6 +1,9 @@
 {
   "author": "Microsoft",
-  "classifications": ["Web", "MVC"],
+  "classifications": [
+    "Web",
+    "MVC"
+  ],
   "name": "ASP.NET Core Web App",
   "generatorVersions": "[1.0.0.0-*)",
   "groupIdentity": "ITMinds.Web.Mvc",
@@ -15,20 +18,33 @@
   "sourceName": "Company.WebApplication1",
   "preferNameDirectory": true,
   "guids": [
-    "53bc9b9d-9d6a-45d4-8429-2a2761773502",
-    "84614420-CD84-4090-8C5C-AE40EE5B9828",
-    "9A710AD3-0898-4540-A98D-CF4C44923102",
-    "946EAB78-1B11-493F-A4A2-135D39C002AD",
-    "06766E29-065A-459C-AA62-3C7F97E5467A",
-    "8BB5AA5E-CD33-4314-A910-9384285B9577",
-    "46846053-0122-4F8C-999A-FBC83B752DF7",
-    "DED1A414-3FD0-4F10-A0C9-036DC1B3E601",
-    "CCB48643-5EE0-4C46-BE65-439982C1684F",
-    "047416CD-0D54-4C35-8FE7-F9C93C122D16"
+    "53bc9b9d-9d6a-45d4-8429-2a2761773502", // Usersecrets
+    "84614420-CD84-4090-8C5C-AE40EE5B9828", // src folder
+    "9A710AD3-0898-4540-A98D-CF4C44923102", // MVC project
+    "8BB5AA5E-CD33-4314-A910-9384285B9577", // Command project
+    "46846053-0122-4F8C-999A-FBC83B752DF7", // DataAccess project
+    "DED1A414-3FD0-4F10-A0C9-036DC1B3E601", // Entities project
+    "CCB48643-5EE0-4C46-BE65-439982C1684F", // Query project
+    "047416CD-0D54-4C35-8FE7-F9C93C122D16", // DomainServices project
+    "662BA7AA-DE8A-46AF-A00B-90C78782F965", // test folder
+    "429C736D-F8D0-4EB4-9FA2-EE1072638309", // Integration.Tests project
+    "3BD99B54-EFF1-4085-B3B0-0F55AD3AD5DF", // MVC.Tests project
+    "449E76AA-EE3D-402A-B609-30DE67B073BE", // Command.Tests project
+    "07AB1420-9D98-443C-AFF8-75AAE82E785F", // Query.Tests project
+    "0C5C9445-17FC-4EAA-8FEC-3165134B1803" // DataAccess.Tests project
   ],
   "sources": [
     {
-      "exclude": [".vs/**/*", ".vscode/**/*", "**/[Bb]in/**", "**/[Oo]bj/**", ".template.config/**/*", "**/*.filelist", "**/*.user", "**/*.lock.json"],
+      "exclude": [
+        ".vs/**/*",
+        ".vscode/**/*",
+        "**/[Bb]in/**",
+        "**/[Oo]bj/**",
+        ".template.config/**/*",
+        "**/*.filelist",
+        "**/*.user",
+        "**/*.lock.json"
+      ],
       "modifiers": [
         {
           "condition": "(!IndividualAuth && !OrganizationalAuth)",
@@ -317,14 +333,20 @@
       "description": "The editor this template is generated for."
     }
   },
-  "primaryOutputs": [ { "path": "Company.WebApplication1.sln" } ],
+  "primaryOutputs": [
+    {
+      "path": "Company.WebApplication1.sln"
+    }
+  ],
   "defaultName": "WebApplication1",
   "postActions": [
     {
       "condition": "(!skipRestore)",
       "description": "Restore NuGet packages required by this project.",
       "manualInstructions": [
-        { "text": "Run 'dotnet restore'" }
+        {
+          "text": "Run 'dotnet restore'"
+        }
       ],
       "actionId": "210D431B-A78B-4D2F-B762-4ED3E3EA9025",
       "continueOnError": true

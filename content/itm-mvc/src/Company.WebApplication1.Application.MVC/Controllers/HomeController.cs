@@ -7,7 +7,7 @@ using Microsoft.AspNetCore.Authorization;
 #endif
 using Microsoft.AspNetCore.Mvc;
 
-namespace Company.WebApplication1.Controllers
+namespace Company.WebApplication1.Application.MVC.Controllers
 {
 #if (OrganizationalAuth)
     [Authorize]

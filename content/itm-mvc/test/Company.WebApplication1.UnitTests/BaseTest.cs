@@ -56,7 +56,7 @@ namespace Company.WebApplication1.UnitTests
 
             builder.RegisterType<QueryDb>();
 
-            var webAssembly = Assembly.Load(new AssemblyName("Company.WebApplication1.Application.Web"));
+            var webAssembly = Assembly.Load(new AssemblyName("Company.WebApplication1.Application.MVC"));
             builder.RegisterAssemblyTypes(webAssembly)
                 .Where(t => t.Name.EndsWith("Controller"))
                 .AsSelf();

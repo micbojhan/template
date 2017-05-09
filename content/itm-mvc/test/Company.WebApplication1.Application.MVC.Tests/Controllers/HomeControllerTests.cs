@@ -6,7 +6,7 @@ using System.Collections.Generic;
 using System.Text;
 using Xunit;
 
-namespace Company.WebApplication1.UnitTests.Controllers
+namespace Company.WebApplication1.Application.MVC.Tests.Controllers
 {
     public class HomeControllerTests : BaseTest
     {

@@ -11,7 +11,7 @@ using Company.WebApplication1.Core.Entities;
 using Company.WebApplication1.Models.ManageViewModels;
 using Company.WebApplication1.Application.MVC.Services;
 
-namespace Company.WebApplication1.Controllers
+namespace Company.WebApplication1.Application.MVC.Controllers
 {
     [Authorize]
     public class ManageController : Controller

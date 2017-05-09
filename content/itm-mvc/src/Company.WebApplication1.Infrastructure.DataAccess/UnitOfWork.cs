@@ -1,7 +1,6 @@
 using System;
 using Company.WebApplication1.Core.DomainServices;
 using System.Threading.Tasks;
-using System.Diagnostics;
 using Microsoft.EntityFrameworkCore;
 
 namespace Company.WebApplication1.Infrastructure.DataAccess

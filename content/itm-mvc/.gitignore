@@ -243,5 +243,3 @@ ModelManifest.xml
 
 # FAKE - F# Make
 .fake/
-
-src/Company.WebApplication1.Application.MVC/logs/

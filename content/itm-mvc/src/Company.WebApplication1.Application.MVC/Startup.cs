@@ -1,26 +1,26 @@
 ﻿using System.Linq;
 using Company.WebApplication1.Infrastructure.DataAccess;
-using Company.WebApplication1.Infrastructure.DataAccess.CsvSeeder;
+using Company.WebApplication1.Infrastructure.DataAccess.Data.Seed;
 using Microsoft.EntityFrameworkCore;
 using Company.WebApplication1.Application.MVC.Services;
 using AutoMapper;
 using Serilog;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
+using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Hosting;
 #if (OrganizationalAuth)
 using Microsoft.AspNetCore.Authentication.Cookies;
 #endif
 #if (MultiOrgAuth)
 using Microsoft.AspNetCore.Authentication.OpenIdConnect;
 #endif
-using Microsoft.AspNetCore.Builder;
-using Microsoft.AspNetCore.Hosting;
 #if (IndividualAuth)
 using Company.WebApplication1.Core.DomainServices;
 using Company.WebApplication1.Core.Query;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 #endif
-using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Logging;
 #if (OrganizationalAuth && OrgReadAccess)
 using Microsoft.IdentityModel.Protocols.OpenIdConnect;
 #endif
@@ -110,7 +110,7 @@ namespace Company.WebApplication1.Application.MVC
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, IHostingEnvironment env, ILoggerFactory loggerFactory, ApplicationDbContext context)
+        public void Configure(IApplicationBuilder app, IHostingEnvironment env, ILoggerFactory loggerFactory)
         {
             loggerFactory.AddDebug();
             loggerFactory.AddSerilog();
@@ -205,11 +205,11 @@ namespace Company.WebApplication1.Application.MVC
                     template: "{controller=Home}/{action=Index}/{id?}");
             });
 
-            context.Database.Migrate();
-
-            if (context.Users.Any() == false)
-                context.Users.SeedFromFile("SeedData/contacts.csv");
-            context.SaveChanges();
+            using(var serviceScope = app.ApplicationServices.GetRequiredService<IServiceScopeFactory>().CreateScope())
+            {
+                var context = serviceScope.ServiceProvider.GetService<ApplicationDbContext>();
+                context.MigrateAndSeedData();
+            }
         }
     }
 }

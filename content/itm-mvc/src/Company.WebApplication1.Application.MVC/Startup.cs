@@ -31,7 +31,7 @@ using Microsoft.IdentityModel.Tokens;
 using Company.WebApplication1.Core.Entities;
 #endif
 
-namespace Company.WebApplication1
+namespace Company.WebApplication1.Application.MVC
 {
     public class Startup
     {

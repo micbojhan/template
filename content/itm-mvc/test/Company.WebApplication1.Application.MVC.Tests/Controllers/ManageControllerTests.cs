@@ -15,7 +15,6 @@ using System.Security.Claims;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Company.WebApplication1.Models.ManageViewModels;
-using Microsoft.Extensions.DependencyInjection;
 using Microsoft.AspNetCore.Mvc.ViewFeatures;
 using Newtonsoft.Json;
 
@@ -23,10 +22,9 @@ namespace Company.WebApplication1.Application.MVC.Tests.Controllers
 {
     public class ManageControllerTests
     {
-        private UserManager<ApplicationUser> UserManagerMock;
-        private ManageController uut;
-
-        public SignInManager<ApplicationUser> SignInManagerMock;
+        private UserManager<ApplicationUser> _userManagerMock;
+        private ManageController _uut;
+        public SignInManager<ApplicationUser> _signInManagerMock;
 
         public ManageControllerTests()
         {
@@ -41,7 +39,7 @@ namespace Company.WebApplication1.Application.MVC.Tests.Controllers
             var serviceProviderMock = Substitute.For<IServiceProvider>();
             var loggerMock = Substitute.For<ILogger<UserManager<ApplicationUser>>>();
 
-            UserManagerMock = Substitute.For<UserManager<ApplicationUser>>(
+            _userManagerMock = Substitute.For<UserManager<ApplicationUser>>(
                 userStoreMock,
                 optionsMock,
                 passwordHasherMock,
@@ -52,14 +50,13 @@ namespace Company.WebApplication1.Application.MVC.Tests.Controllers
                 serviceProviderMock,
                 loggerMock);
 
-
             //SignInManager mocks
             var contextAccessorMock = Substitute.For<IHttpContextAccessor>();
             var claimsPricipleFactoryMock = Substitute.For<IUserClaimsPrincipalFactory<ApplicationUser>>();
             var loggerMockSM = Substitute.For<ILogger<SignInManager<ApplicationUser>>>();
 
-            SignInManagerMock = Substitute.For<SignInManager<ApplicationUser>>(
-                UserManagerMock,
+            _signInManagerMock = Substitute.For<SignInManager<ApplicationUser>>(
+                _userManagerMock,
                 contextAccessorMock,
                 claimsPricipleFactoryMock,
                 optionsMock,
@@ -75,7 +72,7 @@ namespace Company.WebApplication1.Application.MVC.Tests.Controllers
             var loggerMockCtrl = Substitute.For<ILogger>();
             loggerFactoryMock.CreateLogger("").Returns(loggerMockCtrl);
 
-            uut = new ManageController(UserManagerMock, SignInManagerMock, cookieOptionsMock, emailMock, smsMock, loggerFactoryMock);
+            _uut = new ManageController(_userManagerMock, _signInManagerMock, cookieOptionsMock, emailMock, smsMock, loggerFactoryMock);
         }
 
         [Theory]
@@ -91,10 +88,10 @@ namespace Company.WebApplication1.Application.MVC.Tests.Controllers
             //Arrange
 
             //Act
-            var result = uut.Index(messageId);
+            var result = _uut.Index(messageId);
 
             //Assert
-            Assert.Equal(statusMessage, uut.ViewData["StatusMessage"]);
+            Assert.Equal(statusMessage, _uut.ViewData["StatusMessage"]);
         }
 
         [Fact]
@@ -110,21 +107,21 @@ namespace Company.WebApplication1.Application.MVC.Tests.Controllers
             var httpContext = Substitute.For<HttpContext>();
             httpContext.User.Returns(validPrincipal);
 
-            uut.ControllerContext = new ControllerContext
+            _uut.ControllerContext = new ControllerContext
             {
                 HttpContext = httpContext
             };
 
-            UserManagerMock.HasPasswordAsync(Arg.Any<ApplicationUser>()).Returns(Task.FromResult(true));
-            UserManagerMock.GetPhoneNumberAsync(Arg.Any<ApplicationUser>()).Returns(Task.FromResult(""));
-            UserManagerMock.GetTwoFactorEnabledAsync(Arg.Any<ApplicationUser>()).Returns(Task.FromResult(true));
+            _userManagerMock.HasPasswordAsync(Arg.Any<ApplicationUser>()).Returns(Task.FromResult(true));
+            _userManagerMock.GetPhoneNumberAsync(Arg.Any<ApplicationUser>()).Returns(Task.FromResult(""));
+            _userManagerMock.GetTwoFactorEnabledAsync(Arg.Any<ApplicationUser>()).Returns(Task.FromResult(true));
             IList<UserLoginInfo> list = new List<UserLoginInfo>();
-            UserManagerMock.GetLoginsAsync(Arg.Any<ApplicationUser>()).Returns(Task.FromResult(list));
-            SignInManagerMock.IsTwoFactorClientRememberedAsync(Arg.Any<ApplicationUser>()).Returns(Task.FromResult(true));
-            uut.TempData = Substitute.For<ITempDataDictionary>();
+            _userManagerMock.GetLoginsAsync(Arg.Any<ApplicationUser>()).Returns(Task.FromResult(list));
+            _signInManagerMock.IsTwoFactorClientRememberedAsync(Arg.Any<ApplicationUser>()).Returns(Task.FromResult(true));
+            _uut.TempData = Substitute.For<ITempDataDictionary>();
 
             //Act
-            var result = await uut.Index(null) as ViewResult;
+            var result = await _uut.Index(null) as ViewResult;
 
             //Assert
             Assert.Null(result.ViewName); //Returns default view
@@ -134,16 +131,15 @@ namespace Company.WebApplication1.Application.MVC.Tests.Controllers
         public async void Index_UserIsValid_ReturnsCorrectViewModel()
         {
             //Arrange
-            var validPrincipal = new ClaimsPrincipal(
-            new[]
-            {
-                new ClaimsIdentity(
-                    new[] {new Claim(ClaimTypes.NameIdentifier, "MyUserId")})
-            });
+            var validPrincipal = new ClaimsPrincipal(new[]
+                {
+                    new ClaimsIdentity(
+                        new[] {new Claim(ClaimTypes.NameIdentifier, "MyUserId")})
+                });
             var httpContext = Substitute.For<HttpContext>();
             httpContext.User.Returns(validPrincipal);
 
-            uut.ControllerContext = new ControllerContext
+            _uut.ControllerContext = new ControllerContext
             {
                 HttpContext = httpContext
             };
@@ -156,15 +152,15 @@ namespace Company.WebApplication1.Application.MVC.Tests.Controllers
                 BrowserRemembered = true
             };
 
-            UserManagerMock.HasPasswordAsync(Arg.Any<ApplicationUser>()).Returns(Task.FromResult(viewModel.HasPassword));
-            UserManagerMock.GetPhoneNumberAsync(Arg.Any<ApplicationUser>()).Returns(Task.FromResult(viewModel.PhoneNumber));
-            UserManagerMock.GetTwoFactorEnabledAsync(Arg.Any<ApplicationUser>()).Returns(Task.FromResult(viewModel.TwoFactor));
-            UserManagerMock.GetLoginsAsync(Arg.Any<ApplicationUser>()).Returns(Task.FromResult(viewModel.Logins));
-            SignInManagerMock.IsTwoFactorClientRememberedAsync(Arg.Any<ApplicationUser>()).Returns(Task.FromResult(viewModel.BrowserRemembered));
-            uut.TempData = Substitute.For<ITempDataDictionary>();
+            _userManagerMock.HasPasswordAsync(Arg.Any<ApplicationUser>()).Returns(Task.FromResult(viewModel.HasPassword));
+            _userManagerMock.GetPhoneNumberAsync(Arg.Any<ApplicationUser>()).Returns(Task.FromResult(viewModel.PhoneNumber));
+            _userManagerMock.GetTwoFactorEnabledAsync(Arg.Any<ApplicationUser>()).Returns(Task.FromResult(viewModel.TwoFactor));
+            _userManagerMock.GetLoginsAsync(Arg.Any<ApplicationUser>()).Returns(Task.FromResult(viewModel.Logins));
+            _signInManagerMock.IsTwoFactorClientRememberedAsync(Arg.Any<ApplicationUser>()).Returns(Task.FromResult(viewModel.BrowserRemembered));
+            _uut.TempData = Substitute.For<ITempDataDictionary>();
 
             //Act
-            var result = await uut.Index(null) as ViewResult;
+            var result = await _uut.Index(null) as ViewResult;
             var originalViewModel = JsonConvert.SerializeObject(viewModel);
             var viewModelReturnedToView = JsonConvert.SerializeObject(result.Model);
 
@@ -173,27 +169,27 @@ namespace Company.WebApplication1.Application.MVC.Tests.Controllers
         }
 
         [Fact]
-        public async void Index_UserIsNull_ReturnsErrorView()
+        public async void Index_UnregisteredUser_ReturnsErrorView()
         {
             //Arrange
             var httpContext = Substitute.For<HttpContext>();
 
-            uut.ControllerContext = new ControllerContext
+            _uut.ControllerContext = new ControllerContext
             {
                 HttpContext = httpContext
             };
             ApplicationUser nullUser = null;
-            UserManagerMock.GetUserAsync(Arg.Any<ClaimsPrincipal>()).Returns(Task.FromResult(nullUser));
-            UserManagerMock.HasPasswordAsync(Arg.Any<ApplicationUser>()).Returns(Task.FromResult(true));
-            UserManagerMock.GetPhoneNumberAsync(Arg.Any<ApplicationUser>()).Returns(Task.FromResult(""));
-            UserManagerMock.GetTwoFactorEnabledAsync(Arg.Any<ApplicationUser>()).Returns(Task.FromResult(true));
+            _userManagerMock.GetUserAsync(Arg.Any<ClaimsPrincipal>()).Returns(Task.FromResult(nullUser));
+            _userManagerMock.HasPasswordAsync(Arg.Any<ApplicationUser>()).Returns(Task.FromResult(true));
+            _userManagerMock.GetPhoneNumberAsync(Arg.Any<ApplicationUser>()).Returns(Task.FromResult(""));
+            _userManagerMock.GetTwoFactorEnabledAsync(Arg.Any<ApplicationUser>()).Returns(Task.FromResult(true));
             IList<UserLoginInfo> list = new List<UserLoginInfo>();
-            UserManagerMock.GetLoginsAsync(Arg.Any<ApplicationUser>()).Returns(Task.FromResult(list));
-            SignInManagerMock.IsTwoFactorClientRememberedAsync(Arg.Any<ApplicationUser>()).Returns(Task.FromResult(true));
-            uut.TempData = Substitute.For<ITempDataDictionary>();
+            _userManagerMock.GetLoginsAsync(Arg.Any<ApplicationUser>()).Returns(Task.FromResult(list));
+            _signInManagerMock.IsTwoFactorClientRememberedAsync(Arg.Any<ApplicationUser>()).Returns(Task.FromResult(true));
+            _uut.TempData = Substitute.For<ITempDataDictionary>();
 
             //Act
-            var result = await uut.Index(null) as ViewResult;
+            var result = await _uut.Index(null) as ViewResult;
 
             //Assert
             Assert.Equal("Error", result.ViewName);

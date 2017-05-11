@@ -100,7 +100,7 @@ namespace Company.WebApplication1.Application.MVC
             services.AddTransient<IEmailSender, AuthMessageSender>();
             services.AddTransient<ISmsSender, AuthMessageSender>();
 
-            services.AddScoped<QueryDb, QueryDb>();
+            services.AddScoped(typeof(QueryDb<>), typeof(QueryDb<>));
             services.AddScoped<ApplicationDbContext, ApplicationDbContext>();
 #elseif (OrganizationalAuth)
 

@@ -22,9 +22,9 @@ namespace Company.WebApplication1.Application.MVC.Tests.Controllers
 {
     public class ManageControllerTests
     {
-        private UserManager<ApplicationUser> _userManagerMock;
-        private ManageController _uut;
-        public SignInManager<ApplicationUser> _signInManagerMock;
+        private readonly UserManager<ApplicationUser> _userManagerMock;
+        private readonly ManageController _uut;
+        private readonly SignInManager<ApplicationUser> _signInManagerMock;
 
         public ManageControllerTests()
         {

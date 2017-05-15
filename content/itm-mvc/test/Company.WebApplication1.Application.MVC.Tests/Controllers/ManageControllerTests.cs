@@ -75,6 +75,7 @@ namespace Company.WebApplication1.Application.MVC.Tests.Controllers
             _uut = new ManageController(_userManagerMock, _signInManagerMock, cookieOptionsMock, emailMock, smsMock, loggerFactoryMock);
         }
 
+        //Index
         [Theory]
         [InlineData(ManageMessageId.ChangePasswordSuccess, "Your password has been changed.")]
         [InlineData(ManageMessageId.SetPasswordSuccess, "Your password has been set.")]
@@ -98,8 +99,7 @@ namespace Company.WebApplication1.Application.MVC.Tests.Controllers
         public async void Index_UserIsValid_ReturnsDefaultView()
         {
             //Arrange
-            var validPrincipal = new ClaimsPrincipal(
-            new[]
+            var validPrincipal = new ClaimsPrincipal(new[]
             {
                 new ClaimsIdentity(
                     new[] {new Claim(ClaimTypes.NameIdentifier, "MyUserId")})
@@ -193,6 +193,101 @@ namespace Company.WebApplication1.Application.MVC.Tests.Controllers
 
             //Assert
             Assert.Equal("Error", result.ViewName);
+        }
+
+        //Removelogin
+        [Fact]
+        public async void Removelogin_UnregisteredUser_CallsRedirectWithErrorMessage()
+        {
+            //Arrange
+            var removeLoginViewModelMock = new RemoveLoginViewModel
+            {
+                LoginProvider = "",
+                ProviderKey = ""
+            };
+            var httpContext = Substitute.For<HttpContext>();
+
+            _uut.ControllerContext = new ControllerContext
+            {
+                HttpContext = httpContext
+            };
+            ApplicationUser nullUser = null;
+            _userManagerMock.GetUserAsync(Arg.Any<ClaimsPrincipal>()).Returns(Task.FromResult(nullUser));
+            _uut.Url = Substitute.For<IUrlHelper>();
+
+            //Act
+            var result = await _uut.RemoveLogin(removeLoginViewModelMock) as RedirectToActionResult;
+
+            //Assert
+            Assert.Equal(ManageMessageId.Error, result.RouteValues["message"]);
+        }
+
+        [Fact]
+        public async void Removelogin_RegisteredUserWithRemoveLoginSuccess_CallsRedirectWithRemoveLoginSuccessMessage()
+        {
+            //Arrange
+            var removeLoginViewModelMock = new RemoveLoginViewModel
+            {
+                LoginProvider = "",
+                ProviderKey = ""
+            };
+
+            var validPrincipal = new ClaimsPrincipal(new[]
+                {
+                    new ClaimsIdentity(
+                        new[] {new Claim(ClaimTypes.NameIdentifier, "MyUserId")})
+                });
+            var httpContext = Substitute.For<HttpContext>();
+            httpContext.User.Returns(validPrincipal);
+
+            _uut.ControllerContext = new ControllerContext
+            {
+                HttpContext = httpContext
+            };
+
+            _userManagerMock.RemoveLoginAsync(Arg.Any<ApplicationUser>(), Arg.Any<string>(), Arg.Any<string>()).Returns(Task.FromResult(IdentityResult.Success));
+
+            _uut.Url = Substitute.For<IUrlHelper>();
+
+            //Act
+            var result = await _uut.RemoveLogin(removeLoginViewModelMock) as RedirectToActionResult;
+
+            //Assert
+            Assert.Equal(ManageMessageId.RemoveLoginSuccess, result.RouteValues["message"]);
+        }
+
+        [Fact]
+        public async void Removelogin_RegisteredUserWithRemoveLoginError_CallsRedirectWithErrorMessage()
+        {
+            //Arrange
+            var removeLoginViewModelMock = new RemoveLoginViewModel
+            {
+                LoginProvider = "",
+                ProviderKey = ""
+            };
+
+            var validPrincipal = new ClaimsPrincipal(new[]
+                {
+                    new ClaimsIdentity(
+                        new[] {new Claim(ClaimTypes.NameIdentifier, "MyUserId")})
+                });
+            var httpContext = Substitute.For<HttpContext>();
+            httpContext.User.Returns(validPrincipal);
+
+            _uut.ControllerContext = new ControllerContext
+            {
+                HttpContext = httpContext
+            };
+
+            _userManagerMock.RemoveLoginAsync(Arg.Any<ApplicationUser>(), Arg.Any<string>(), Arg.Any<string>()).Returns(Task.FromResult(IdentityResult.Failed()));
+
+            _uut.Url = Substitute.For<IUrlHelper>();
+
+            //Act
+            var result = await _uut.RemoveLogin(removeLoginViewModelMock) as RedirectToActionResult;
+
+            //Assert
+            Assert.Equal(ManageMessageId.Error, result.RouteValues["message"]);
         }
     }
 }

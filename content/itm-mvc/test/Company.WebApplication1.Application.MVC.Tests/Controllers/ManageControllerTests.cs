@@ -289,5 +289,18 @@ namespace Company.WebApplication1.Application.MVC.Tests.Controllers
             //Assert
             Assert.Equal(ManageMessageId.Error, result.RouteValues["message"]);
         }
+
+        //AddPhoneNumber
+        [Fact]
+        public void AddPhoneNumber_ReturnsDefaultViewResult()
+        {
+            //Arrange
+
+            //Act
+            var result = _uut.AddPhoneNumber() as ViewResult;
+
+            //Assert
+            Assert.Null(result.ViewName); //Returns default view
+        }
     }
 }

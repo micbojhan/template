@@ -302,5 +302,95 @@ namespace Company.WebApplication1.Application.MVC.Tests.Controllers
             //Assert
             Assert.Null(result.ViewName); //Returns default view
         }
+
+        //AddPhoneNumber(model)
+        [Fact]
+        public async void AddPhoneNumber_ModelStateNotValid_ReturnsDefaultView()
+        {
+            //Arrange
+            var addPhoneNumberViewModelMock = new AddPhoneNumberViewModel
+            {
+                PhoneNumber = "+4512345678"
+            };
+            _uut.ModelState.AddModelError("Error","Error");
+            //Act
+            var result = await _uut.AddPhoneNumber(addPhoneNumberViewModelMock) as ViewResult;
+
+            //Assert
+            Assert.Null(result.ViewName);
+        }
+
+        [Fact]
+        public async void AddPhoneNumber_ModelStateNotValid_ReturnsViewWithSameModel()
+        {
+            //Arrange
+            var addPhoneNumberViewModelMock = new AddPhoneNumberViewModel
+            {
+                PhoneNumber = "+4512345678"
+            };
+            _uut.ModelState.AddModelError("Error","Error");
+            //Act
+            var result = await _uut.AddPhoneNumber(addPhoneNumberViewModelMock) as ViewResult;
+            var originalViewModel = JsonConvert.SerializeObject(addPhoneNumberViewModelMock);
+            var viewModelReturnedToView = JsonConvert.SerializeObject(result.Model);
+
+            //Assert
+            Assert.Equal(originalViewModel, viewModelReturnedToView);
+        }
+
+        [Fact]
+        public async void AddPhoneNumber_ModelStateValidUnregisteredUser_ReturnsErrorView()
+        {
+            //Arrange
+            var addPhoneNumberViewModelMock = new AddPhoneNumberViewModel
+            {
+                PhoneNumber = "+4512345678"
+            };
+            var httpContext = Substitute.For<HttpContext>();
+
+            _uut.ControllerContext = new ControllerContext
+            {
+                HttpContext = httpContext
+            };
+            ApplicationUser nullUser = null;
+            _userManagerMock.GetUserAsync(Arg.Any<ClaimsPrincipal>()).Returns(Task.FromResult(nullUser));
+            _uut.TempData = Substitute.For<ITempDataDictionary>();
+
+            //Act
+            var result = await _uut.AddPhoneNumber(addPhoneNumberViewModelMock) as ViewResult;
+
+            //Assert
+            Assert.Equal("Error", result.ViewName);
+        }
+
+        [Fact]
+        public async void AddPhoneNumber_ModelStateValidValidUser_ReturnsRedirectResultWithPhoneNumber()
+        {
+            //Arrange
+            var addPhoneNumberViewModelMock = new AddPhoneNumberViewModel
+            {
+                PhoneNumber = "+4512345678"
+            };
+            var validPrincipal = new ClaimsPrincipal(new[]
+                {
+                    new ClaimsIdentity(
+                        new[] {new Claim(ClaimTypes.NameIdentifier, "MyUserId")})
+                });
+            var httpContext = Substitute.For<HttpContext>();
+            httpContext.User.Returns(validPrincipal);
+
+            _uut.ControllerContext = new ControllerContext
+            {
+                HttpContext = httpContext
+            };
+            _userManagerMock.GenerateChangePhoneNumberTokenAsync(Arg.Any<ApplicationUser>(),Arg.Any<string>()).Returns(Task.FromResult(""));
+            _uut.Url = Substitute.For<IUrlHelper>();
+
+            //Act
+            var result = await _uut.AddPhoneNumber(addPhoneNumberViewModelMock) as RedirectToActionResult;
+
+            //Assert
+            Assert.Equal(addPhoneNumberViewModelMock.PhoneNumber, result.RouteValues["PhoneNumber"]);
+        }
     }
 }

@@ -19,14 +19,14 @@ namespace Company.WebApplication1.Core.Command
         protected abstract void RunCommand();
 
 
-        public BaseCommand(ILogger<BaseCommand> logger)
+        public BaseCommand(ILoggerFactory loggerFactory)
         {
-            _logger = logger;
+            _logger = loggerFactory.CreateLogger<BaseCommand>();
         }
 
-        public BaseCommand(ILogger<BaseCommand> logger, ApplicationDbContext dbContext)
+        public BaseCommand(ILoggerFactory loggerFactory, ApplicationDbContext dbContext)
         {
-            _logger = logger;
+            _logger = loggerFactory.CreateLogger<BaseCommand>();
             _dbContext = dbContext;
         }
 

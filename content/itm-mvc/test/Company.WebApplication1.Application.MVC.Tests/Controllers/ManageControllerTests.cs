@@ -392,5 +392,51 @@ namespace Company.WebApplication1.Application.MVC.Tests.Controllers
             //Assert
             Assert.Equal(addPhoneNumberViewModelMock.PhoneNumber, result.RouteValues["PhoneNumber"]);
         }
+
+        //EnableTwoFactorAuthentication
+        [Fact]
+        public async void EnableTwoFactorAuthentication_UnregisteredUser_UserManagerTwoFactorEnableIsNotCalled()
+        {
+            //Arrange
+            var httpContext = Substitute.For<HttpContext>();
+
+            _uut.ControllerContext = new ControllerContext
+            {
+                HttpContext = httpContext
+            };
+            ApplicationUser nullUser = null;
+            _userManagerMock.GetUserAsync(Arg.Any<ClaimsPrincipal>()).Returns(Task.FromResult(nullUser));
+            _uut.Url = Substitute.For<IUrlHelper>();
+
+            //Act
+            var result = await _uut.EnableTwoFactorAuthentication();
+
+            //Assert
+            await _userManagerMock.DidNotReceive().SetTwoFactorEnabledAsync(Arg.Any<ApplicationUser>(),Arg.Any<bool>());
+        }
+        [Fact]
+        public async void EnableTwoFactorAuthentication_ValidUser_UserManagerTwoFactorEnableIsCalled()
+        {
+            //Arrange
+            var validPrincipal = new ClaimsPrincipal(new[]
+                {
+                    new ClaimsIdentity(
+                        new[] {new Claim(ClaimTypes.NameIdentifier, "MyUserId")})
+                });
+            var httpContext = Substitute.For<HttpContext>();
+            httpContext.User.Returns(validPrincipal);
+
+            _uut.ControllerContext = new ControllerContext
+            {
+                HttpContext = httpContext
+            };
+            _uut.Url = Substitute.For<IUrlHelper>();
+
+            //Act
+            var result = await _uut.EnableTwoFactorAuthentication();
+
+            //Assert
+            await _userManagerMock.Received().SetTwoFactorEnabledAsync(Arg.Any<ApplicationUser>(),true);
+        }
     }
 }

@@ -1537,5 +1537,216 @@ namespace Company.WebApplication1.Application.MVC.Tests.Controllers
             //Assert
             Assert.True((bool)result.ViewData["ShowRemoveButton"]);
         }
+
+        //LinkLogin
+        [Fact]
+        public async void LinkLogin_CallsSignOutOnHttpContext()
+        {
+            //Arrange
+            var httpContext = Substitute.For<HttpContext>();
+            _uut.ControllerContext = new ControllerContext
+            {
+                HttpContext = httpContext
+            };
+            _uut.Url = Substitute.For<IUrlHelper>();
+
+            //Act
+            var result = await _uut.LinkLogin(Arg.Any<string>());
+
+            //Assert
+            await httpContext.Received().Authentication.SignOutAsync(Arg.Any<string>());
+        }
+
+        [Fact]
+        public async void LinkLogin_CallsSignInManagerConfigureExternalAuthenticationProperties()
+        {
+            //Arrange
+            var httpContext = Substitute.For<HttpContext>();
+            _uut.ControllerContext = new ControllerContext
+            {
+                HttpContext = httpContext
+            };
+            _uut.Url = Substitute.For<IUrlHelper>();
+
+            //Act
+            var result = await _uut.LinkLogin(Arg.Any<string>());
+
+            //Assert
+            _signInManagerMock.Received().ConfigureExternalAuthenticationProperties(Arg.Any<string>(), Arg.Any<string>(), Arg.Any<string>());
+        }
+
+        [Fact]
+        public async void LinkLogin_ReturnsChallengeResult()
+        {
+            //Arrange
+            var httpContext = Substitute.For<HttpContext>();
+            _uut.ControllerContext = new ControllerContext
+            {
+                HttpContext = httpContext
+            };
+            _uut.Url = Substitute.For<IUrlHelper>();
+
+            //Act
+            var result = await _uut.LinkLogin(Arg.Any<string>());
+
+            //Assert
+            Assert.IsType<ChallengeResult>(result);
+        }
+
+        //LinkLoginCallback
+        [Fact]
+        public async void LinkLoginCallback_UnregisteredUser_ReturnsErrorView()
+        {
+            //Arrange
+            var httpContext = Substitute.For<HttpContext>();
+
+            _uut.ControllerContext = new ControllerContext
+            {
+                HttpContext = httpContext
+            };
+
+            _userManagerMock.GetUserAsync(Arg.Any<ClaimsPrincipal>()).Returns(default(ApplicationUser));
+            _uut.TempData = Substitute.For<ITempDataDictionary>();
+
+            //Act
+            var result = await _uut.LinkLoginCallback() as ViewResult;
+
+            //Assert
+            Assert.Equal("Error", result.ViewName);
+        }
+
+        [Fact]
+        public async void LinkLoginCallback_UserIsValidAndExternalLoginInfoNull_ReturnsRedirectWithErrorMessage()
+        {
+            //Arrange
+            var validPrincipal = new ClaimsPrincipal(new[]
+                {
+                    new ClaimsIdentity(
+                        new[] {new Claim(ClaimTypes.NameIdentifier, "MyUserId")})
+                });
+            var httpContext = Substitute.For<HttpContext>();
+            httpContext.User.Returns(validPrincipal);
+
+            _uut.ControllerContext = new ControllerContext
+            {
+                HttpContext = httpContext
+            };
+            _uut.Url = Substitute.For<IUrlHelper>();
+            _signInManagerMock.GetExternalLoginInfoAsync(Arg.Any<string>()).Returns(default(ExternalLoginInfo));
+
+            //Act
+            var result = await _uut.LinkLoginCallback() as RedirectToActionResult;
+
+            //Assert
+            Assert.Equal(ManageMessageId.Error, result.RouteValues["message"]);
+        }
+
+        [Fact]
+        public async void LinkLoginCallback_UserIsValidAndExternalLoginInfoNotNullAndAddLoginFailed_UserManagerAddLoginCalled()
+        {
+            //Arrange
+            var validPrincipal = new ClaimsPrincipal(new[]
+                {
+                    new ClaimsIdentity(
+                        new[] {new Claim(ClaimTypes.NameIdentifier, "MyUserId")})
+                });
+            var httpContext = Substitute.For<HttpContext>();
+            httpContext.User.Returns(validPrincipal);
+
+            _uut.ControllerContext = new ControllerContext
+            {
+                HttpContext = httpContext
+            };
+            _uut.Url = Substitute.For<IUrlHelper>();
+            _signInManagerMock.GetExternalLoginInfoAsync(Arg.Any<string>()).Returns(new ExternalLoginInfo(validPrincipal, "", "", ""));
+            _userManagerMock.AddLoginAsync(Arg.Any<ApplicationUser>(),Arg.Any<UserLoginInfo>()).Returns(IdentityResult.Failed());
+
+            //Act
+            var result = await _uut.LinkLoginCallback() as RedirectToActionResult;
+
+            //Assert
+            await _userManagerMock.Received().AddLoginAsync(Arg.Any<ApplicationUser>(), Arg.Any<UserLoginInfo>());
+        }
+
+        [Fact]
+        public async void LinkLoginCallback_UserIsValidAndExternalLoginInfoNotNullAndAddLoginFailed_ReturnsRedirectWithErrorMessage()
+        {
+            //Arrange
+            var validPrincipal = new ClaimsPrincipal(new[]
+                {
+                    new ClaimsIdentity(
+                        new[] {new Claim(ClaimTypes.NameIdentifier, "MyUserId")})
+                });
+            var httpContext = Substitute.For<HttpContext>();
+            httpContext.User.Returns(validPrincipal);
+
+            _uut.ControllerContext = new ControllerContext
+            {
+                HttpContext = httpContext
+            };
+            _uut.Url = Substitute.For<IUrlHelper>();
+            _signInManagerMock.GetExternalLoginInfoAsync(Arg.Any<string>()).Returns(new ExternalLoginInfo(validPrincipal, "", "", ""));
+            _userManagerMock.AddLoginAsync(Arg.Any<ApplicationUser>(), Arg.Any<UserLoginInfo>()).Returns(IdentityResult.Failed());
+
+            //Act
+            var result = await _uut.LinkLoginCallback() as RedirectToActionResult;
+
+            //Assert
+            Assert.Equal(ManageMessageId.Error, result.RouteValues["message"]);
+        }
+
+        [Fact]
+        public async void LinkLoginCallback_UserIsValidAndExternalLoginInfoNotNullAndAddLoginSucceded_CallsSignOutOnHttpContext()
+        {
+            //Arrange
+            var validPrincipal = new ClaimsPrincipal(new[]
+                {
+                    new ClaimsIdentity(
+                        new[] {new Claim(ClaimTypes.NameIdentifier, "MyUserId")})
+                });
+            var httpContext = Substitute.For<HttpContext>();
+            httpContext.User.Returns(validPrincipal);
+
+            _uut.ControllerContext = new ControllerContext
+            {
+                HttpContext = httpContext
+            };
+            _uut.Url = Substitute.For<IUrlHelper>();
+            _signInManagerMock.GetExternalLoginInfoAsync(Arg.Any<string>()).Returns(new ExternalLoginInfo(validPrincipal, "", "", ""));
+            _userManagerMock.AddLoginAsync(Arg.Any<ApplicationUser>(), Arg.Any<UserLoginInfo>()).Returns(IdentityResult.Success);
+
+            //Act
+            var result = await _uut.LinkLoginCallback() as RedirectToActionResult;
+
+            //Assert
+            await httpContext.Received().Authentication.SignOutAsync(Arg.Any<string>());
+        }
+
+        [Fact]
+        public async void LinkLoginCallback_UserIsValidAndExternalLoginInfoNotNullAndAddLoginSucceded_ReturnsRedirectWithSuccessMessage()
+        {
+            //Arrange
+            var validPrincipal = new ClaimsPrincipal(new[]
+                {
+                    new ClaimsIdentity(
+                        new[] {new Claim(ClaimTypes.NameIdentifier, "MyUserId")})
+                });
+            var httpContext = Substitute.For<HttpContext>();
+            httpContext.User.Returns(validPrincipal);
+
+            _uut.ControllerContext = new ControllerContext
+            {
+                HttpContext = httpContext
+            };
+            _uut.Url = Substitute.For<IUrlHelper>();
+            _signInManagerMock.GetExternalLoginInfoAsync(Arg.Any<string>()).Returns(new ExternalLoginInfo(validPrincipal, "", "", ""));
+            _userManagerMock.AddLoginAsync(Arg.Any<ApplicationUser>(), Arg.Any<UserLoginInfo>()).Returns(IdentityResult.Success);
+
+            //Act
+            var result = await _uut.LinkLoginCallback() as RedirectToActionResult;
+
+            //Assert
+            Assert.Equal(ManageMessageId.AddLoginSuccess, result.RouteValues["message"]);
+        }
     }
 }

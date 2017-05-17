@@ -412,7 +412,7 @@ namespace Company.WebApplication1.Application.MVC.Tests.Controllers
             var result = await _uut.EnableTwoFactorAuthentication();
 
             //Assert
-            await _userManagerMock.DidNotReceive().SetTwoFactorEnabledAsync(Arg.Any<ApplicationUser>(),Arg.Any<bool>());
+            await _userManagerMock.DidNotReceive().SetTwoFactorEnabledAsync(Arg.Any<ApplicationUser>(), Arg.Any<bool>());
         }
         [Fact]
         public async void EnableTwoFactorAuthentication_ValidUser_UserManagerTwoFactorEnableIsCalled()
@@ -436,7 +436,7 @@ namespace Company.WebApplication1.Application.MVC.Tests.Controllers
             var result = await _uut.EnableTwoFactorAuthentication();
 
             //Assert
-            await _userManagerMock.Received().SetTwoFactorEnabledAsync(Arg.Any<ApplicationUser>(),true);
+            await _userManagerMock.Received().SetTwoFactorEnabledAsync(Arg.Any<ApplicationUser>(), true);
         }
     }
 }

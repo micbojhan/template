@@ -1665,7 +1665,7 @@ namespace Company.WebApplication1.Application.MVC.Tests.Controllers
             var result = await _uut.LinkLoginCallback() as RedirectToActionResult;
 
             //Assert
-            await _userManagerMock.Received().AddLoginAsync(Arg.Any<ApplicationUser>(),Arg.Any<UserLoginInfo>());
+            await _userManagerMock.Received().AddLoginAsync(Arg.Any<ApplicationUser>(), Arg.Any<UserLoginInfo>());
         }
 
         [Fact]
@@ -1686,7 +1686,7 @@ namespace Company.WebApplication1.Application.MVC.Tests.Controllers
             };
             _uut.Url = Substitute.For<IUrlHelper>();
             _signInManagerMock.GetExternalLoginInfoAsync(Arg.Any<string>()).Returns(new ExternalLoginInfo(validPrincipal, "", "", ""));
-            _userManagerMock.AddLoginAsync(Arg.Any<ApplicationUser>(),Arg.Any<UserLoginInfo>()).Returns(IdentityResult.Failed());
+            _userManagerMock.AddLoginAsync(Arg.Any<ApplicationUser>(), Arg.Any<UserLoginInfo>()).Returns(IdentityResult.Failed());
 
             //Act
             var result = await _uut.LinkLoginCallback() as RedirectToActionResult;
@@ -1713,7 +1713,7 @@ namespace Company.WebApplication1.Application.MVC.Tests.Controllers
             };
             _uut.Url = Substitute.For<IUrlHelper>();
             _signInManagerMock.GetExternalLoginInfoAsync(Arg.Any<string>()).Returns(new ExternalLoginInfo(validPrincipal, "", "", ""));
-            _userManagerMock.AddLoginAsync(Arg.Any<ApplicationUser>(),Arg.Any<UserLoginInfo>()).Returns(IdentityResult.Success);
+            _userManagerMock.AddLoginAsync(Arg.Any<ApplicationUser>(), Arg.Any<UserLoginInfo>()).Returns(IdentityResult.Success);
 
             //Act
             var result = await _uut.LinkLoginCallback() as RedirectToActionResult;
@@ -1740,7 +1740,7 @@ namespace Company.WebApplication1.Application.MVC.Tests.Controllers
             };
             _uut.Url = Substitute.For<IUrlHelper>();
             _signInManagerMock.GetExternalLoginInfoAsync(Arg.Any<string>()).Returns(new ExternalLoginInfo(validPrincipal, "", "", ""));
-            _userManagerMock.AddLoginAsync(Arg.Any<ApplicationUser>(),Arg.Any<UserLoginInfo>()).Returns(IdentityResult.Success);
+            _userManagerMock.AddLoginAsync(Arg.Any<ApplicationUser>(), Arg.Any<UserLoginInfo>()).Returns(IdentityResult.Success);
 
             //Act
             var result = await _uut.LinkLoginCallback() as RedirectToActionResult;

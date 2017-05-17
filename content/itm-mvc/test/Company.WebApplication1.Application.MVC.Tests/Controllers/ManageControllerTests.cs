@@ -202,7 +202,7 @@ namespace Company.WebApplication1.Application.MVC.Tests.Controllers
         public async void Removelogin_UnregisteredUser_CallsRedirectWithErrorMessage()
         {
             //Arrange
-            var removeLoginViewModelMock = new RemoveLoginViewModel
+            var removeLoginViewModel = new RemoveLoginViewModel
             {
                 LoginProvider = "",
                 ProviderKey = ""
@@ -218,7 +218,7 @@ namespace Company.WebApplication1.Application.MVC.Tests.Controllers
             _uut.Url = Substitute.For<IUrlHelper>();
 
             //Act
-            var result = await _uut.RemoveLogin(removeLoginViewModelMock) as RedirectToActionResult;
+            var result = await _uut.RemoveLogin(removeLoginViewModel) as RedirectToActionResult;
 
             //Assert
             Assert.Equal(ManageMessageId.Error, result.RouteValues["message"]);
@@ -228,7 +228,7 @@ namespace Company.WebApplication1.Application.MVC.Tests.Controllers
         public async void Removelogin_RegisteredUserWithRemoveLoginSuccess_CallsRedirectWithRemoveLoginSuccessMessage()
         {
             //Arrange
-            var removeLoginViewModelMock = new RemoveLoginViewModel
+            var removeLoginViewModel = new RemoveLoginViewModel
             {
                 LoginProvider = "",
                 ProviderKey = ""
@@ -252,7 +252,7 @@ namespace Company.WebApplication1.Application.MVC.Tests.Controllers
             _uut.Url = Substitute.For<IUrlHelper>();
 
             //Act
-            var result = await _uut.RemoveLogin(removeLoginViewModelMock) as RedirectToActionResult;
+            var result = await _uut.RemoveLogin(removeLoginViewModel) as RedirectToActionResult;
 
             //Assert
             Assert.Equal(ManageMessageId.RemoveLoginSuccess, result.RouteValues["message"]);
@@ -262,7 +262,7 @@ namespace Company.WebApplication1.Application.MVC.Tests.Controllers
         public async void Removelogin_RegisteredUserWithRemoveLoginError_CallsRedirectWithErrorMessage()
         {
             //Arrange
-            var removeLoginViewModelMock = new RemoveLoginViewModel
+            var removeLoginViewModel = new RemoveLoginViewModel
             {
                 LoginProvider = "",
                 ProviderKey = ""
@@ -286,7 +286,7 @@ namespace Company.WebApplication1.Application.MVC.Tests.Controllers
             _uut.Url = Substitute.For<IUrlHelper>();
 
             //Act
-            var result = await _uut.RemoveLogin(removeLoginViewModelMock) as RedirectToActionResult;
+            var result = await _uut.RemoveLogin(removeLoginViewModel) as RedirectToActionResult;
 
             //Assert
             Assert.Equal(ManageMessageId.Error, result.RouteValues["message"]);
@@ -303,6 +303,160 @@ namespace Company.WebApplication1.Application.MVC.Tests.Controllers
 
             //Assert
             Assert.Null(result.ViewName); //Returns default view
+        }
+
+        //AddPhoneNumber(model)
+        [Fact]
+        public async void AddPhoneNumber_ModelStateNotValid_ReturnsDefaultView()
+        {
+            //Arrange
+            var addPhoneNumberViewModel = new AddPhoneNumberViewModel();
+            _uut.ModelState.AddModelError("Error","Error");
+
+            //Act
+            var result = await _uut.AddPhoneNumber(addPhoneNumberViewModel) as ViewResult;
+
+            //Assert
+            Assert.Null(result.ViewName);
+        }
+
+        [Fact]
+        public async void AddPhoneNumber_ModelStateNotValid_ReturnsViewWithSameModel()
+        {
+            //Arrange
+            var addPhoneNumberViewModel = new AddPhoneNumberViewModel();
+            _uut.ModelState.AddModelError("Error","Error");
+
+            //Act
+            var result = await _uut.AddPhoneNumber(addPhoneNumberViewModel) as ViewResult;
+            var originalViewModel = JsonConvert.SerializeObject(addPhoneNumberViewModel);
+            var viewModelReturnedToView = JsonConvert.SerializeObject(result.Model);
+
+            //Assert
+            Assert.Equal(originalViewModel, viewModelReturnedToView);
+        }
+
+        [Fact]
+        public async void AddPhoneNumber_ModelStateValidUnregisteredUser_ReturnsErrorView()
+        {
+            //Arrange
+            var addPhoneNumberViewModel = new AddPhoneNumberViewModel();
+            var httpContext = Substitute.For<HttpContext>();
+
+            _uut.ControllerContext = new ControllerContext
+            {
+                HttpContext = httpContext
+            };
+            ApplicationUser nullUser = null;
+            _userManagerMock.GetUserAsync(Arg.Any<ClaimsPrincipal>()).Returns(Task.FromResult(nullUser));
+            _uut.TempData = Substitute.For<ITempDataDictionary>();
+
+            //Act
+            var result = await _uut.AddPhoneNumber(addPhoneNumberViewModel) as ViewResult;
+
+            //Assert
+            Assert.Equal("Error", result.ViewName);
+        }
+
+        [Fact]
+        public async void AddPhoneNumber_ModelStateValidValidUser_ReturnsRedirectResultWithPhoneNumber()
+        {
+            //Arrange
+            var addPhoneNumberViewModel = new AddPhoneNumberViewModel();
+            var validPrincipal = new ClaimsPrincipal(new[]
+                {
+                    new ClaimsIdentity(
+                        new[] {new Claim(ClaimTypes.NameIdentifier, "MyUserId")})
+                });
+            var httpContext = Substitute.For<HttpContext>();
+            httpContext.User.Returns(validPrincipal);
+
+            _uut.ControllerContext = new ControllerContext
+            {
+                HttpContext = httpContext
+            };
+            _userManagerMock.GenerateChangePhoneNumberTokenAsync(Arg.Any<ApplicationUser>(), Arg.Any<string>()).Returns(Task.FromResult(""));
+            _uut.Url = Substitute.For<IUrlHelper>();
+
+            //Act
+            var result = await _uut.AddPhoneNumber(addPhoneNumberViewModel) as RedirectToActionResult;
+
+            //Assert
+            Assert.Equal(addPhoneNumberViewModel.PhoneNumber, result.RouteValues["PhoneNumber"]);
+        }
+
+        [Fact]
+        public async void AddPhoneNumber_ModelStateValidValidUser_ReturnsRedirectResultToVerifyPhoneNumber()
+        {
+            //Arrange
+            var addPhoneNumberViewModel = new AddPhoneNumberViewModel();
+            var validPrincipal = new ClaimsPrincipal(new[]
+                {
+                    new ClaimsIdentity(
+                        new[] {new Claim(ClaimTypes.NameIdentifier, "MyUserId")})
+                });
+            var httpContext = Substitute.For<HttpContext>();
+            httpContext.User.Returns(validPrincipal);
+
+            _uut.ControllerContext = new ControllerContext
+            {
+                HttpContext = httpContext
+            };
+            _userManagerMock.GenerateChangePhoneNumberTokenAsync(Arg.Any<ApplicationUser>(), Arg.Any<string>()).Returns(Task.FromResult(""));
+            _uut.Url = Substitute.For<IUrlHelper>();
+
+            //Act
+            var result = await _uut.AddPhoneNumber(addPhoneNumberViewModel) as RedirectToActionResult;
+
+            //Assert
+            Assert.Equal("VerifyPhoneNumber", result.ActionName);
+        }
+
+        //EnableTwoFactorAuthentication
+        [Fact]
+        public async void EnableTwoFactorAuthentication_UnregisteredUser_UserManagerTwoFactorEnableIsNotCalled()
+        {
+            //Arrange
+            var httpContext = Substitute.For<HttpContext>();
+
+            _uut.ControllerContext = new ControllerContext
+            {
+                HttpContext = httpContext
+            };
+            ApplicationUser nullUser = null;
+            _userManagerMock.GetUserAsync(Arg.Any<ClaimsPrincipal>()).Returns(Task.FromResult(nullUser));
+            _uut.Url = Substitute.For<IUrlHelper>();
+
+            //Act
+            var result = await _uut.EnableTwoFactorAuthentication();
+
+            //Assert
+            await _userManagerMock.DidNotReceive().SetTwoFactorEnabledAsync(Arg.Any<ApplicationUser>(), Arg.Any<bool>());
+        }
+
+        [Fact]
+        public async void EnableTwoFactorAuthentication_ValidUser_UserManagerTwoFactorEnableIsCalled()
+        {
+            //Arrange
+            var validPrincipal = new ClaimsPrincipal(new[]
+                {
+                    new ClaimsIdentity(
+                        new[] {new Claim(ClaimTypes.NameIdentifier, "MyUserId")})
+                });
+            var httpContext = Substitute.For<HttpContext>();
+            httpContext.User.Returns(validPrincipal);
+
+            _uut.ControllerContext = new ControllerContext
+            {
+                HttpContext = httpContext
+            };
+            _uut.Url = Substitute.For<IUrlHelper>();
+
+            //Act
+            var result = await _uut.EnableTwoFactorAuthentication();
+
+            //Assert
+            await _userManagerMock.Received().SetTwoFactorEnabledAsync(Arg.Any<ApplicationUser>(), true);
         }
 
         //DisableTwoFactorAuthentication

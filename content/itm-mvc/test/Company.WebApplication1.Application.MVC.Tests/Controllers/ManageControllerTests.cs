@@ -478,7 +478,7 @@ namespace Company.WebApplication1.Application.MVC.Tests.Controllers
             var result = await _uut.DisableTwoFactorAuthentication();
 
             //Assert
-            await _userManagerMock.DidNotReceive().SetTwoFactorEnabledAsync(Arg.Any<ApplicationUser>(),Arg.Any<bool>());
+            await _userManagerMock.DidNotReceive().SetTwoFactorEnabledAsync(Arg.Any<ApplicationUser>(), Arg.Any<bool>());
         }
 
         [Fact]
@@ -503,7 +503,7 @@ namespace Company.WebApplication1.Application.MVC.Tests.Controllers
             var result = await _uut.DisableTwoFactorAuthentication();
 
             //Assert
-            await _userManagerMock.Received().SetTwoFactorEnabledAsync(Arg.Any<ApplicationUser>(),false);
+            await _userManagerMock.Received().SetTwoFactorEnabledAsync(Arg.Any<ApplicationUser>(), false);
         }
 
         //VerifyPhoneNumber(string)
@@ -525,11 +525,11 @@ namespace Company.WebApplication1.Application.MVC.Tests.Controllers
             var result = await _uut.VerifyPhoneNumber("12345678") as ViewResult;
 
             //Assert
-            Assert.Equal("Error",result.ViewName);
+            Assert.Equal("Error", result.ViewName);
         }
 
         [Fact]
-        public async void VerifyPhoneNumber_ValidUserPhoneNumberNull_ReturnsErrorView()
+        public async void VerifyPhoneNumber_ValidUserAndPhoneNumberNull_ReturnsErrorView()
         {
             //Arrange
             var validPrincipal = new ClaimsPrincipal(new[]
@@ -554,7 +554,7 @@ namespace Company.WebApplication1.Application.MVC.Tests.Controllers
         }
 
         [Fact]
-        public async void VerifyPhoneNumber_ValidUserPhoneNumberValid_ReturnsDefaultView()
+        public async void VerifyPhoneNumber_ValidUserAndPhoneNumberValid_ReturnsDefaultView()
         {
             //Arrange
             var validPrincipal = new ClaimsPrincipal(new[]
@@ -596,7 +596,7 @@ namespace Company.WebApplication1.Application.MVC.Tests.Controllers
                 HttpContext = httpContext
             };
             _uut.TempData = Substitute.For<ITempDataDictionary>();
-            _uut.ModelState.AddModelError("Error","Error");
+            _uut.ModelState.AddModelError("Error", "Error");
             var verifyPhoneNumberViewModel = new VerifyPhoneNumberViewModel
             {
                 PhoneNumber = "12345678",
@@ -607,7 +607,7 @@ namespace Company.WebApplication1.Application.MVC.Tests.Controllers
             var result = await _uut.VerifyPhoneNumber(verifyPhoneNumberViewModel) as ViewResult;
 
             //Assert
-            await _userManagerMock.DidNotReceive().ChangePhoneNumberAsync(Arg.Any<ApplicationUser>(),Arg.Any<string>(),Arg.Any<string>());
+            await _userManagerMock.DidNotReceive().ChangePhoneNumberAsync(Arg.Any<ApplicationUser>(),Arg.Any<string>(), Arg.Any<string>());
         }
 
         [Fact]
@@ -627,7 +627,7 @@ namespace Company.WebApplication1.Application.MVC.Tests.Controllers
                 HttpContext = httpContext
             };
             _uut.TempData = Substitute.For<ITempDataDictionary>();
-            _uut.ModelState.AddModelError("Error","Error");
+            _uut.ModelState.AddModelError("Error", "Error");
             var verifyPhoneNumberViewModel = new VerifyPhoneNumberViewModel
             {
                 PhoneNumber = "12345678",
@@ -638,11 +638,11 @@ namespace Company.WebApplication1.Application.MVC.Tests.Controllers
             var result = await _uut.VerifyPhoneNumber(verifyPhoneNumberViewModel) as ViewResult;
 
             //Assert
-            await _signInManagerMock.DidNotReceive().SignInAsync(Arg.Any<ApplicationUser>(),Arg.Any<bool>(),Arg.Any<string>());
+            await _signInManagerMock.DidNotReceive().SignInAsync(Arg.Any<ApplicationUser>(),Arg.Any<bool>(), Arg.Any<string>());
         }
 
         [Fact]
-        public async void VerifyPhoneNumber_ModelStateValidUserValidChangePhoneNumberSuccess_RedirectResultReturnedWithPhoneChangeSuccessMessage()
+        public async void VerifyPhoneNumber_ValidUserAndChangePhoneNumberSuccess_RedirectResultReturnedWithPhoneChangeSuccessMessage()
         {
             //Arrange
             var validPrincipal = new ClaimsPrincipal(new[]
@@ -663,18 +663,18 @@ namespace Company.WebApplication1.Application.MVC.Tests.Controllers
                 PhoneNumber = "12345678",
                 Code = "1234"
             };
-            _userManagerMock.ChangePhoneNumberAsync(Arg.Any<ApplicationUser>(),Arg.Any<string>(),Arg.Any<string>()).Returns(IdentityResult.Success);
+            _userManagerMock.ChangePhoneNumberAsync(Arg.Any<ApplicationUser>(), Arg.Any<string>(), Arg.Any<string>()).Returns(IdentityResult.Success);
             _uut.Url = Substitute.For<IUrlHelper>();
 
             //Act
             var result = await _uut.VerifyPhoneNumber(verifyPhoneNumberViewModel) as RedirectToActionResult;
 
             //Assert
-            Assert.Equal(ManageMessageId.AddPhoneSuccess,result.RouteValues["message"]);
+            Assert.Equal(ManageMessageId.AddPhoneSuccess, result.RouteValues["message"]);
         }
 
         [Fact]
-        public async void VerifyPhoneNumber_ModelStateValidUnregisteredUser_ModelErrorAdded()
+        public async void VerifyPhoneNumber_UnregisteredUser_ModelErrorAdded()
         {
             //Arrange
             var httpContext = Substitute.For<HttpContext>();
@@ -696,11 +696,11 @@ namespace Company.WebApplication1.Application.MVC.Tests.Controllers
             var result = await _uut.VerifyPhoneNumber(verifyPhoneNumberViewModel) as ViewResult;
 
             //Assert
-            Assert.Equal("Failed to verify phone number",result.ViewData.ModelState.Root.Errors.FirstOrDefault().ErrorMessage);
+            Assert.Equal("Failed to verify phone number", result.ViewData.ModelState.Root.Errors.FirstOrDefault().ErrorMessage);
         }
 
         [Fact]
-        public async void VerifyPhoneNumber_ModelStateValidUserValidChangePhoneNumberError_ModelErrorAdded()
+        public async void VerifyPhoneNumber_ValidUserAndChangePhoneNumberError_ModelErrorAdded()
         {
             //Arrange
             var validPrincipal = new ClaimsPrincipal(new[]
@@ -721,18 +721,18 @@ namespace Company.WebApplication1.Application.MVC.Tests.Controllers
                 PhoneNumber = "12345678",
                 Code = "1234"
             };
-            _userManagerMock.ChangePhoneNumberAsync(Arg.Any<ApplicationUser>(),Arg.Any<string>(),Arg.Any<string>()).Returns(IdentityResult.Failed());
+            _userManagerMock.ChangePhoneNumberAsync(Arg.Any<ApplicationUser>(), Arg.Any<string>(), Arg.Any<string>()).Returns(IdentityResult.Failed());
             _uut.Url = Substitute.For<IUrlHelper>();
 
             //Act
             var result = await _uut.VerifyPhoneNumber(verifyPhoneNumberViewModel) as ViewResult;
 
             //Assert
-            Assert.Equal("Failed to verify phone number",result.ViewData.ModelState.Root.Errors.FirstOrDefault().ErrorMessage);
+            Assert.Equal("Failed to verify phone number", result.ViewData.ModelState.Root.Errors.FirstOrDefault().ErrorMessage);
         }
 
         [Fact]
-        public async void VerifyPhoneNumber_ModelStateValidUserValidChangePhoneNumberError_SignInNotCalled()
+        public async void VerifyPhoneNumber_ValidUserAndChangePhoneNumberError_SignInNotCalled()
         {
             //Arrange
             var validPrincipal = new ClaimsPrincipal(new[]
@@ -753,14 +753,14 @@ namespace Company.WebApplication1.Application.MVC.Tests.Controllers
                 PhoneNumber = "12345678",
                 Code = "1234"
             };
-            _userManagerMock.ChangePhoneNumberAsync(Arg.Any<ApplicationUser>(),Arg.Any<string>(),Arg.Any<string>()).Returns(IdentityResult.Failed());
+            _userManagerMock.ChangePhoneNumberAsync(Arg.Any<ApplicationUser>(), Arg.Any<string>(), Arg.Any<string>()).Returns(IdentityResult.Failed());
             _uut.Url = Substitute.For<IUrlHelper>();
 
             //Act
             var result = await _uut.VerifyPhoneNumber(verifyPhoneNumberViewModel) as ViewResult;
 
             //Assert
-            await _signInManagerMock.DidNotReceive().SignInAsync(Arg.Any<ApplicationUser>(),Arg.Any<bool>());
+            await _signInManagerMock.DidNotReceive().SignInAsync(Arg.Any<ApplicationUser>(), Arg.Any<bool>());
         }
 
         //RemovePhoneNumber
@@ -782,11 +782,11 @@ namespace Company.WebApplication1.Application.MVC.Tests.Controllers
             var result = await _uut.RemovePhoneNumber() as RedirectToActionResult;
 
             //Assert
-            Assert.Equal(ManageMessageId.Error,result.RouteValues["message"]);
+            Assert.Equal(ManageMessageId.Error, result.RouteValues["message"]);
         }
 
         [Fact]
-        public async void RemovePhoneNumber_ValidUserSetPhoneNumberError_ReturnsRedirectWithErrorMessage()
+        public async void RemovePhoneNumber_ValidUserAndSetPhoneNumberError_ReturnsRedirectWithErrorMessage()
         {
             //Arrange
             var validPrincipal = new ClaimsPrincipal(new[]
@@ -802,17 +802,17 @@ namespace Company.WebApplication1.Application.MVC.Tests.Controllers
                 HttpContext = httpContext
             };
             _uut.Url = Substitute.For<IUrlHelper>();
-            _userManagerMock.SetPhoneNumberAsync(Arg.Any<ApplicationUser>(),Arg.Any<string>()).Returns(IdentityResult.Failed());
+            _userManagerMock.SetPhoneNumberAsync(Arg.Any<ApplicationUser>(), Arg.Any<string>()).Returns(IdentityResult.Failed());
 
             //Act
             var result = await _uut.RemovePhoneNumber() as RedirectToActionResult;
 
             //Assert
-            Assert.Equal(ManageMessageId.Error,result.RouteValues["message"]);
+            Assert.Equal(ManageMessageId.Error, result.RouteValues["message"]);
         }
 
         [Fact]
-        public async void RemovePhoneNumber_ValidUserSetPhoneNumberSuccess_ReturnsRedirectWithSuccessMessage()
+        public async void RemovePhoneNumber_ValidUserAndSetPhoneNumberSuccess_ReturnsRedirectWithSuccessMessage()
         {
             //Arrange
             var validPrincipal = new ClaimsPrincipal(new[]
@@ -828,13 +828,13 @@ namespace Company.WebApplication1.Application.MVC.Tests.Controllers
                 HttpContext = httpContext
             };
             _uut.Url = Substitute.For<IUrlHelper>();
-            _userManagerMock.SetPhoneNumberAsync(Arg.Any<ApplicationUser>(),Arg.Any<string>()).Returns(IdentityResult.Success);
+            _userManagerMock.SetPhoneNumberAsync(Arg.Any<ApplicationUser>(), Arg.Any<string>()).Returns(IdentityResult.Success);
 
             //Act
             var result = await _uut.RemovePhoneNumber() as RedirectToActionResult;
 
             //Assert
-            Assert.Equal(ManageMessageId.RemovePhoneSuccess,result.RouteValues["message"]);
+            Assert.Equal(ManageMessageId.RemovePhoneSuccess, result.RouteValues["message"]);
         }
 
         //ChangePassword
@@ -874,13 +874,13 @@ namespace Company.WebApplication1.Application.MVC.Tests.Controllers
                 NewPassword = "",
                 ConfirmPassword = ""
             };
-            _uut.ModelState.AddModelError("Error","Error");
+            _uut.ModelState.AddModelError("Error", "Error");
 
             //Act
             var result = await _uut.ChangePassword(changePasswordViewModel) as ViewResult;
 
             //Assert
-            await _userManagerMock.DidNotReceive().ChangePasswordAsync(Arg.Any<ApplicationUser>(),Arg.Any<string>(),Arg.Any<string>());
+            await _userManagerMock.DidNotReceive().ChangePasswordAsync(Arg.Any<ApplicationUser>(), Arg.Any<string>(), Arg.Any<string>());
         }
 
         [Fact]
@@ -906,7 +906,7 @@ namespace Company.WebApplication1.Application.MVC.Tests.Controllers
                 NewPassword = "",
                 ConfirmPassword = ""
             };
-            _uut.ModelState.AddModelError("Error","Error");
+            _uut.ModelState.AddModelError("Error", "Error");
 
             //Act
             var result = await _uut.ChangePassword(changePasswordViewModel) as ViewResult;
@@ -916,7 +916,7 @@ namespace Company.WebApplication1.Application.MVC.Tests.Controllers
         }
 
         [Fact]
-        public async void ChangePassword_ModelStateValidUnregisteredUser_ReturnsRedirectResultWithErrorMessage()
+        public async void ChangePassword_UnregisteredUser_ReturnsRedirectResultWithErrorMessage()
         {
             //Arrange
             var httpContext = Substitute.For<HttpContext>();
@@ -939,11 +939,11 @@ namespace Company.WebApplication1.Application.MVC.Tests.Controllers
             var result = await _uut.ChangePassword(changePasswordViewModel) as RedirectToActionResult;
 
             //Assert
-            Assert.Equal(ManageMessageId.Error,result.RouteValues["message"]);
+            Assert.Equal(ManageMessageId.Error, result.RouteValues["message"]);
         }
 
         [Fact]
-        public async void ChangePassword_ModelStateValidUserValidChangePasswordError_ModelStateErrorsAdded()
+        public async void ChangePassword_ValidUserAndChangePasswordError_ModelStateErrorsAdded()
         {
             //Arrange
             var validPrincipal = new ClaimsPrincipal(new[]
@@ -965,18 +965,18 @@ namespace Company.WebApplication1.Application.MVC.Tests.Controllers
                 NewPassword = "",
                 ConfirmPassword = ""
             };
-            _userManagerMock.ChangePasswordAsync(Arg.Any<ApplicationUser>(),Arg.Any<string>(),Arg.Any<string>())
+            _userManagerMock.ChangePasswordAsync(Arg.Any<ApplicationUser>(), Arg.Any<string>(), Arg.Any<string>())
                 .Returns(IdentityResult.Failed(new IdentityError{Description = "ChangePasswordErrorForTest"}));
 
             //Act
             var result = await _uut.ChangePassword(changePasswordViewModel) as ViewResult;
 
             //Assert
-            Assert.Equal("ChangePasswordErrorForTest",result.ViewData.ModelState.Root.Errors.FirstOrDefault().ErrorMessage);
+            Assert.Equal("ChangePasswordErrorForTest", result.ViewData.ModelState.Root.Errors.FirstOrDefault().ErrorMessage);
         }
 
         [Fact]
-        public async void ChangePassword_ModelStateValidUserValidChangePasswordError_DefaultViewReturned()
+        public async void ChangePassword_ValidUserAndChangePasswordError_DefaultViewReturned()
         {
             //Arrange
             var validPrincipal = new ClaimsPrincipal(new[]
@@ -998,7 +998,7 @@ namespace Company.WebApplication1.Application.MVC.Tests.Controllers
                 NewPassword = "",
                 ConfirmPassword = ""
             };
-            _userManagerMock.ChangePasswordAsync(Arg.Any<ApplicationUser>(),Arg.Any<string>(),Arg.Any<string>())
+            _userManagerMock.ChangePasswordAsync(Arg.Any<ApplicationUser>(), Arg.Any<string>(), Arg.Any<string>())
                 .Returns(IdentityResult.Failed(new IdentityError{Description = "ChangePasswordErrorForTest"}));
 
             //Act
@@ -1009,7 +1009,7 @@ namespace Company.WebApplication1.Application.MVC.Tests.Controllers
         }
 
         [Fact]
-        public async void ChangePassword_ModelStateValidUserValidChangePasswordSuccess_SignInManagerSignInCalled()
+        public async void ChangePassword_ValidUserAndChangePasswordSuccess_SignInManagerSignInCalled()
         {
             //Arrange
             var validPrincipal = new ClaimsPrincipal(new[]
@@ -1031,18 +1031,18 @@ namespace Company.WebApplication1.Application.MVC.Tests.Controllers
                 NewPassword = "",
                 ConfirmPassword = ""
             };
-            _userManagerMock.ChangePasswordAsync(Arg.Any<ApplicationUser>(),Arg.Any<string>(),Arg.Any<string>())
+            _userManagerMock.ChangePasswordAsync(Arg.Any<ApplicationUser>(), Arg.Any<string>(), Arg.Any<string>())
                 .Returns(IdentityResult.Success);
 
             //Act
             var result = await _uut.ChangePassword(changePasswordViewModel) as RedirectToActionResult;
 
             //Assert
-            await _signInManagerMock.Received().SignInAsync(Arg.Any<ApplicationUser>(),Arg.Any<bool>());
+            await _signInManagerMock.Received().SignInAsync(Arg.Any<ApplicationUser>(), Arg.Any<bool>());
         }
 
         [Fact]
-        public async void ChangePassword_ModelStateValidUserValidChangePasswordSuccess_RedirectWithChangePasswordSuccessReturned()
+        public async void ChangePassword_ValidUserAndChangePasswordSuccess_RedirectWithChangePasswordSuccessReturned()
         {
             //Arrange
             var validPrincipal = new ClaimsPrincipal(new[]
@@ -1064,14 +1064,14 @@ namespace Company.WebApplication1.Application.MVC.Tests.Controllers
                 NewPassword = "",
                 ConfirmPassword = ""
             };
-            _userManagerMock.ChangePasswordAsync(Arg.Any<ApplicationUser>(),Arg.Any<string>(),Arg.Any<string>())
+            _userManagerMock.ChangePasswordAsync(Arg.Any<ApplicationUser>(), Arg.Any<string>(), Arg.Any<string>())
                 .Returns(IdentityResult.Success);
 
             //Act
             var result = await _uut.ChangePassword(changePasswordViewModel) as RedirectToActionResult;
 
             //Assert
-            Assert.Equal(ManageMessageId.ChangePasswordSuccess,result.RouteValues["message"]);
+            Assert.Equal(ManageMessageId.ChangePasswordSuccess, result.RouteValues["message"]);
         }
 
         //SetPassword
@@ -1110,13 +1110,13 @@ namespace Company.WebApplication1.Application.MVC.Tests.Controllers
                 NewPassword = "",
                 ConfirmPassword = ""
             };
-            _uut.ModelState.AddModelError("Error","Error");
+            _uut.ModelState.AddModelError("Error", "Error");
 
             //Act
             var result = await _uut.SetPassword(setPasswordViewModel) as ViewResult;
 
             //Assert
-            await _userManagerMock.DidNotReceive().AddPasswordAsync(Arg.Any<ApplicationUser>(),Arg.Any<string>());
+            await _userManagerMock.DidNotReceive().AddPasswordAsync(Arg.Any<ApplicationUser>(), Arg.Any<string>());
         }
 
         [Fact]
@@ -1141,7 +1141,7 @@ namespace Company.WebApplication1.Application.MVC.Tests.Controllers
                 NewPassword = "",
                 ConfirmPassword = ""
             };
-            _uut.ModelState.AddModelError("Error","Error");
+            _uut.ModelState.AddModelError("Error", "Error");
 
             //Act
             var result = await _uut.SetPassword(setPasswordViewModel) as ViewResult;
@@ -1151,7 +1151,7 @@ namespace Company.WebApplication1.Application.MVC.Tests.Controllers
         }
 
         [Fact]
-        public async void SetPassword_ModelStateValidUnregisteredUser_RedirectResultWithErrorReturned()
+        public async void SetPassword_UnregisteredUser_RedirectResultWithErrorReturned()
         {
             //Arrange
             var httpContext = Substitute.For<HttpContext>();
@@ -1173,11 +1173,11 @@ namespace Company.WebApplication1.Application.MVC.Tests.Controllers
             var result = await _uut.SetPassword(setPasswordViewModel) as RedirectToActionResult;
 
             //Assert
-            Assert.Equal(ManageMessageId.Error,result.RouteValues["message"]);
+            Assert.Equal(ManageMessageId.Error, result.RouteValues["message"]);
         }
 
         [Fact]
-        public async void SetPassword_ModelStateValidUserValidAddPasswordError_ModelStateErrorsAdded()
+        public async void SetPassword_ValidUserAndAddPasswordError_ModelStateErrorsAdded()
         {
             //Arrange
             var validPrincipal = new ClaimsPrincipal(new[]
@@ -1198,18 +1198,18 @@ namespace Company.WebApplication1.Application.MVC.Tests.Controllers
                 NewPassword = "",
                 ConfirmPassword = ""
             };
-            _userManagerMock.AddPasswordAsync(Arg.Any<ApplicationUser>(),Arg.Any<string>())
+            _userManagerMock.AddPasswordAsync(Arg.Any<ApplicationUser>(), Arg.Any<string>())
                 .Returns(IdentityResult.Failed(new IdentityError{Description = "AddPasswordErrorForTest"}));
 
             //Act
             var result = await _uut.SetPassword(setPasswordViewModel) as ViewResult;
 
             //Assert
-            Assert.Equal("AddPasswordErrorForTest",result.ViewData.ModelState.Root.Errors.FirstOrDefault().ErrorMessage);
+            Assert.Equal("AddPasswordErrorForTest", result.ViewData.ModelState.Root.Errors.FirstOrDefault().ErrorMessage);
         }
 
         [Fact]
-        public async void SetPassword_ModelStateValidUserValidAddPasswordError_DefaultViewReturned()
+        public async void SetPassword_ValidUserAndAddPasswordError_DefaultViewReturned()
         {
             //Arrange
             var validPrincipal = new ClaimsPrincipal(new[]
@@ -1230,7 +1230,7 @@ namespace Company.WebApplication1.Application.MVC.Tests.Controllers
                 NewPassword = "",
                 ConfirmPassword = ""
             };
-            _userManagerMock.AddPasswordAsync(Arg.Any<ApplicationUser>(),Arg.Any<string>())
+            _userManagerMock.AddPasswordAsync(Arg.Any<ApplicationUser>(), Arg.Any<string>())
                 .Returns(IdentityResult.Failed(new IdentityError{Description = "AddPasswordErrorForTest"}));
 
             //Act
@@ -1241,7 +1241,7 @@ namespace Company.WebApplication1.Application.MVC.Tests.Controllers
         }
 
         [Fact]
-        public async void SetPassword_ModelStateValidUserValidAddPasswordSuccess_SignInManagerSignInCalled()
+        public async void SetPassword_ValidUserAndAddPasswordSuccess_SignInManagerSignInCalled()
         {
             //Arrange
             var validPrincipal = new ClaimsPrincipal(new[]
@@ -1262,18 +1262,18 @@ namespace Company.WebApplication1.Application.MVC.Tests.Controllers
                 NewPassword = "",
                 ConfirmPassword = ""
             };
-            _userManagerMock.AddPasswordAsync(Arg.Any<ApplicationUser>(),Arg.Any<string>())
+            _userManagerMock.AddPasswordAsync(Arg.Any<ApplicationUser>(), Arg.Any<string>())
                 .Returns(IdentityResult.Success);
 
             //Act
             var result = await _uut.SetPassword(setPasswordViewModel) as RedirectToActionResult;
 
             //Assert
-            await _signInManagerMock.Received().SignInAsync(Arg.Any<ApplicationUser>(),Arg.Any<bool>());
+            await _signInManagerMock.Received().SignInAsync(Arg.Any<ApplicationUser>(), Arg.Any<bool>());
         }
 
         [Fact]
-        public async void SetPassword_ModelStateValidUserValidAddPasswordSuccess_RedirectResultWithSetPasswordSuccessReturned()
+        public async void SetPassword_ValidUserAndAddPasswordSuccess_RedirectResultWithSetPasswordSuccessReturned()
         {
             //Arrange
             var validPrincipal = new ClaimsPrincipal(new[]
@@ -1294,14 +1294,14 @@ namespace Company.WebApplication1.Application.MVC.Tests.Controllers
                 NewPassword = "",
                 ConfirmPassword = ""
             };
-            _userManagerMock.AddPasswordAsync(Arg.Any<ApplicationUser>(),Arg.Any<string>())
+            _userManagerMock.AddPasswordAsync(Arg.Any<ApplicationUser>(), Arg.Any<string>())
                 .Returns(IdentityResult.Success);
 
             //Act
             var result = await _uut.SetPassword(setPasswordViewModel) as RedirectToActionResult;
 
             //Assert
-            Assert.Equal(ManageMessageId.SetPasswordSuccess,result.RouteValues["message"]);
+            Assert.Equal(ManageMessageId.SetPasswordSuccess, result.RouteValues["message"]);
         }
 
         //ManageLogins
@@ -1381,7 +1381,7 @@ namespace Company.WebApplication1.Application.MVC.Tests.Controllers
         }
 
         [Fact]
-        public async void ManageLogins_ValidUserUserLoginCountOverOneUserPasswordHashNotNull_ShowRemoveButtonIsTrue()
+        public async void ManageLogins_ValidUserAndUserLoginCountOverOneAndUserPasswordHashNotNull_ShowRemoveButtonIsTrue()
         {
             //Arrange
             var validPrincipal = new ClaimsPrincipal(new[]
@@ -1421,7 +1421,7 @@ namespace Company.WebApplication1.Application.MVC.Tests.Controllers
         }
 
         [Fact]
-        public async void ManageLogins_ValidUserUserLoginCountIsOneUserPassWordHashNull_ShowRemoveButtonIsFalse()
+        public async void ManageLogins_ValidUserAndUserLoginCountIsOneAndUserPasswordHashNull_ShowRemoveButtonIsFalse()
         {
             //Arrange
             var validPrincipal = new ClaimsPrincipal(new[]
@@ -1439,7 +1439,7 @@ namespace Company.WebApplication1.Application.MVC.Tests.Controllers
             _uut.TempData = Substitute.For<ITempDataDictionary>();
             IList<UserLoginInfo> list = new List<UserLoginInfo>
             {
-                new UserLoginInfo("","","")
+                new UserLoginInfo("", "", "")
             };
             _userManagerMock.GetLoginsAsync(Arg.Any<ApplicationUser>()).Returns(list);
             IEnumerable<AuthenticationDescription> authList = new List<AuthenticationDescription>();
@@ -1460,7 +1460,7 @@ namespace Company.WebApplication1.Application.MVC.Tests.Controllers
         }
 
         [Fact]
-        public async void ManageLogins_ValidUserUserLoginCountIsOverOneUserPassWordHashNull_ShowRemoveButtonIsTrue()
+        public async void ManageLogins_ValidUserAndUserLoginCountIsOverOneAndUserPasswordHashNull_ShowRemoveButtonIsTrue()
         {
             //Arrange
             var validPrincipal = new ClaimsPrincipal(new[]
@@ -1478,8 +1478,8 @@ namespace Company.WebApplication1.Application.MVC.Tests.Controllers
             _uut.TempData = Substitute.For<ITempDataDictionary>();
             IList<UserLoginInfo> list = new List<UserLoginInfo>
             {
-                new UserLoginInfo("","",""),
-                new UserLoginInfo("","","")
+                new UserLoginInfo("", "", ""),
+                new UserLoginInfo("", "", "")
             };
             _userManagerMock.GetLoginsAsync(Arg.Any<ApplicationUser>()).Returns(list);
             IEnumerable<AuthenticationDescription> authList = new List<AuthenticationDescription>();
@@ -1500,7 +1500,7 @@ namespace Company.WebApplication1.Application.MVC.Tests.Controllers
         }
 
         [Fact]
-        public async void ManageLogins_ValidUserUserLoginCountIsOneUserPassWordHashNotNull_ShowRemoveButtonIsTrue()
+        public async void ManageLogins_ValidUserAndUserLoginCountIsOneAndUserPasswordHashNotNull_ShowRemoveButtonIsTrue()
         {
             //Arrange
             var validPrincipal = new ClaimsPrincipal(new[]
@@ -1518,7 +1518,7 @@ namespace Company.WebApplication1.Application.MVC.Tests.Controllers
             _uut.TempData = Substitute.For<ITempDataDictionary>();
             IList<UserLoginInfo> list = new List<UserLoginInfo>
             {
-                new UserLoginInfo("","","")
+                new UserLoginInfo("", "", "")
             };
             _userManagerMock.GetLoginsAsync(Arg.Any<ApplicationUser>()).Returns(list);
             IEnumerable<AuthenticationDescription> authList = new List<AuthenticationDescription>();

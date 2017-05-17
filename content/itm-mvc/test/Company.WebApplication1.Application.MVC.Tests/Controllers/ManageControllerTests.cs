@@ -114,12 +114,12 @@ namespace Company.WebApplication1.Application.MVC.Tests.Controllers
                 HttpContext = httpContext
             };
 
-            _userManagerMock.HasPasswordAsync(Arg.Any<ApplicationUser>()).Returns(Task.FromResult(true));
-            _userManagerMock.GetPhoneNumberAsync(Arg.Any<ApplicationUser>()).Returns(Task.FromResult(""));
-            _userManagerMock.GetTwoFactorEnabledAsync(Arg.Any<ApplicationUser>()).Returns(Task.FromResult(true));
+            _userManagerMock.HasPasswordAsync(Arg.Any<ApplicationUser>()).Returns(true);
+            _userManagerMock.GetPhoneNumberAsync(Arg.Any<ApplicationUser>()).Returns("");
+            _userManagerMock.GetTwoFactorEnabledAsync(Arg.Any<ApplicationUser>()).Returns(true);
             IList<UserLoginInfo> list = new List<UserLoginInfo>();
-            _userManagerMock.GetLoginsAsync(Arg.Any<ApplicationUser>()).Returns(Task.FromResult(list));
-            _signInManagerMock.IsTwoFactorClientRememberedAsync(Arg.Any<ApplicationUser>()).Returns(Task.FromResult(true));
+            _userManagerMock.GetLoginsAsync(Arg.Any<ApplicationUser>()).Returns(list);
+            _signInManagerMock.IsTwoFactorClientRememberedAsync(Arg.Any<ApplicationUser>()).Returns(true);
             _uut.TempData = Substitute.For<ITempDataDictionary>();
 
             //Act
@@ -154,11 +154,11 @@ namespace Company.WebApplication1.Application.MVC.Tests.Controllers
                 BrowserRemembered = true
             };
 
-            _userManagerMock.HasPasswordAsync(Arg.Any<ApplicationUser>()).Returns(Task.FromResult(viewModel.HasPassword));
-            _userManagerMock.GetPhoneNumberAsync(Arg.Any<ApplicationUser>()).Returns(Task.FromResult(viewModel.PhoneNumber));
-            _userManagerMock.GetTwoFactorEnabledAsync(Arg.Any<ApplicationUser>()).Returns(Task.FromResult(viewModel.TwoFactor));
-            _userManagerMock.GetLoginsAsync(Arg.Any<ApplicationUser>()).Returns(Task.FromResult(viewModel.Logins));
-            _signInManagerMock.IsTwoFactorClientRememberedAsync(Arg.Any<ApplicationUser>()).Returns(Task.FromResult(viewModel.BrowserRemembered));
+            _userManagerMock.HasPasswordAsync(Arg.Any<ApplicationUser>()).Returns(viewModel.HasPassword);
+            _userManagerMock.GetPhoneNumberAsync(Arg.Any<ApplicationUser>()).Returns(viewModel.PhoneNumber);
+            _userManagerMock.GetTwoFactorEnabledAsync(Arg.Any<ApplicationUser>()).Returns(viewModel.TwoFactor);
+            _userManagerMock.GetLoginsAsync(Arg.Any<ApplicationUser>()).Returns(viewModel.Logins);
+            _signInManagerMock.IsTwoFactorClientRememberedAsync(Arg.Any<ApplicationUser>()).Returns(viewModel.BrowserRemembered);
             _uut.TempData = Substitute.For<ITempDataDictionary>();
 
             //Act
@@ -180,14 +180,14 @@ namespace Company.WebApplication1.Application.MVC.Tests.Controllers
             {
                 HttpContext = httpContext
             };
-            ApplicationUser nullUser = null;
-            _userManagerMock.GetUserAsync(Arg.Any<ClaimsPrincipal>()).Returns(Task.FromResult(nullUser));
-            _userManagerMock.HasPasswordAsync(Arg.Any<ApplicationUser>()).Returns(Task.FromResult(true));
-            _userManagerMock.GetPhoneNumberAsync(Arg.Any<ApplicationUser>()).Returns(Task.FromResult(""));
-            _userManagerMock.GetTwoFactorEnabledAsync(Arg.Any<ApplicationUser>()).Returns(Task.FromResult(true));
+
+            _userManagerMock.GetUserAsync(Arg.Any<ClaimsPrincipal>()).Returns(default(ApplicationUser));
+            _userManagerMock.HasPasswordAsync(Arg.Any<ApplicationUser>()).Returns(true);
+            _userManagerMock.GetPhoneNumberAsync(Arg.Any<ApplicationUser>()).Returns("");
+            _userManagerMock.GetTwoFactorEnabledAsync(Arg.Any<ApplicationUser>()).Returns(true);
             IList<UserLoginInfo> list = new List<UserLoginInfo>();
-            _userManagerMock.GetLoginsAsync(Arg.Any<ApplicationUser>()).Returns(Task.FromResult(list));
-            _signInManagerMock.IsTwoFactorClientRememberedAsync(Arg.Any<ApplicationUser>()).Returns(Task.FromResult(true));
+            _userManagerMock.GetLoginsAsync(Arg.Any<ApplicationUser>()).Returns(list);
+            _signInManagerMock.IsTwoFactorClientRememberedAsync(Arg.Any<ApplicationUser>()).Returns(true);
             _uut.TempData = Substitute.For<ITempDataDictionary>();
 
             //Act
@@ -213,8 +213,8 @@ namespace Company.WebApplication1.Application.MVC.Tests.Controllers
             {
                 HttpContext = httpContext
             };
-            ApplicationUser nullUser = null;
-            _userManagerMock.GetUserAsync(Arg.Any<ClaimsPrincipal>()).Returns(Task.FromResult(nullUser));
+
+            _userManagerMock.GetUserAsync(Arg.Any<ClaimsPrincipal>()).Returns(default(ApplicationUser));
             _uut.Url = Substitute.For<IUrlHelper>();
 
             //Act
@@ -247,7 +247,7 @@ namespace Company.WebApplication1.Application.MVC.Tests.Controllers
                 HttpContext = httpContext
             };
 
-            _userManagerMock.RemoveLoginAsync(Arg.Any<ApplicationUser>(), Arg.Any<string>(), Arg.Any<string>()).Returns(Task.FromResult(IdentityResult.Success));
+            _userManagerMock.RemoveLoginAsync(Arg.Any<ApplicationUser>(), Arg.Any<string>(), Arg.Any<string>()).Returns(IdentityResult.Success);
 
             _uut.Url = Substitute.For<IUrlHelper>();
 
@@ -281,7 +281,7 @@ namespace Company.WebApplication1.Application.MVC.Tests.Controllers
                 HttpContext = httpContext
             };
 
-            _userManagerMock.RemoveLoginAsync(Arg.Any<ApplicationUser>(), Arg.Any<string>(), Arg.Any<string>()).Returns(Task.FromResult(IdentityResult.Failed()));
+            _userManagerMock.RemoveLoginAsync(Arg.Any<ApplicationUser>(), Arg.Any<string>(), Arg.Any<string>()).Returns(IdentityResult.Failed());
 
             _uut.Url = Substitute.For<IUrlHelper>();
 
@@ -347,8 +347,8 @@ namespace Company.WebApplication1.Application.MVC.Tests.Controllers
             {
                 HttpContext = httpContext
             };
-            ApplicationUser nullUser = null;
-            _userManagerMock.GetUserAsync(Arg.Any<ClaimsPrincipal>()).Returns(Task.FromResult(nullUser));
+
+            _userManagerMock.GetUserAsync(Arg.Any<ClaimsPrincipal>()).Returns(default(ApplicationUser));
             _uut.TempData = Substitute.For<ITempDataDictionary>();
 
             //Act
@@ -375,7 +375,7 @@ namespace Company.WebApplication1.Application.MVC.Tests.Controllers
             {
                 HttpContext = httpContext
             };
-            _userManagerMock.GenerateChangePhoneNumberTokenAsync(Arg.Any<ApplicationUser>(), Arg.Any<string>()).Returns(Task.FromResult(""));
+            _userManagerMock.GenerateChangePhoneNumberTokenAsync(Arg.Any<ApplicationUser>(), Arg.Any<string>()).Returns("");
             _uut.Url = Substitute.For<IUrlHelper>();
 
             //Act
@@ -402,7 +402,7 @@ namespace Company.WebApplication1.Application.MVC.Tests.Controllers
             {
                 HttpContext = httpContext
             };
-            _userManagerMock.GenerateChangePhoneNumberTokenAsync(Arg.Any<ApplicationUser>(), Arg.Any<string>()).Returns(Task.FromResult(""));
+            _userManagerMock.GenerateChangePhoneNumberTokenAsync(Arg.Any<ApplicationUser>(), Arg.Any<string>()).Returns("");
             _uut.Url = Substitute.For<IUrlHelper>();
 
             //Act
@@ -423,8 +423,8 @@ namespace Company.WebApplication1.Application.MVC.Tests.Controllers
             {
                 HttpContext = httpContext
             };
-            ApplicationUser nullUser = null;
-            _userManagerMock.GetUserAsync(Arg.Any<ClaimsPrincipal>()).Returns(Task.FromResult(nullUser));
+
+            _userManagerMock.GetUserAsync(Arg.Any<ClaimsPrincipal>()).Returns(default(ApplicationUser));
             _uut.Url = Substitute.For<IUrlHelper>();
 
             //Act
@@ -470,8 +470,8 @@ namespace Company.WebApplication1.Application.MVC.Tests.Controllers
             {
                 HttpContext = httpContext
             };
-            ApplicationUser nullUser = null;
-            _userManagerMock.GetUserAsync(Arg.Any<ClaimsPrincipal>()).Returns(Task.FromResult(nullUser));
+
+            _userManagerMock.GetUserAsync(Arg.Any<ClaimsPrincipal>()).Returns(default(ApplicationUser));
             _uut.Url = Substitute.For<IUrlHelper>();
 
             //Act
@@ -517,8 +517,8 @@ namespace Company.WebApplication1.Application.MVC.Tests.Controllers
             {
                 HttpContext = httpContext
             };
-            ApplicationUser nullUser = null;
-            _userManagerMock.GetUserAsync(Arg.Any<ClaimsPrincipal>()).Returns(Task.FromResult(nullUser));
+
+            _userManagerMock.GetUserAsync(Arg.Any<ClaimsPrincipal>()).Returns(default(ApplicationUser));
             _uut.TempData = Substitute.For<ITempDataDictionary>();
 
             //Act
@@ -663,7 +663,7 @@ namespace Company.WebApplication1.Application.MVC.Tests.Controllers
                 PhoneNumber = "12345678",
                 Code = "1234"
             };
-            _userManagerMock.ChangePhoneNumberAsync(Arg.Any<ApplicationUser>(),Arg.Any<string>(),Arg.Any<string>()).Returns(Task.FromResult(IdentityResult.Success));
+            _userManagerMock.ChangePhoneNumberAsync(Arg.Any<ApplicationUser>(),Arg.Any<string>(),Arg.Any<string>()).Returns(IdentityResult.Success);
             _uut.Url = Substitute.For<IUrlHelper>();
 
             //Act
@@ -683,8 +683,8 @@ namespace Company.WebApplication1.Application.MVC.Tests.Controllers
             {
                 HttpContext = httpContext
             };
-            ApplicationUser nullUser = null;
-            _userManagerMock.GetUserAsync(Arg.Any<ClaimsPrincipal>()).Returns(Task.FromResult(nullUser));
+
+            _userManagerMock.GetUserAsync(Arg.Any<ClaimsPrincipal>()).Returns(default(ApplicationUser));
             _uut.TempData = Substitute.For<ITempDataDictionary>();
             var verifyPhoneNumberViewModel = new VerifyPhoneNumberViewModel
             {
@@ -721,7 +721,7 @@ namespace Company.WebApplication1.Application.MVC.Tests.Controllers
                 PhoneNumber = "12345678",
                 Code = "1234"
             };
-            _userManagerMock.ChangePhoneNumberAsync(Arg.Any<ApplicationUser>(),Arg.Any<string>(),Arg.Any<string>()).Returns(Task.FromResult(IdentityResult.Failed()));
+            _userManagerMock.ChangePhoneNumberAsync(Arg.Any<ApplicationUser>(),Arg.Any<string>(),Arg.Any<string>()).Returns(IdentityResult.Failed());
             _uut.Url = Substitute.For<IUrlHelper>();
 
             //Act
@@ -753,7 +753,7 @@ namespace Company.WebApplication1.Application.MVC.Tests.Controllers
                 PhoneNumber = "12345678",
                 Code = "1234"
             };
-            _userManagerMock.ChangePhoneNumberAsync(Arg.Any<ApplicationUser>(),Arg.Any<string>(),Arg.Any<string>()).Returns(Task.FromResult(IdentityResult.Failed()));
+            _userManagerMock.ChangePhoneNumberAsync(Arg.Any<ApplicationUser>(),Arg.Any<string>(),Arg.Any<string>()).Returns(IdentityResult.Failed());
             _uut.Url = Substitute.For<IUrlHelper>();
 
             //Act
@@ -774,8 +774,8 @@ namespace Company.WebApplication1.Application.MVC.Tests.Controllers
             {
                 HttpContext = httpContext
             };
-            ApplicationUser nullUser = null;
-            _userManagerMock.GetUserAsync(Arg.Any<ClaimsPrincipal>()).Returns(Task.FromResult(nullUser));
+
+            _userManagerMock.GetUserAsync(Arg.Any<ClaimsPrincipal>()).Returns(default(ApplicationUser));
             _uut.Url = Substitute.For<IUrlHelper>();
 
             //Act
@@ -802,7 +802,7 @@ namespace Company.WebApplication1.Application.MVC.Tests.Controllers
                 HttpContext = httpContext
             };
             _uut.Url = Substitute.For<IUrlHelper>();
-            _userManagerMock.SetPhoneNumberAsync(Arg.Any<ApplicationUser>(),Arg.Any<string>()).Returns(Task.FromResult(IdentityResult.Failed()));
+            _userManagerMock.SetPhoneNumberAsync(Arg.Any<ApplicationUser>(),Arg.Any<string>()).Returns(IdentityResult.Failed());
 
             //Act
             var result = await _uut.RemovePhoneNumber() as RedirectToActionResult;
@@ -828,7 +828,7 @@ namespace Company.WebApplication1.Application.MVC.Tests.Controllers
                 HttpContext = httpContext
             };
             _uut.Url = Substitute.For<IUrlHelper>();
-            _userManagerMock.SetPhoneNumberAsync(Arg.Any<ApplicationUser>(),Arg.Any<string>()).Returns(Task.FromResult(IdentityResult.Success));
+            _userManagerMock.SetPhoneNumberAsync(Arg.Any<ApplicationUser>(),Arg.Any<string>()).Returns(IdentityResult.Success);
 
             //Act
             var result = await _uut.RemovePhoneNumber() as RedirectToActionResult;
@@ -925,8 +925,8 @@ namespace Company.WebApplication1.Application.MVC.Tests.Controllers
             {
                 HttpContext = httpContext
             };
-            ApplicationUser nullUser = null;
-            _userManagerMock.GetUserAsync(Arg.Any<ClaimsPrincipal>()).Returns(Task.FromResult(nullUser));
+
+            _userManagerMock.GetUserAsync(Arg.Any<ClaimsPrincipal>()).Returns(default(ApplicationUser));
             _uut.Url = Substitute.For<IUrlHelper>();
             var changePasswordViewModel = new ChangePasswordViewModel
             {
@@ -966,7 +966,7 @@ namespace Company.WebApplication1.Application.MVC.Tests.Controllers
                 ConfirmPassword = ""
             };
             _userManagerMock.ChangePasswordAsync(Arg.Any<ApplicationUser>(),Arg.Any<string>(),Arg.Any<string>())
-                .Returns(Task.FromResult(IdentityResult.Failed(new IdentityError{Description = "ChangePasswordErrorForTest"})));
+                .Returns(IdentityResult.Failed(new IdentityError{Description = "ChangePasswordErrorForTest"}));
 
             //Act
             var result = await _uut.ChangePassword(changePasswordViewModel) as ViewResult;
@@ -999,7 +999,7 @@ namespace Company.WebApplication1.Application.MVC.Tests.Controllers
                 ConfirmPassword = ""
             };
             _userManagerMock.ChangePasswordAsync(Arg.Any<ApplicationUser>(),Arg.Any<string>(),Arg.Any<string>())
-                .Returns(Task.FromResult(IdentityResult.Failed(new IdentityError{Description = "ChangePasswordErrorForTest"})));
+                .Returns(IdentityResult.Failed(new IdentityError{Description = "ChangePasswordErrorForTest"}));
 
             //Act
             var result = await _uut.ChangePassword(changePasswordViewModel) as ViewResult;
@@ -1032,7 +1032,7 @@ namespace Company.WebApplication1.Application.MVC.Tests.Controllers
                 ConfirmPassword = ""
             };
             _userManagerMock.ChangePasswordAsync(Arg.Any<ApplicationUser>(),Arg.Any<string>(),Arg.Any<string>())
-                .Returns(Task.FromResult(IdentityResult.Success));
+                .Returns(IdentityResult.Success);
 
             //Act
             var result = await _uut.ChangePassword(changePasswordViewModel) as RedirectToActionResult;
@@ -1065,7 +1065,7 @@ namespace Company.WebApplication1.Application.MVC.Tests.Controllers
                 ConfirmPassword = ""
             };
             _userManagerMock.ChangePasswordAsync(Arg.Any<ApplicationUser>(),Arg.Any<string>(),Arg.Any<string>())
-                .Returns(Task.FromResult(IdentityResult.Success));
+                .Returns(IdentityResult.Success);
 
             //Act
             var result = await _uut.ChangePassword(changePasswordViewModel) as RedirectToActionResult;
@@ -1160,8 +1160,8 @@ namespace Company.WebApplication1.Application.MVC.Tests.Controllers
             {
                 HttpContext = httpContext
             };
-            ApplicationUser nullUser = null;
-            _userManagerMock.GetUserAsync(Arg.Any<ClaimsPrincipal>()).Returns(Task.FromResult(nullUser));
+
+            _userManagerMock.GetUserAsync(Arg.Any<ClaimsPrincipal>()).Returns(default(ApplicationUser));
             var setPasswordViewModel = new SetPasswordViewModel
             {
                 NewPassword = "",
@@ -1199,7 +1199,7 @@ namespace Company.WebApplication1.Application.MVC.Tests.Controllers
                 ConfirmPassword = ""
             };
             _userManagerMock.AddPasswordAsync(Arg.Any<ApplicationUser>(),Arg.Any<string>())
-                .Returns(Task.FromResult(IdentityResult.Failed(new IdentityError{Description = "AddPasswordErrorForTest"})));
+                .Returns(IdentityResult.Failed(new IdentityError{Description = "AddPasswordErrorForTest"}));
 
             //Act
             var result = await _uut.SetPassword(setPasswordViewModel) as ViewResult;
@@ -1231,7 +1231,7 @@ namespace Company.WebApplication1.Application.MVC.Tests.Controllers
                 ConfirmPassword = ""
             };
             _userManagerMock.AddPasswordAsync(Arg.Any<ApplicationUser>(),Arg.Any<string>())
-                .Returns(Task.FromResult(IdentityResult.Failed(new IdentityError{Description = "AddPasswordErrorForTest"})));
+                .Returns(IdentityResult.Failed(new IdentityError{Description = "AddPasswordErrorForTest"}));
 
             //Act
             var result = await _uut.SetPassword(setPasswordViewModel) as ViewResult;
@@ -1263,7 +1263,7 @@ namespace Company.WebApplication1.Application.MVC.Tests.Controllers
                 ConfirmPassword = ""
             };
             _userManagerMock.AddPasswordAsync(Arg.Any<ApplicationUser>(),Arg.Any<string>())
-                .Returns(Task.FromResult(IdentityResult.Success));
+                .Returns(IdentityResult.Success);
 
             //Act
             var result = await _uut.SetPassword(setPasswordViewModel) as RedirectToActionResult;
@@ -1295,7 +1295,7 @@ namespace Company.WebApplication1.Application.MVC.Tests.Controllers
                 ConfirmPassword = ""
             };
             _userManagerMock.AddPasswordAsync(Arg.Any<ApplicationUser>(),Arg.Any<string>())
-                .Returns(Task.FromResult(IdentityResult.Success));
+                .Returns(IdentityResult.Success);
 
             //Act
             var result = await _uut.SetPassword(setPasswordViewModel) as RedirectToActionResult;
@@ -1319,8 +1319,8 @@ namespace Company.WebApplication1.Application.MVC.Tests.Controllers
             {
                 HttpContext = httpContext
             };
-            ApplicationUser nullUser = null;
-            _userManagerMock.GetUserAsync(Arg.Any<ClaimsPrincipal>()).Returns(Task.FromResult(nullUser));
+
+            _userManagerMock.GetUserAsync(Arg.Any<ClaimsPrincipal>()).Returns(default(ApplicationUser));
             _uut.TempData = Substitute.For<ITempDataDictionary>();
 
             //Act
@@ -1340,8 +1340,8 @@ namespace Company.WebApplication1.Application.MVC.Tests.Controllers
             {
                 HttpContext = httpContext
             };
-            ApplicationUser nullUser = null;
-            _userManagerMock.GetUserAsync(Arg.Any<ClaimsPrincipal>()).Returns(Task.FromResult(nullUser));
+
+            _userManagerMock.GetUserAsync(Arg.Any<ClaimsPrincipal>()).Returns(default(ApplicationUser));
             _uut.TempData = Substitute.For<ITempDataDictionary>();
 
             //Act
@@ -1369,7 +1369,7 @@ namespace Company.WebApplication1.Application.MVC.Tests.Controllers
             };
             _uut.TempData = Substitute.For<ITempDataDictionary>();
             IList<UserLoginInfo> list = new List<UserLoginInfo>();
-            _userManagerMock.GetLoginsAsync(Arg.Any<ApplicationUser>()).Returns(Task.FromResult(list));
+            _userManagerMock.GetLoginsAsync(Arg.Any<ApplicationUser>()).Returns(list);
             IEnumerable<AuthenticationDescription> authList = new List<AuthenticationDescription>();
             _signInManagerMock.GetExternalAuthenticationSchemes().Returns(authList);
 
@@ -1402,7 +1402,7 @@ namespace Company.WebApplication1.Application.MVC.Tests.Controllers
                 new UserLoginInfo("","",""),
                 new UserLoginInfo("","","")
             };
-            _userManagerMock.GetLoginsAsync(Arg.Any<ApplicationUser>()).Returns(Task.FromResult(list));
+            _userManagerMock.GetLoginsAsync(Arg.Any<ApplicationUser>()).Returns(list);
             IEnumerable<AuthenticationDescription> authList = new List<AuthenticationDescription>();
             _signInManagerMock.GetExternalAuthenticationSchemes().Returns(authList);
             ApplicationUser user = new ApplicationUser
@@ -1411,7 +1411,7 @@ namespace Company.WebApplication1.Application.MVC.Tests.Controllers
                 Id = "123",
                 Email = "123"
             };
-            _userManagerMock.GetUserAsync(Arg.Any<ClaimsPrincipal>()).Returns(Task.FromResult(user));
+            _userManagerMock.GetUserAsync(Arg.Any<ClaimsPrincipal>()).Returns(user);
 
             //Act
             var result = await _uut.ManageLogins() as ViewResult;
@@ -1441,7 +1441,7 @@ namespace Company.WebApplication1.Application.MVC.Tests.Controllers
             {
                 new UserLoginInfo("","","")
             };
-            _userManagerMock.GetLoginsAsync(Arg.Any<ApplicationUser>()).Returns(Task.FromResult(list));
+            _userManagerMock.GetLoginsAsync(Arg.Any<ApplicationUser>()).Returns(list);
             IEnumerable<AuthenticationDescription> authList = new List<AuthenticationDescription>();
             _signInManagerMock.GetExternalAuthenticationSchemes().Returns(authList);
             ApplicationUser user = new ApplicationUser
@@ -1450,7 +1450,7 @@ namespace Company.WebApplication1.Application.MVC.Tests.Controllers
                 Id = "123",
                 Email = "123"
             };
-            _userManagerMock.GetUserAsync(Arg.Any<ClaimsPrincipal>()).Returns(Task.FromResult(user));
+            _userManagerMock.GetUserAsync(Arg.Any<ClaimsPrincipal>()).Returns(user);
 
             //Act
             var result = await _uut.ManageLogins() as ViewResult;
@@ -1481,7 +1481,7 @@ namespace Company.WebApplication1.Application.MVC.Tests.Controllers
                 new UserLoginInfo("","",""),
                 new UserLoginInfo("","","")
             };
-            _userManagerMock.GetLoginsAsync(Arg.Any<ApplicationUser>()).Returns(Task.FromResult(list));
+            _userManagerMock.GetLoginsAsync(Arg.Any<ApplicationUser>()).Returns(list);
             IEnumerable<AuthenticationDescription> authList = new List<AuthenticationDescription>();
             _signInManagerMock.GetExternalAuthenticationSchemes().Returns(authList);
             ApplicationUser user = new ApplicationUser
@@ -1490,7 +1490,7 @@ namespace Company.WebApplication1.Application.MVC.Tests.Controllers
                 Id = "123",
                 Email = "123"
             };
-            _userManagerMock.GetUserAsync(Arg.Any<ClaimsPrincipal>()).Returns(Task.FromResult(user));
+            _userManagerMock.GetUserAsync(Arg.Any<ClaimsPrincipal>()).Returns(user);
 
             //Act
             var result = await _uut.ManageLogins() as ViewResult;
@@ -1520,7 +1520,7 @@ namespace Company.WebApplication1.Application.MVC.Tests.Controllers
             {
                 new UserLoginInfo("","","")
             };
-            _userManagerMock.GetLoginsAsync(Arg.Any<ApplicationUser>()).Returns(Task.FromResult(list));
+            _userManagerMock.GetLoginsAsync(Arg.Any<ApplicationUser>()).Returns(list);
             IEnumerable<AuthenticationDescription> authList = new List<AuthenticationDescription>();
             _signInManagerMock.GetExternalAuthenticationSchemes().Returns(authList);
             ApplicationUser user = new ApplicationUser
@@ -1529,7 +1529,7 @@ namespace Company.WebApplication1.Application.MVC.Tests.Controllers
                 Id = "123",
                 Email = "123"
             };
-            _userManagerMock.GetUserAsync(Arg.Any<ClaimsPrincipal>()).Returns(Task.FromResult(user));
+            _userManagerMock.GetUserAsync(Arg.Any<ClaimsPrincipal>()).Returns(user);
 
             //Act
             var result = await _uut.ManageLogins() as ViewResult;

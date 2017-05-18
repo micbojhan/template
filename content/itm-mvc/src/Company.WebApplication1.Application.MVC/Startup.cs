@@ -207,9 +207,10 @@ namespace Company.WebApplication1
 
             context.Database.Migrate();
 
-            if (context.Users.Any() == false)
+            if (context.Users.Any() == false) {
                 context.Users.SeedFromFile("SeedData/contacts.csv");
-            context.SaveChanges();
+                context.CommitWithIdentityInsert("AspNetUsers");
+            }
         }
     }
 }

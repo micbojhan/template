@@ -78,4 +78,10 @@
     <ProjectReference Include="..\Company.WebApplication1.Infrastructure.DataAccess\Company.WebApplication1.Infrastructure.DataAccess.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <None Update="SeedData\*.csv">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+
 </Project>

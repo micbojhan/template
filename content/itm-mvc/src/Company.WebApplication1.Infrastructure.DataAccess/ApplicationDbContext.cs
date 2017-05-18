@@ -22,5 +22,25 @@ namespace Company.WebApplication1.Infrastructure.DataAccess
             // For example, you can rename the ASP.NET Identity table names and more.
             // Add your customizations after calling base.OnModelCreating(builder);
         }
+
+        public void CommitWithIdentityInsert(string tableName)
+        {
+            using (var dbContextTransaction = Database.BeginTransaction())
+            {
+                try
+                {
+                    Database.ExecuteSqlCommand($@"SET IDENTITY_INSERT {tableName} ON");
+                    SaveChanges();
+                    Database.ExecuteSqlCommand($@"SET IDENTITY_INSERT {tableName} OFF");
+                    dbContextTransaction.Commit();
+
+                }
+                catch (Exception)
+                {
+                    dbContextTransaction.Rollback();
+                    throw;
+                }
+            }
+        }
     }
 }

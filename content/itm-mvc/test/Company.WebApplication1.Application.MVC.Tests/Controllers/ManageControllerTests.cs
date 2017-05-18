@@ -19,6 +19,7 @@ using Microsoft.AspNetCore.Mvc.ViewFeatures;
 using Newtonsoft.Json;
 using Microsoft.AspNetCore.Http.Authentication;
 using System.Linq;
+using test3.Application.MVC.Tests.Controllers.TestExtensions;
 
 namespace Company.WebApplication1.Application.MVC.Tests.Controllers
 {
@@ -74,7 +75,7 @@ namespace Company.WebApplication1.Application.MVC.Tests.Controllers
             var loggerMockCtrl = Substitute.For<ILogger>();
             loggerFactoryMock.CreateLogger("").Returns(loggerMockCtrl);
 
-            _uut = new ManageController(_userManagerMock, _signInManagerMock, cookieOptionsMock, emailMock, smsMock, loggerFactoryMock);
+            _uut = new ManageController(_userManagerMock, _signInManagerMock, cookieOptionsMock, emailMock, smsMock, loggerFactoryMock).WithDefaultMocks();
         }
 
         //Index
@@ -106,13 +107,8 @@ namespace Company.WebApplication1.Application.MVC.Tests.Controllers
                 new ClaimsIdentity(
                     new[] {new Claim(ClaimTypes.NameIdentifier, "MyUserId")})
             });
-            var httpContext = Substitute.For<HttpContext>();
-            httpContext.User.Returns(validPrincipal);
 
-            _uut.ControllerContext = new ControllerContext
-            {
-                HttpContext = httpContext
-            };
+            _uut.ControllerContext.HttpContext.User.Returns(validPrincipal);
 
             _userManagerMock.HasPasswordAsync(Arg.Any<ApplicationUser>()).Returns(true);
             _userManagerMock.GetPhoneNumberAsync(Arg.Any<ApplicationUser>()).Returns("");
@@ -120,7 +116,6 @@ namespace Company.WebApplication1.Application.MVC.Tests.Controllers
             IList<UserLoginInfo> list = new List<UserLoginInfo>();
             _userManagerMock.GetLoginsAsync(Arg.Any<ApplicationUser>()).Returns(list);
             _signInManagerMock.IsTwoFactorClientRememberedAsync(Arg.Any<ApplicationUser>()).Returns(true);
-            _uut.TempData = Substitute.For<ITempDataDictionary>();
 
             //Act
             var result = await _uut.Index(null) as ViewResult;
@@ -138,13 +133,7 @@ namespace Company.WebApplication1.Application.MVC.Tests.Controllers
                     new ClaimsIdentity(
                         new[] {new Claim(ClaimTypes.NameIdentifier, "MyUserId")})
                 });
-            var httpContext = Substitute.For<HttpContext>();
-            httpContext.User.Returns(validPrincipal);
-
-            _uut.ControllerContext = new ControllerContext
-            {
-                HttpContext = httpContext
-            };
+            _uut.ControllerContext.HttpContext.User.Returns(validPrincipal);
             var viewModel = new IndexViewModel
             {
                 HasPassword = true,
@@ -159,7 +148,6 @@ namespace Company.WebApplication1.Application.MVC.Tests.Controllers
             _userManagerMock.GetTwoFactorEnabledAsync(Arg.Any<ApplicationUser>()).Returns(viewModel.TwoFactor);
             _userManagerMock.GetLoginsAsync(Arg.Any<ApplicationUser>()).Returns(viewModel.Logins);
             _signInManagerMock.IsTwoFactorClientRememberedAsync(Arg.Any<ApplicationUser>()).Returns(viewModel.BrowserRemembered);
-            _uut.TempData = Substitute.For<ITempDataDictionary>();
 
             //Act
             var result = await _uut.Index(null) as ViewResult;
@@ -174,12 +162,6 @@ namespace Company.WebApplication1.Application.MVC.Tests.Controllers
         public async void Index_UnregisteredUser_ReturnsErrorView()
         {
             //Arrange
-            var httpContext = Substitute.For<HttpContext>();
-
-            _uut.ControllerContext = new ControllerContext
-            {
-                HttpContext = httpContext
-            };
 
             _userManagerMock.GetUserAsync(Arg.Any<ClaimsPrincipal>()).Returns(default(ApplicationUser));
             _userManagerMock.HasPasswordAsync(Arg.Any<ApplicationUser>()).Returns(true);
@@ -188,7 +170,6 @@ namespace Company.WebApplication1.Application.MVC.Tests.Controllers
             IList<UserLoginInfo> list = new List<UserLoginInfo>();
             _userManagerMock.GetLoginsAsync(Arg.Any<ApplicationUser>()).Returns(list);
             _signInManagerMock.IsTwoFactorClientRememberedAsync(Arg.Any<ApplicationUser>()).Returns(true);
-            _uut.TempData = Substitute.For<ITempDataDictionary>();
 
             //Act
             var result = await _uut.Index(null) as ViewResult;
@@ -207,15 +188,8 @@ namespace Company.WebApplication1.Application.MVC.Tests.Controllers
                 LoginProvider = "",
                 ProviderKey = ""
             };
-            var httpContext = Substitute.For<HttpContext>();
-
-            _uut.ControllerContext = new ControllerContext
-            {
-                HttpContext = httpContext
-            };
 
             _userManagerMock.GetUserAsync(Arg.Any<ClaimsPrincipal>()).Returns(default(ApplicationUser));
-            _uut.Url = Substitute.For<IUrlHelper>();
 
             //Act
             var result = await _uut.RemoveLogin(removeLoginViewModel) as RedirectToActionResult;
@@ -239,17 +213,10 @@ namespace Company.WebApplication1.Application.MVC.Tests.Controllers
                     new ClaimsIdentity(
                         new[] {new Claim(ClaimTypes.NameIdentifier, "MyUserId")})
                 });
-            var httpContext = Substitute.For<HttpContext>();
-            httpContext.User.Returns(validPrincipal);
 
-            _uut.ControllerContext = new ControllerContext
-            {
-                HttpContext = httpContext
-            };
+            _uut.ControllerContext.HttpContext.User.Returns(validPrincipal);
 
             _userManagerMock.RemoveLoginAsync(Arg.Any<ApplicationUser>(), Arg.Any<string>(), Arg.Any<string>()).Returns(IdentityResult.Success);
-
-            _uut.Url = Substitute.For<IUrlHelper>();
 
             //Act
             var result = await _uut.RemoveLogin(removeLoginViewModel) as RedirectToActionResult;
@@ -273,17 +240,10 @@ namespace Company.WebApplication1.Application.MVC.Tests.Controllers
                     new ClaimsIdentity(
                         new[] {new Claim(ClaimTypes.NameIdentifier, "MyUserId")})
                 });
-            var httpContext = Substitute.For<HttpContext>();
-            httpContext.User.Returns(validPrincipal);
 
-            _uut.ControllerContext = new ControllerContext
-            {
-                HttpContext = httpContext
-            };
+            _uut.ControllerContext.HttpContext.User.Returns(validPrincipal);
 
             _userManagerMock.RemoveLoginAsync(Arg.Any<ApplicationUser>(), Arg.Any<string>(), Arg.Any<string>()).Returns(IdentityResult.Failed());
-
-            _uut.Url = Substitute.For<IUrlHelper>();
 
             //Act
             var result = await _uut.RemoveLogin(removeLoginViewModel) as RedirectToActionResult;
@@ -341,15 +301,8 @@ namespace Company.WebApplication1.Application.MVC.Tests.Controllers
         {
             //Arrange
             var addPhoneNumberViewModel = new AddPhoneNumberViewModel();
-            var httpContext = Substitute.For<HttpContext>();
-
-            _uut.ControllerContext = new ControllerContext
-            {
-                HttpContext = httpContext
-            };
 
             _userManagerMock.GetUserAsync(Arg.Any<ClaimsPrincipal>()).Returns(default(ApplicationUser));
-            _uut.TempData = Substitute.For<ITempDataDictionary>();
 
             //Act
             var result = await _uut.AddPhoneNumber(addPhoneNumberViewModel) as ViewResult;
@@ -368,15 +321,10 @@ namespace Company.WebApplication1.Application.MVC.Tests.Controllers
                     new ClaimsIdentity(
                         new[] {new Claim(ClaimTypes.NameIdentifier, "MyUserId")})
                 });
-            var httpContext = Substitute.For<HttpContext>();
-            httpContext.User.Returns(validPrincipal);
 
-            _uut.ControllerContext = new ControllerContext
-            {
-                HttpContext = httpContext
-            };
+            _uut.ControllerContext.HttpContext.User.Returns(validPrincipal);
+
             _userManagerMock.GenerateChangePhoneNumberTokenAsync(Arg.Any<ApplicationUser>(), Arg.Any<string>()).Returns("");
-            _uut.Url = Substitute.For<IUrlHelper>();
 
             //Act
             var result = await _uut.AddPhoneNumber(addPhoneNumberViewModel) as RedirectToActionResult;
@@ -395,15 +343,10 @@ namespace Company.WebApplication1.Application.MVC.Tests.Controllers
                     new ClaimsIdentity(
                         new[] {new Claim(ClaimTypes.NameIdentifier, "MyUserId")})
                 });
-            var httpContext = Substitute.For<HttpContext>();
-            httpContext.User.Returns(validPrincipal);
 
-            _uut.ControllerContext = new ControllerContext
-            {
-                HttpContext = httpContext
-            };
+            _uut.ControllerContext.HttpContext.User.Returns(validPrincipal);
+
             _userManagerMock.GenerateChangePhoneNumberTokenAsync(Arg.Any<ApplicationUser>(), Arg.Any<string>()).Returns("");
-            _uut.Url = Substitute.For<IUrlHelper>();
 
             //Act
             var result = await _uut.AddPhoneNumber(addPhoneNumberViewModel) as RedirectToActionResult;
@@ -417,15 +360,7 @@ namespace Company.WebApplication1.Application.MVC.Tests.Controllers
         public async void EnableTwoFactorAuthentication_UnregisteredUser_UserManagerTwoFactorEnableIsNotCalled()
         {
             //Arrange
-            var httpContext = Substitute.For<HttpContext>();
-
-            _uut.ControllerContext = new ControllerContext
-            {
-                HttpContext = httpContext
-            };
-
             _userManagerMock.GetUserAsync(Arg.Any<ClaimsPrincipal>()).Returns(default(ApplicationUser));
-            _uut.Url = Substitute.For<IUrlHelper>();
 
             //Act
             var result = await _uut.EnableTwoFactorAuthentication();
@@ -443,14 +378,8 @@ namespace Company.WebApplication1.Application.MVC.Tests.Controllers
                     new ClaimsIdentity(
                         new[] {new Claim(ClaimTypes.NameIdentifier, "MyUserId")})
                 });
-            var httpContext = Substitute.For<HttpContext>();
-            httpContext.User.Returns(validPrincipal);
 
-            _uut.ControllerContext = new ControllerContext
-            {
-                HttpContext = httpContext
-            };
-            _uut.Url = Substitute.For<IUrlHelper>();
+            _uut.ControllerContext.HttpContext.User.Returns(validPrincipal);
 
             //Act
             var result = await _uut.EnableTwoFactorAuthentication();
@@ -464,15 +393,7 @@ namespace Company.WebApplication1.Application.MVC.Tests.Controllers
         public async void DisableTwoFactorAuthentication_UnregisteredUser_UserManagerTwoFactorEnableIsNotCalled()
         {
             //Arrange
-            var httpContext = Substitute.For<HttpContext>();
-
-            _uut.ControllerContext = new ControllerContext
-            {
-                HttpContext = httpContext
-            };
-
             _userManagerMock.GetUserAsync(Arg.Any<ClaimsPrincipal>()).Returns(default(ApplicationUser));
-            _uut.Url = Substitute.For<IUrlHelper>();
 
             //Act
             var result = await _uut.DisableTwoFactorAuthentication();
@@ -490,14 +411,8 @@ namespace Company.WebApplication1.Application.MVC.Tests.Controllers
                     new ClaimsIdentity(
                         new[] {new Claim(ClaimTypes.NameIdentifier, "MyUserId")})
                 });
-            var httpContext = Substitute.For<HttpContext>();
-            httpContext.User.Returns(validPrincipal);
 
-            _uut.ControllerContext = new ControllerContext
-            {
-                HttpContext = httpContext
-            };
-            _uut.Url = Substitute.For<IUrlHelper>();
+            _uut.ControllerContext.HttpContext.User.Returns(validPrincipal);
 
             //Act
             var result = await _uut.DisableTwoFactorAuthentication();
@@ -511,15 +426,7 @@ namespace Company.WebApplication1.Application.MVC.Tests.Controllers
         public async void VerifyPhoneNumber_UnregisteredUser_ReturnsErrorView()
         {
             //Arrange
-            var httpContext = Substitute.For<HttpContext>();
-
-            _uut.ControllerContext = new ControllerContext
-            {
-                HttpContext = httpContext
-            };
-
             _userManagerMock.GetUserAsync(Arg.Any<ClaimsPrincipal>()).Returns(default(ApplicationUser));
-            _uut.TempData = Substitute.For<ITempDataDictionary>();
 
             //Act
             var result = await _uut.VerifyPhoneNumber("12345678") as ViewResult;
@@ -537,14 +444,8 @@ namespace Company.WebApplication1.Application.MVC.Tests.Controllers
                     new ClaimsIdentity(
                         new[] {new Claim(ClaimTypes.NameIdentifier, "MyUserId")})
                 });
-            var httpContext = Substitute.For<HttpContext>();
-            httpContext.User.Returns(validPrincipal);
 
-            _uut.ControllerContext = new ControllerContext
-            {
-                HttpContext = httpContext
-            };
-            _uut.TempData = Substitute.For<ITempDataDictionary>();
+            _uut.ControllerContext.HttpContext.User.Returns(validPrincipal);
 
             //Act
             var result = await _uut.VerifyPhoneNumber(null as string) as ViewResult;
@@ -562,14 +463,8 @@ namespace Company.WebApplication1.Application.MVC.Tests.Controllers
                     new ClaimsIdentity(
                         new[] {new Claim(ClaimTypes.NameIdentifier, "MyUserId")})
                 });
-            var httpContext = Substitute.For<HttpContext>();
-            httpContext.User.Returns(validPrincipal);
 
-            _uut.ControllerContext = new ControllerContext
-            {
-                HttpContext = httpContext
-            };
-            _uut.TempData = Substitute.For<ITempDataDictionary>();
+            _uut.ControllerContext.HttpContext.User.Returns(validPrincipal);
 
             //Act
             var result = await _uut.VerifyPhoneNumber("12345678") as ViewResult;
@@ -588,14 +483,9 @@ namespace Company.WebApplication1.Application.MVC.Tests.Controllers
                     new ClaimsIdentity(
                         new[] {new Claim(ClaimTypes.NameIdentifier, "MyUserId")})
                 });
-            var httpContext = Substitute.For<HttpContext>();
-            httpContext.User.Returns(validPrincipal);
 
-            _uut.ControllerContext = new ControllerContext
-            {
-                HttpContext = httpContext
-            };
-            _uut.TempData = Substitute.For<ITempDataDictionary>();
+            _uut.ControllerContext.HttpContext.User.Returns(validPrincipal);
+
             _uut.ModelState.AddModelError("Error", "Error");
             var verifyPhoneNumberViewModel = new VerifyPhoneNumberViewModel
             {
@@ -619,14 +509,9 @@ namespace Company.WebApplication1.Application.MVC.Tests.Controllers
                     new ClaimsIdentity(
                         new[] {new Claim(ClaimTypes.NameIdentifier, "MyUserId")})
                 });
-            var httpContext = Substitute.For<HttpContext>();
-            httpContext.User.Returns(validPrincipal);
 
-            _uut.ControllerContext = new ControllerContext
-            {
-                HttpContext = httpContext
-            };
-            _uut.TempData = Substitute.For<ITempDataDictionary>();
+            _uut.ControllerContext.HttpContext.User.Returns(validPrincipal);
+
             _uut.ModelState.AddModelError("Error", "Error");
             var verifyPhoneNumberViewModel = new VerifyPhoneNumberViewModel
             {
@@ -650,21 +535,15 @@ namespace Company.WebApplication1.Application.MVC.Tests.Controllers
                     new ClaimsIdentity(
                         new[] {new Claim(ClaimTypes.NameIdentifier, "MyUserId")})
                 });
-            var httpContext = Substitute.For<HttpContext>();
-            httpContext.User.Returns(validPrincipal);
 
-            _uut.ControllerContext = new ControllerContext
-            {
-                HttpContext = httpContext
-            };
-            _uut.TempData = Substitute.For<ITempDataDictionary>();
+            _uut.ControllerContext.HttpContext.User.Returns(validPrincipal);
+
             var verifyPhoneNumberViewModel = new VerifyPhoneNumberViewModel
             {
                 PhoneNumber = "12345678",
                 Code = "1234"
             };
             _userManagerMock.ChangePhoneNumberAsync(Arg.Any<ApplicationUser>(), Arg.Any<string>(), Arg.Any<string>()).Returns(IdentityResult.Success);
-            _uut.Url = Substitute.For<IUrlHelper>();
 
             //Act
             var result = await _uut.VerifyPhoneNumber(verifyPhoneNumberViewModel) as RedirectToActionResult;
@@ -677,15 +556,7 @@ namespace Company.WebApplication1.Application.MVC.Tests.Controllers
         public async void VerifyPhoneNumber_UnregisteredUser_ModelErrorAdded()
         {
             //Arrange
-            var httpContext = Substitute.For<HttpContext>();
-
-            _uut.ControllerContext = new ControllerContext
-            {
-                HttpContext = httpContext
-            };
-
             _userManagerMock.GetUserAsync(Arg.Any<ClaimsPrincipal>()).Returns(default(ApplicationUser));
-            _uut.TempData = Substitute.For<ITempDataDictionary>();
             var verifyPhoneNumberViewModel = new VerifyPhoneNumberViewModel
             {
                 PhoneNumber = "12345678",
@@ -708,21 +579,14 @@ namespace Company.WebApplication1.Application.MVC.Tests.Controllers
                     new ClaimsIdentity(
                         new[] {new Claim(ClaimTypes.NameIdentifier, "MyUserId")})
                 });
-            var httpContext = Substitute.For<HttpContext>();
-            httpContext.User.Returns(validPrincipal);
+            _uut.ControllerContext.HttpContext.User.Returns(validPrincipal);
 
-            _uut.ControllerContext = new ControllerContext
-            {
-                HttpContext = httpContext
-            };
-            _uut.TempData = Substitute.For<ITempDataDictionary>();
             var verifyPhoneNumberViewModel = new VerifyPhoneNumberViewModel
             {
                 PhoneNumber = "12345678",
                 Code = "1234"
             };
             _userManagerMock.ChangePhoneNumberAsync(Arg.Any<ApplicationUser>(), Arg.Any<string>(), Arg.Any<string>()).Returns(IdentityResult.Failed());
-            _uut.Url = Substitute.For<IUrlHelper>();
 
             //Act
             var result = await _uut.VerifyPhoneNumber(verifyPhoneNumberViewModel) as ViewResult;
@@ -740,21 +604,15 @@ namespace Company.WebApplication1.Application.MVC.Tests.Controllers
                     new ClaimsIdentity(
                         new[] {new Claim(ClaimTypes.NameIdentifier, "MyUserId")})
                 });
-            var httpContext = Substitute.For<HttpContext>();
-            httpContext.User.Returns(validPrincipal);
 
-            _uut.ControllerContext = new ControllerContext
-            {
-                HttpContext = httpContext
-            };
-            _uut.TempData = Substitute.For<ITempDataDictionary>();
+            _uut.ControllerContext.HttpContext.User.Returns(validPrincipal);
+
             var verifyPhoneNumberViewModel = new VerifyPhoneNumberViewModel
             {
                 PhoneNumber = "12345678",
                 Code = "1234"
             };
             _userManagerMock.ChangePhoneNumberAsync(Arg.Any<ApplicationUser>(), Arg.Any<string>(), Arg.Any<string>()).Returns(IdentityResult.Failed());
-            _uut.Url = Substitute.For<IUrlHelper>();
 
             //Act
             var result = await _uut.VerifyPhoneNumber(verifyPhoneNumberViewModel) as ViewResult;
@@ -768,15 +626,7 @@ namespace Company.WebApplication1.Application.MVC.Tests.Controllers
         public async void RemovePhoneNumber_UnregisteredUser_ReturnsRedirectWithErrorMessage()
         {
             //Arrange
-            var httpContext = Substitute.For<HttpContext>();
-
-            _uut.ControllerContext = new ControllerContext
-            {
-                HttpContext = httpContext
-            };
-
             _userManagerMock.GetUserAsync(Arg.Any<ClaimsPrincipal>()).Returns(default(ApplicationUser));
-            _uut.Url = Substitute.For<IUrlHelper>();
 
             //Act
             var result = await _uut.RemovePhoneNumber() as RedirectToActionResult;
@@ -794,14 +644,8 @@ namespace Company.WebApplication1.Application.MVC.Tests.Controllers
                     new ClaimsIdentity(
                         new[] {new Claim(ClaimTypes.NameIdentifier, "MyUserId")})
                 });
-            var httpContext = Substitute.For<HttpContext>();
-            httpContext.User.Returns(validPrincipal);
+            _uut.ControllerContext.HttpContext.User.Returns(validPrincipal);
 
-            _uut.ControllerContext = new ControllerContext
-            {
-                HttpContext = httpContext
-            };
-            _uut.Url = Substitute.For<IUrlHelper>();
             _userManagerMock.SetPhoneNumberAsync(Arg.Any<ApplicationUser>(), Arg.Any<string>()).Returns(IdentityResult.Failed());
 
             //Act
@@ -820,14 +664,8 @@ namespace Company.WebApplication1.Application.MVC.Tests.Controllers
                     new ClaimsIdentity(
                         new[] {new Claim(ClaimTypes.NameIdentifier, "MyUserId")})
                 });
-            var httpContext = Substitute.For<HttpContext>();
-            httpContext.User.Returns(validPrincipal);
+            _uut.ControllerContext.HttpContext.User.Returns(validPrincipal);
 
-            _uut.ControllerContext = new ControllerContext
-            {
-                HttpContext = httpContext
-            };
-            _uut.Url = Substitute.For<IUrlHelper>();
             _userManagerMock.SetPhoneNumberAsync(Arg.Any<ApplicationUser>(), Arg.Any<string>()).Returns(IdentityResult.Success);
 
             //Act
@@ -860,14 +698,9 @@ namespace Company.WebApplication1.Application.MVC.Tests.Controllers
                     new ClaimsIdentity(
                         new[] {new Claim(ClaimTypes.NameIdentifier, "MyUserId")})
                 });
-            var httpContext = Substitute.For<HttpContext>();
-            httpContext.User.Returns(validPrincipal);
 
-            _uut.ControllerContext = new ControllerContext
-            {
-                HttpContext = httpContext
-            };
-            _uut.TempData = Substitute.For<ITempDataDictionary>();
+            _uut.ControllerContext.HttpContext.User.Returns(validPrincipal);
+
             var changePasswordViewModel = new ChangePasswordViewModel
             {
                 OldPassword = "",
@@ -892,14 +725,9 @@ namespace Company.WebApplication1.Application.MVC.Tests.Controllers
                     new ClaimsIdentity(
                         new[] {new Claim(ClaimTypes.NameIdentifier, "MyUserId")})
                 });
-            var httpContext = Substitute.For<HttpContext>();
-            httpContext.User.Returns(validPrincipal);
 
-            _uut.ControllerContext = new ControllerContext
-            {
-                HttpContext = httpContext
-            };
-            _uut.TempData = Substitute.For<ITempDataDictionary>();
+            _uut.ControllerContext.HttpContext.User.Returns(validPrincipal);
+
             var changePasswordViewModel = new ChangePasswordViewModel
             {
                 OldPassword = "",
@@ -919,15 +747,7 @@ namespace Company.WebApplication1.Application.MVC.Tests.Controllers
         public async void ChangePassword_UnregisteredUser_ReturnsRedirectResultWithErrorMessage()
         {
             //Arrange
-            var httpContext = Substitute.For<HttpContext>();
-
-            _uut.ControllerContext = new ControllerContext
-            {
-                HttpContext = httpContext
-            };
-
             _userManagerMock.GetUserAsync(Arg.Any<ClaimsPrincipal>()).Returns(default(ApplicationUser));
-            _uut.Url = Substitute.For<IUrlHelper>();
             var changePasswordViewModel = new ChangePasswordViewModel
             {
                 OldPassword = "",
@@ -951,14 +771,9 @@ namespace Company.WebApplication1.Application.MVC.Tests.Controllers
                     new ClaimsIdentity(
                         new[] {new Claim(ClaimTypes.NameIdentifier, "MyUserId")})
                 });
-            var httpContext = Substitute.For<HttpContext>();
-            httpContext.User.Returns(validPrincipal);
 
-            _uut.ControllerContext = new ControllerContext
-            {
-                HttpContext = httpContext
-            };
-            _uut.TempData = Substitute.For<ITempDataDictionary>();
+            _uut.ControllerContext.HttpContext.User.Returns(validPrincipal);
+
             var changePasswordViewModel = new ChangePasswordViewModel
             {
                 OldPassword = "",
@@ -984,14 +799,9 @@ namespace Company.WebApplication1.Application.MVC.Tests.Controllers
                     new ClaimsIdentity(
                         new[] {new Claim(ClaimTypes.NameIdentifier, "MyUserId")})
                 });
-            var httpContext = Substitute.For<HttpContext>();
-            httpContext.User.Returns(validPrincipal);
 
-            _uut.ControllerContext = new ControllerContext
-            {
-                HttpContext = httpContext
-            };
-            _uut.TempData = Substitute.For<ITempDataDictionary>();
+            _uut.ControllerContext.HttpContext.User.Returns(validPrincipal);
+
             var changePasswordViewModel = new ChangePasswordViewModel
             {
                 OldPassword = "",
@@ -1017,14 +827,9 @@ namespace Company.WebApplication1.Application.MVC.Tests.Controllers
                     new ClaimsIdentity(
                         new[] {new Claim(ClaimTypes.NameIdentifier, "MyUserId")})
                 });
-            var httpContext = Substitute.For<HttpContext>();
-            httpContext.User.Returns(validPrincipal);
 
-            _uut.ControllerContext = new ControllerContext
-            {
-                HttpContext = httpContext
-            };
-            _uut.Url = Substitute.For<IUrlHelper>();
+            _uut.ControllerContext.HttpContext.User.Returns(validPrincipal);
+
             var changePasswordViewModel = new ChangePasswordViewModel
             {
                 OldPassword = "",
@@ -1050,14 +855,9 @@ namespace Company.WebApplication1.Application.MVC.Tests.Controllers
                     new ClaimsIdentity(
                         new[] {new Claim(ClaimTypes.NameIdentifier, "MyUserId")})
                 });
-            var httpContext = Substitute.For<HttpContext>();
-            httpContext.User.Returns(validPrincipal);
 
-            _uut.ControllerContext = new ControllerContext
-            {
-                HttpContext = httpContext
-            };
-            _uut.Url = Substitute.For<IUrlHelper>();
+            _uut.ControllerContext.HttpContext.User.Returns(validPrincipal);
+
             var changePasswordViewModel = new ChangePasswordViewModel
             {
                 OldPassword = "",
@@ -1097,14 +897,9 @@ namespace Company.WebApplication1.Application.MVC.Tests.Controllers
                     new ClaimsIdentity(
                         new[] {new Claim(ClaimTypes.NameIdentifier, "MyUserId")})
                 });
-            var httpContext = Substitute.For<HttpContext>();
-            httpContext.User.Returns(validPrincipal);
 
-            _uut.ControllerContext = new ControllerContext
-            {
-                HttpContext = httpContext
-            };
-            _uut.TempData = Substitute.For<ITempDataDictionary>();
+            _uut.ControllerContext.HttpContext.User.Returns(validPrincipal);
+
             var setPasswordViewModel = new SetPasswordViewModel
             {
                 NewPassword = "",
@@ -1128,14 +923,9 @@ namespace Company.WebApplication1.Application.MVC.Tests.Controllers
                     new ClaimsIdentity(
                         new[] {new Claim(ClaimTypes.NameIdentifier, "MyUserId")})
                 });
-            var httpContext = Substitute.For<HttpContext>();
-            httpContext.User.Returns(validPrincipal);
 
-            _uut.ControllerContext = new ControllerContext
-            {
-                HttpContext = httpContext
-            };
-            _uut.TempData = Substitute.For<ITempDataDictionary>();
+            _uut.ControllerContext.HttpContext.User.Returns(validPrincipal);
+
             var setPasswordViewModel = new SetPasswordViewModel
             {
                 NewPassword = "",
@@ -1154,20 +944,12 @@ namespace Company.WebApplication1.Application.MVC.Tests.Controllers
         public async void SetPassword_UnregisteredUser_RedirectResultWithErrorReturned()
         {
             //Arrange
-            var httpContext = Substitute.For<HttpContext>();
-
-            _uut.ControllerContext = new ControllerContext
-            {
-                HttpContext = httpContext
-            };
-
             _userManagerMock.GetUserAsync(Arg.Any<ClaimsPrincipal>()).Returns(default(ApplicationUser));
             var setPasswordViewModel = new SetPasswordViewModel
             {
                 NewPassword = "",
                 ConfirmPassword = ""
             };
-            _uut.Url = Substitute.For<IUrlHelper>();
 
             //Act
             var result = await _uut.SetPassword(setPasswordViewModel) as RedirectToActionResult;
@@ -1185,14 +967,9 @@ namespace Company.WebApplication1.Application.MVC.Tests.Controllers
                     new ClaimsIdentity(
                         new[] {new Claim(ClaimTypes.NameIdentifier, "MyUserId")})
                 });
-            var httpContext = Substitute.For<HttpContext>();
-            httpContext.User.Returns(validPrincipal);
 
-            _uut.ControllerContext = new ControllerContext
-            {
-                HttpContext = httpContext
-            };
-            _uut.TempData = Substitute.For<ITempDataDictionary>();
+            _uut.ControllerContext.HttpContext.User.Returns(validPrincipal);
+
             var setPasswordViewModel = new SetPasswordViewModel
             {
                 NewPassword = "",
@@ -1217,14 +994,9 @@ namespace Company.WebApplication1.Application.MVC.Tests.Controllers
                     new ClaimsIdentity(
                         new[] {new Claim(ClaimTypes.NameIdentifier, "MyUserId")})
                 });
-            var httpContext = Substitute.For<HttpContext>();
-            httpContext.User.Returns(validPrincipal);
 
-            _uut.ControllerContext = new ControllerContext
-            {
-                HttpContext = httpContext
-            };
-            _uut.TempData = Substitute.For<ITempDataDictionary>();
+            _uut.ControllerContext.HttpContext.User.Returns(validPrincipal);
+
             var setPasswordViewModel = new SetPasswordViewModel
             {
                 NewPassword = "",
@@ -1249,14 +1021,9 @@ namespace Company.WebApplication1.Application.MVC.Tests.Controllers
                     new ClaimsIdentity(
                         new[] {new Claim(ClaimTypes.NameIdentifier, "MyUserId")})
                 });
-            var httpContext = Substitute.For<HttpContext>();
-            httpContext.User.Returns(validPrincipal);
 
-            _uut.ControllerContext = new ControllerContext
-            {
-                HttpContext = httpContext
-            };
-            _uut.Url = Substitute.For<IUrlHelper>();
+            _uut.ControllerContext.HttpContext.User.Returns(validPrincipal);
+
             var setPasswordViewModel = new SetPasswordViewModel
             {
                 NewPassword = "",
@@ -1281,14 +1048,9 @@ namespace Company.WebApplication1.Application.MVC.Tests.Controllers
                     new ClaimsIdentity(
                         new[] {new Claim(ClaimTypes.NameIdentifier, "MyUserId")})
                 });
-            var httpContext = Substitute.For<HttpContext>();
-            httpContext.User.Returns(validPrincipal);
 
-            _uut.ControllerContext = new ControllerContext
-            {
-                HttpContext = httpContext
-            };
-            _uut.Url = Substitute.For<IUrlHelper>();
+            _uut.ControllerContext.HttpContext.User.Returns(validPrincipal);
+
             var setPasswordViewModel = new SetPasswordViewModel
             {
                 NewPassword = "",
@@ -1313,15 +1075,7 @@ namespace Company.WebApplication1.Application.MVC.Tests.Controllers
         public async void ManageLogins_GivenMessage_ViewBagContainsCorrectMessage(ManageMessageId? messageId, string message)
         {
             //Arrange
-            var httpContext = Substitute.For<HttpContext>();
-
-            _uut.ControllerContext = new ControllerContext
-            {
-                HttpContext = httpContext
-            };
-
             _userManagerMock.GetUserAsync(Arg.Any<ClaimsPrincipal>()).Returns(default(ApplicationUser));
-            _uut.TempData = Substitute.For<ITempDataDictionary>();
 
             //Act
             var result = await _uut.ManageLogins(messageId);
@@ -1334,15 +1088,7 @@ namespace Company.WebApplication1.Application.MVC.Tests.Controllers
         public async void ManageLogins_UnregisteredUser_ErrorViewReturned()
         {
             //Arrange
-            var httpContext = Substitute.For<HttpContext>();
-
-            _uut.ControllerContext = new ControllerContext
-            {
-                HttpContext = httpContext
-            };
-
             _userManagerMock.GetUserAsync(Arg.Any<ClaimsPrincipal>()).Returns(default(ApplicationUser));
-            _uut.TempData = Substitute.For<ITempDataDictionary>();
 
             //Act
             var result = await _uut.ManageLogins() as ViewResult;
@@ -1360,14 +1106,9 @@ namespace Company.WebApplication1.Application.MVC.Tests.Controllers
                     new ClaimsIdentity(
                         new[] {new Claim(ClaimTypes.NameIdentifier, "MyUserId")})
                 });
-            var httpContext = Substitute.For<HttpContext>();
-            httpContext.User.Returns(validPrincipal);
 
-            _uut.ControllerContext = new ControllerContext
-            {
-                HttpContext = httpContext
-            };
-            _uut.TempData = Substitute.For<ITempDataDictionary>();
+            _uut.ControllerContext.HttpContext.User.Returns(validPrincipal);
+
             IList<UserLoginInfo> list = new List<UserLoginInfo>();
             _userManagerMock.GetLoginsAsync(Arg.Any<ApplicationUser>()).Returns(list);
             IEnumerable<AuthenticationDescription> authList = new List<AuthenticationDescription>();
@@ -1389,14 +1130,9 @@ namespace Company.WebApplication1.Application.MVC.Tests.Controllers
                     new ClaimsIdentity(
                         new[] {new Claim(ClaimTypes.NameIdentifier, "MyUserId")})
                 });
-            var httpContext = Substitute.For<HttpContext>();
-            httpContext.User.Returns(validPrincipal);
 
-            _uut.ControllerContext = new ControllerContext
-            {
-                HttpContext = httpContext
-            };
-            _uut.TempData = Substitute.For<ITempDataDictionary>();
+            _uut.ControllerContext.HttpContext.User.Returns(validPrincipal);
+
             IList<UserLoginInfo> list = new List<UserLoginInfo>
             {
                 new UserLoginInfo("","",""),
@@ -1429,14 +1165,9 @@ namespace Company.WebApplication1.Application.MVC.Tests.Controllers
                     new ClaimsIdentity(
                         new[] {new Claim(ClaimTypes.NameIdentifier, "MyUserId")})
                 });
-            var httpContext = Substitute.For<HttpContext>();
-            httpContext.User.Returns(validPrincipal);
 
-            _uut.ControllerContext = new ControllerContext
-            {
-                HttpContext = httpContext
-            };
-            _uut.TempData = Substitute.For<ITempDataDictionary>();
+            _uut.ControllerContext.HttpContext.User.Returns(validPrincipal);
+
             IList<UserLoginInfo> list = new List<UserLoginInfo>
             {
                 new UserLoginInfo("", "", "")
@@ -1468,14 +1199,9 @@ namespace Company.WebApplication1.Application.MVC.Tests.Controllers
                     new ClaimsIdentity(
                         new[] {new Claim(ClaimTypes.NameIdentifier, "MyUserId")})
                 });
-            var httpContext = Substitute.For<HttpContext>();
-            httpContext.User.Returns(validPrincipal);
 
-            _uut.ControllerContext = new ControllerContext
-            {
-                HttpContext = httpContext
-            };
-            _uut.TempData = Substitute.For<ITempDataDictionary>();
+            _uut.ControllerContext.HttpContext.User.Returns(validPrincipal);
+
             IList<UserLoginInfo> list = new List<UserLoginInfo>
             {
                 new UserLoginInfo("", "", ""),
@@ -1508,14 +1234,9 @@ namespace Company.WebApplication1.Application.MVC.Tests.Controllers
                     new ClaimsIdentity(
                         new[] {new Claim(ClaimTypes.NameIdentifier, "MyUserId")})
                 });
-            var httpContext = Substitute.For<HttpContext>();
-            httpContext.User.Returns(validPrincipal);
 
-            _uut.ControllerContext = new ControllerContext
-            {
-                HttpContext = httpContext
-            };
-            _uut.TempData = Substitute.For<ITempDataDictionary>();
+            _uut.ControllerContext.HttpContext.User.Returns(validPrincipal);
+
             IList<UserLoginInfo> list = new List<UserLoginInfo>
             {
                 new UserLoginInfo("", "", "")
@@ -1543,30 +1264,18 @@ namespace Company.WebApplication1.Application.MVC.Tests.Controllers
         public async void LinkLogin_CallsSignOutOnHttpContext()
         {
             //Arrange
-            var httpContext = Substitute.For<HttpContext>();
-            _uut.ControllerContext = new ControllerContext
-            {
-                HttpContext = httpContext
-            };
-            _uut.Url = Substitute.For<IUrlHelper>();
 
             //Act
             var result = await _uut.LinkLogin(Arg.Any<string>());
 
             //Assert
-            await httpContext.Received().Authentication.SignOutAsync(Arg.Any<string>());
+            await _uut.ControllerContext.HttpContext.Received().Authentication.SignOutAsync(Arg.Any<string>());
         }
 
         [Fact]
         public async void LinkLogin_CallsSignInManagerConfigureExternalAuthenticationProperties()
         {
             //Arrange
-            var httpContext = Substitute.For<HttpContext>();
-            _uut.ControllerContext = new ControllerContext
-            {
-                HttpContext = httpContext
-            };
-            _uut.Url = Substitute.For<IUrlHelper>();
 
             //Act
             var result = await _uut.LinkLogin(Arg.Any<string>());
@@ -1579,12 +1288,6 @@ namespace Company.WebApplication1.Application.MVC.Tests.Controllers
         public async void LinkLogin_ReturnsChallengeResult()
         {
             //Arrange
-            var httpContext = Substitute.For<HttpContext>();
-            _uut.ControllerContext = new ControllerContext
-            {
-                HttpContext = httpContext
-            };
-            _uut.Url = Substitute.For<IUrlHelper>();
 
             //Act
             var result = await _uut.LinkLogin(Arg.Any<string>());
@@ -1598,15 +1301,7 @@ namespace Company.WebApplication1.Application.MVC.Tests.Controllers
         public async void LinkLoginCallback_UnregisteredUser_ReturnsErrorView()
         {
             //Arrange
-            var httpContext = Substitute.For<HttpContext>();
-
-            _uut.ControllerContext = new ControllerContext
-            {
-                HttpContext = httpContext
-            };
-
             _userManagerMock.GetUserAsync(Arg.Any<ClaimsPrincipal>()).Returns(default(ApplicationUser));
-            _uut.TempData = Substitute.For<ITempDataDictionary>();
 
             //Act
             var result = await _uut.LinkLoginCallback() as ViewResult;
@@ -1624,14 +1319,8 @@ namespace Company.WebApplication1.Application.MVC.Tests.Controllers
                     new ClaimsIdentity(
                         new[] {new Claim(ClaimTypes.NameIdentifier, "MyUserId")})
                 });
-            var httpContext = Substitute.For<HttpContext>();
-            httpContext.User.Returns(validPrincipal);
 
-            _uut.ControllerContext = new ControllerContext
-            {
-                HttpContext = httpContext
-            };
-            _uut.Url = Substitute.For<IUrlHelper>();
+            _uut.ControllerContext.HttpContext.User.Returns(validPrincipal);
             _signInManagerMock.GetExternalLoginInfoAsync(Arg.Any<string>()).Returns(default(ExternalLoginInfo));
 
             //Act
@@ -1650,14 +1339,9 @@ namespace Company.WebApplication1.Application.MVC.Tests.Controllers
                     new ClaimsIdentity(
                         new[] {new Claim(ClaimTypes.NameIdentifier, "MyUserId")})
                 });
-            var httpContext = Substitute.For<HttpContext>();
-            httpContext.User.Returns(validPrincipal);
 
-            _uut.ControllerContext = new ControllerContext
-            {
-                HttpContext = httpContext
-            };
-            _uut.Url = Substitute.For<IUrlHelper>();
+            _uut.ControllerContext.HttpContext.User.Returns(validPrincipal);
+
             _signInManagerMock.GetExternalLoginInfoAsync(Arg.Any<string>()).Returns(new ExternalLoginInfo(validPrincipal, "", "", ""));
             _userManagerMock.AddLoginAsync(Arg.Any<ApplicationUser>(),Arg.Any<UserLoginInfo>()).Returns(IdentityResult.Failed());
 
@@ -1677,14 +1361,9 @@ namespace Company.WebApplication1.Application.MVC.Tests.Controllers
                     new ClaimsIdentity(
                         new[] {new Claim(ClaimTypes.NameIdentifier, "MyUserId")})
                 });
-            var httpContext = Substitute.For<HttpContext>();
-            httpContext.User.Returns(validPrincipal);
 
-            _uut.ControllerContext = new ControllerContext
-            {
-                HttpContext = httpContext
-            };
-            _uut.Url = Substitute.For<IUrlHelper>();
+            _uut.ControllerContext.HttpContext.User.Returns(validPrincipal);
+
             _signInManagerMock.GetExternalLoginInfoAsync(Arg.Any<string>()).Returns(new ExternalLoginInfo(validPrincipal, "", "", ""));
             _userManagerMock.AddLoginAsync(Arg.Any<ApplicationUser>(), Arg.Any<UserLoginInfo>()).Returns(IdentityResult.Failed());
 
@@ -1704,14 +1383,9 @@ namespace Company.WebApplication1.Application.MVC.Tests.Controllers
                     new ClaimsIdentity(
                         new[] {new Claim(ClaimTypes.NameIdentifier, "MyUserId")})
                 });
-            var httpContext = Substitute.For<HttpContext>();
-            httpContext.User.Returns(validPrincipal);
 
-            _uut.ControllerContext = new ControllerContext
-            {
-                HttpContext = httpContext
-            };
-            _uut.Url = Substitute.For<IUrlHelper>();
+            _uut.ControllerContext.HttpContext.User.Returns(validPrincipal);
+
             _signInManagerMock.GetExternalLoginInfoAsync(Arg.Any<string>()).Returns(new ExternalLoginInfo(validPrincipal, "", "", ""));
             _userManagerMock.AddLoginAsync(Arg.Any<ApplicationUser>(), Arg.Any<UserLoginInfo>()).Returns(IdentityResult.Success);
 
@@ -1719,7 +1393,7 @@ namespace Company.WebApplication1.Application.MVC.Tests.Controllers
             var result = await _uut.LinkLoginCallback() as RedirectToActionResult;
 
             //Assert
-            await httpContext.Received().Authentication.SignOutAsync(Arg.Any<string>());
+            await _uut.ControllerContext.HttpContext.Received().Authentication.SignOutAsync(Arg.Any<string>());
         }
 
         [Fact]
@@ -1731,14 +1405,9 @@ namespace Company.WebApplication1.Application.MVC.Tests.Controllers
                     new ClaimsIdentity(
                         new[] {new Claim(ClaimTypes.NameIdentifier, "MyUserId")})
                 });
-            var httpContext = Substitute.For<HttpContext>();
-            httpContext.User.Returns(validPrincipal);
 
-            _uut.ControllerContext = new ControllerContext
-            {
-                HttpContext = httpContext
-            };
-            _uut.Url = Substitute.For<IUrlHelper>();
+            _uut.ControllerContext.HttpContext.User.Returns(validPrincipal);
+
             _signInManagerMock.GetExternalLoginInfoAsync(Arg.Any<string>()).Returns(new ExternalLoginInfo(validPrincipal, "", "", ""));
             _userManagerMock.AddLoginAsync(Arg.Any<ApplicationUser>(), Arg.Any<UserLoginInfo>()).Returns(IdentityResult.Success);
 

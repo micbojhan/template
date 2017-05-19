@@ -253,7 +253,7 @@
     },
     "NoAuth": {
       "type": "computed",
-      "value": "(!(IndividualAuth || MultiOrgAuth || SingleOrgAuth || WindowsAuth))"
+      "value": "(false)" // !(IndividualAuth || MultiOrgAuth || SingleOrgAuth || WindowsAuth)
     },
     "RequiresHttps": {
       "type": "computed",
@@ -296,7 +296,7 @@
     },
     "FrameworkIs1_1": {
       "type": "computed",
-      "value": "Framework == \"netcoreapp1.1\""
+      "value": "(Framework == \"netcoreapp1.1\")"
     },
     "copyrightYear": {
       "type": "generated",

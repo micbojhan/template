@@ -13,12 +13,12 @@ using Company.WebApplication1.Application.MVC.Controllers;
 using Company.WebApplication1.Application.MVC.Services;
 using Company.WebApplication1.Core.Entities;
 using Company.WebApplication1.Models.AccountViewModels;
-using ITM.MVC.TestExtensions;
+using Company.WebApplication1.Application.MVC.Tests.Helpers;
 using Xunit;
+using SignInResult = Microsoft.AspNetCore.Identity.SignInResult; //Resolves ambigious classes for SignInResult
 
 namespace Company.WebApplication1.Application.MVC.Tests.Controllers
 {
-    using SignInResult = Microsoft.AspNetCore.Identity.SignInResult; //Resolves ambigious classes for SignInResult
     public class AccountControllerTests
     {
         private readonly UserManager<ApplicationUser> _userManagerMock;

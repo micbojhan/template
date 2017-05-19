@@ -452,5 +452,341 @@ namespace Company.WebApplication1.Application.MVC.Tests.Controllers
             //Assert
             Assert.Equal(originalViewModel, viewModelReturnedToView);
         }
+
+        //Register
+        [Fact]
+        public void Register_CalledWithNoReturnUrl_ViewDataContainsNullInReturnUrl()
+        {
+            //Arrange
+
+            //Act
+            var result = _uut.Register() as ViewResult;
+
+            //Assert
+            Assert.Null(result.ViewData["ReturnUrl"]);
+        }
+
+        [Fact]
+        public void Register_CalledWithReturnUrl_ViewDataContainsSameReturnUrl()
+        {
+            //Arrange
+            var returnUrl = "123";
+
+            //Act
+            var result = _uut.Register(returnUrl) as ViewResult;
+
+            //Assert
+            Assert.Equal(returnUrl, result.ViewData["ReturnUrl"]);
+        }
+
+        [Fact]
+        public void Register_ReturnsDefaultView()
+        {
+            //Arrange
+
+            //Act
+            var result = _uut.Register(null) as ViewResult;
+
+            //Assert
+            Assert.Null(result.ViewName);
+        }
+
+        //Register(model, string)
+        [Fact]
+        public async void Register_CalledWithNoReturnUrlAndModelStateInvalid_ViewDataContainsNullInReturnUrl()
+        {
+            //Arrange
+            _uut.ModelState.AddModelError("Error","Error");
+
+            //Act
+            var result = await _uut.Register(default(RegisterViewModel)) as ViewResult;
+
+            //Assert
+            Assert.Null(result.ViewData["ReturnUrl"]);
+        }
+
+        [Fact]
+        public async void Register_CalledWithReturnUrlAndModelStateInvalid_ViewDataContainsSameReturnUrl()
+        {
+            //Arrange
+            var returnUrl = "123";
+            _uut.ModelState.AddModelError("Error","Error");
+
+            //Act
+            var result = await _uut.Register(null, returnUrl) as ViewResult;
+
+            //Assert
+            Assert.Equal(returnUrl, result.ViewData["ReturnUrl"]);
+        }
+
+        [Fact]
+        public async void Register_CalledWithNoReturnUrlAndModelStateValid_ViewDataContainsNullInReturnUrl()
+        {
+            //Arrange
+            var registerViewModel = new RegisterViewModel
+            {
+                Email = "",
+                Password = "",
+                ConfirmPassword = ""
+            };
+            _userManagerMock.CreateAsync(Arg.Any<ApplicationUser>(), Arg.Any<string>()).Returns(IdentityResult.Failed());
+
+            //Act
+            var result = await _uut.Register(registerViewModel) as ViewResult;
+
+            //Assert
+            Assert.Null(result.ViewData["ReturnUrl"]);
+        }
+
+        [Fact]
+        public async void Register_CalledWithReturnUrlAndModelStateValid_ViewDataContainsSameReturnUrl()
+        {
+            //Arrange
+            var returnUrl = "123";
+            var registerViewModel = new RegisterViewModel
+            {
+                Email = "",
+                Password = "",
+                ConfirmPassword = ""
+            };
+            _userManagerMock.CreateAsync(Arg.Any<ApplicationUser>(), Arg.Any<string>()).Returns(IdentityResult.Failed());
+
+            //Act
+            var result = await _uut.Register(registerViewModel, returnUrl) as ViewResult;
+
+            //Assert
+            Assert.Equal(returnUrl, result.ViewData["ReturnUrl"]);
+        }
+
+        [Fact]
+        public async void Register_ModelStateNotValid_DefaultViewReturned()
+        {
+            //Arrange
+            _uut.ModelState.AddModelError("Error","Error");
+
+            //Act
+            var result = await _uut.Register(default(RegisterViewModel)) as ViewResult;
+
+            //Assert
+            Assert.Null(result.ViewName);
+        }
+
+        [Fact]
+        public async void Register_ModelStateNotValid_ViewWithSameModelReturned()
+        {
+            //Arrange
+            _uut.ModelState.AddModelError("Error","Error");
+            var registerViewModel = new RegisterViewModel
+            {
+                Email = "",
+                Password = "",
+                ConfirmPassword = ""
+            };
+
+            //Act
+            var result = await _uut.Register(registerViewModel) as ViewResult;
+            var originalViewModel = JsonConvert.SerializeObject(registerViewModel);
+            var viewModelReturnedToView = JsonConvert.SerializeObject(result.Model);
+
+            //Assert
+            Assert.Equal(originalViewModel, viewModelReturnedToView);
+        }
+
+        [Fact]
+        public async void Register_UserManagerCreateAsyncCalled()
+        {
+            //Arrange
+            var registerViewModel = new RegisterViewModel
+            {
+                Email = "",
+                Password = "",
+                ConfirmPassword = ""
+            };
+            _userManagerMock.CreateAsync(Arg.Any<ApplicationUser>(), Arg.Any<string>()).Returns(IdentityResult.Failed());
+
+            //Act
+            var result = await _uut.Register(registerViewModel) as ViewResult;
+
+            //Assert
+            await _userManagerMock.Received().CreateAsync(Arg.Any<ApplicationUser>(),Arg.Any<string>());
+        }
+
+        [Fact]
+        public async void Register_ModelStateNotValid_UserManagerCreateAsyncNotCalled()
+        {
+            //Arrange
+            _uut.ModelState.AddModelError("Error","Error");
+
+            //Act
+            var result = await _uut.Register(default(RegisterViewModel)) as ViewResult;
+
+            //Assert
+            await _userManagerMock.DidNotReceive().CreateAsync(Arg.Any<ApplicationUser>(),Arg.Any<string>());
+        }
+
+        [Fact]
+        public async void Register_UserManagerCreateAsyncFails_ModelErrorsAdded()
+        {
+            //Arrange
+            var registerViewModel = new RegisterViewModel
+            {
+                Email = "",
+                Password = "",
+                ConfirmPassword = ""
+            };
+            _userManagerMock.CreateAsync(Arg.Any<ApplicationUser>(), Arg.Any<string>())
+                .Returns(IdentityResult.Failed(new IdentityError{Description = "CreateAsyncErrorForTest"}));
+
+            //Act
+            var result = await _uut.Register(registerViewModel) as ViewResult;
+
+            //Assert
+            Assert.Equal("CreateAsyncErrorForTest", result.ViewData.ModelState.Root.Errors.FirstOrDefault().ErrorMessage);
+        }
+
+        [Fact]
+        public async void Register_UserManagerCreateAsyncFails_DefaultViewReturned()
+        {
+            //Arrange
+            var registerViewModel = new RegisterViewModel
+            {
+                Email = "",
+                Password = "",
+                ConfirmPassword = ""
+            };
+            _userManagerMock.CreateAsync(Arg.Any<ApplicationUser>(), Arg.Any<string>())
+                .Returns(IdentityResult.Failed());
+
+            //Act
+            var result = await _uut.Register(registerViewModel) as ViewResult;
+
+            //Assert
+            Assert.Null(result.ViewName);
+        }
+
+        [Fact]
+        public async void Register_UserManagerCreateAsyncFails_ViewWithSameModelReturned()
+        {
+            //Arrange
+            var registerViewModel = new RegisterViewModel
+            {
+                Email = "",
+                Password = "",
+                ConfirmPassword = ""
+            };
+            _userManagerMock.CreateAsync(Arg.Any<ApplicationUser>(), Arg.Any<string>())
+                .Returns(IdentityResult.Failed());
+
+            //Act
+            var result = await _uut.Register(registerViewModel) as ViewResult;
+            var originalViewModel = JsonConvert.SerializeObject(registerViewModel);
+            var viewModelReturnedToView = JsonConvert.SerializeObject(result.Model);
+
+            //Assert
+            Assert.Equal(originalViewModel, viewModelReturnedToView);
+        }
+
+        [Fact]
+        public async void Register_UserManagerCreateAsyncFails_SignInManagerSignInAsyncNotCalled()
+        {
+            //Arrange
+            var registerViewModel = new RegisterViewModel
+            {
+                Email = "",
+                Password = "",
+                ConfirmPassword = ""
+            };
+            _userManagerMock.CreateAsync(Arg.Any<ApplicationUser>(), Arg.Any<string>())
+                .Returns(IdentityResult.Failed());
+
+            //Act
+            var result = await _uut.Register(registerViewModel) as ViewResult;
+
+            //Assert
+            await _signInManagerMock.DidNotReceive().SignInAsync(Arg.Any<ApplicationUser>(), Arg.Any<bool>());
+        }
+
+        [Fact]
+        public async void Register_UserManagerCreateAsyncSuccess_SignInManagerSignInAsyncCalled()
+        {
+            //Arrange
+            var registerViewModel = new RegisterViewModel
+            {
+                Email = "",
+                Password = "",
+                ConfirmPassword = ""
+            };
+            _userManagerMock.CreateAsync(Arg.Any<ApplicationUser>(), Arg.Any<string>())
+                .Returns(IdentityResult.Success);
+
+            //Act
+            var result = await _uut.Register(registerViewModel) as RedirectToActionResult;
+
+            //Assert
+            await _signInManagerMock.Received().SignInAsync(Arg.Any<ApplicationUser>(), Arg.Any<bool>());
+        }
+
+        [Fact]
+        public async void Register_UserManagerCreateAsyncSuccessReturnUrlIsLocal_RedirectResultReturned()
+        {
+            //Arrange
+            var registerViewModel = new RegisterViewModel
+            {
+                Email = "",
+                Password = "",
+                ConfirmPassword = ""
+            };
+            _userManagerMock.CreateAsync(Arg.Any<ApplicationUser>(), Arg.Any<string>())
+                .Returns(IdentityResult.Success);
+            _uut.Url.IsLocalUrl(Arg.Any<string>()).Returns(true);
+
+            //Act
+            var result = await _uut.Register(registerViewModel, "123");
+
+            //Assert
+            Assert.IsType<RedirectResult>(result);
+        }
+
+        [Fact]
+        public async void Register_UserManagerCreateAsyncSuccessReturnUrlNotLocal_ReturnsRedirectToHomeController()
+        {
+            //Arrange
+            var registerViewModel = new RegisterViewModel
+            {
+                Email = "",
+                Password = "",
+                ConfirmPassword = ""
+            };
+            _userManagerMock.CreateAsync(Arg.Any<ApplicationUser>(), Arg.Any<string>())
+                .Returns(IdentityResult.Success);
+            _uut.Url.IsLocalUrl(Arg.Any<string>()).Returns(false);
+
+            //Act
+            var result = await _uut.Register(registerViewModel, "123") as RedirectToActionResult;
+
+            //Assert
+            Assert.Equal("Home", result.ControllerName);
+        }
+
+        [Fact]
+        public async void Register_UserManagerCreateAsyncSuccessReturnUrlNotLocal_ReturnsRedirectToActionIndex()
+        {
+            //Arrange
+            var registerViewModel = new RegisterViewModel
+            {
+                Email = "",
+                Password = "",
+                ConfirmPassword = ""
+            };
+            _userManagerMock.CreateAsync(Arg.Any<ApplicationUser>(), Arg.Any<string>())
+                .Returns(IdentityResult.Success);
+            _uut.Url.IsLocalUrl(Arg.Any<string>()).Returns(false);
+
+            //Act
+            var result = await _uut.Register(registerViewModel, "123") as RedirectToActionResult;
+
+            //Assert
+            Assert.Equal("Index", result.ActionName);
+        }
     }
 }

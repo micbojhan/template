@@ -55,6 +55,9 @@
     },
     "UserSecretsId": {
       "isHidden": true
+    },
+    "SeedMethod": {
+      "longName": "seed-method"
     }
   },
   "UsageExamples": [

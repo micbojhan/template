@@ -1,6 +1,10 @@
 ﻿using System.Linq;
 using Company.WebApplication1.Infrastructure.DataAccess;
+#if (SeedMethod == "OOSeed")
 using Company.WebApplication1.Infrastructure.DataAccess.Data.Seed;
+#elseif (SeedMethod == "CSVSeed")
+using Company.WebApplication1.Infrastructure.DataAccess.CsvSeeder;
+#endif
 using Microsoft.EntityFrameworkCore;
 using Company.WebApplication1.Application.MVC.Services;
 using AutoMapper;
@@ -207,8 +211,16 @@ namespace Company.WebApplication1.Application.MVC
 
             using(var serviceScope = app.ApplicationServices.GetRequiredService<IServiceScopeFactory>().CreateScope())
             {
+#if (SeedMethod == "OOSeed")
                 var context = serviceScope.ServiceProvider.GetService<ApplicationDbContext>();
                 context.MigrateAndSeedData();
+#elseif (SeedMethod == "CSVSeed")
+                context.Database.Migrate();
+
+                if (context.Users.Any() == false)
+                    context.Users.SeedFromFile("SeedData/contacts.csv");
+                context.SaveChanges();
+#endif
             }
         }
     }

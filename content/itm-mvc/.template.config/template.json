@@ -100,6 +100,18 @@
           "exclude": [
             "src/Company.WebApplication1.Application.MVC/Views/Account/SignedOut.cshtml"
           ]
+        },
+        {
+          "condition": "(SeedMethod != \"OOSeed\")",
+          "exclude": [
+            "src/Company.WebApplication1.Infrastructure.DataAccess/Data/Seed/**"
+          ]
+        },
+        {
+          "condition": "(SeedMethod != \"CSVSeed\")",
+          "exclude": [
+            "src/Company.WebApplication1.Infrastructure.DataAccess/CsvSeeder/**"
+          ]
         }
       ]
     }
@@ -332,6 +344,22 @@
       ],
       "defaultValue": "dotnetcli",
       "description": "The editor this template is generated for."
+    },
+    "SeedMethod": {
+      "type": "parameter",
+      "datatype": "choice",
+      "choices": [
+        {
+          "choice": "OOSeed",
+          "description": "Object Orienated seed method"
+        },
+        {
+          "choice": "CSVSeed",
+          "description": "seed from a csv file"
+        }
+      ],
+      "description": "Method for seeding the database with data.",
+      "defaultValue": "OOSeed"
     }
   },
   "primaryOutputs": [

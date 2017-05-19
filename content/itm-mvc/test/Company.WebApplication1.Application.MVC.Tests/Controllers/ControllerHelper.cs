@@ -3,7 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.ViewFeatures;
 using NSubstitute;
 
-namespace test3.Application.MVC.Tests.Controllers.TestExtensions
+namespace ITM.MVC.TestExtensions
 {
     public static class ControllerHelper
     {

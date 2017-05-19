@@ -52,7 +52,8 @@
             "src/Company.WebApplication1.Application.MVC/Controllers/AccountController.cs",
             "src/Company.WebApplication1.Application.MVC/Views/Account/**",
             "src/Company.WebApplication1.Application.MVC/Views/Manage/**",
-            "src/Company.WebApplication1.Application.MVC/Views/Shared/_LoginPartial.cshtml"
+            "src/Company.WebApplication1.Application.MVC/Views/Shared/_LoginPartial.cshtml",
+            "test/Company.WebApplication1.Application.MVC.Tests/Controllers/AccountControllerTests.cs"
           ]
         },
         {

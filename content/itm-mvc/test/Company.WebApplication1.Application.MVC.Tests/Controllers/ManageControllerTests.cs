@@ -19,7 +19,7 @@ using Microsoft.AspNetCore.Mvc.ViewFeatures;
 using Newtonsoft.Json;
 using Microsoft.AspNetCore.Http.Authentication;
 using System.Linq;
-using test3.Application.MVC.Tests.Controllers.TestExtensions;
+using ITM.MVC.TestExtensions;
 
 namespace Company.WebApplication1.Application.MVC.Tests.Controllers
 {

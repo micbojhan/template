@@ -3,7 +3,6 @@
     "TargetFrameworkOverride": {
       "isHidden": "true",
       "longName": "target-framework-override",
-      "shortName": ""
     },
     "IncludeApplicationInsights": {
       "isHidden": "true"
@@ -20,16 +19,13 @@
       "shortName": "r"
     },
     "ClientId": {
-      "longName": "client-id",
-      "shortName": ""
+      "longName": "client-id"
     },
     "Domain": {
-      "longName": "domain",
-      "shortName": ""
+      "longName": "domain"
     },
     "TenantId": {
-      "longName": "tenant-id",
-      "shortName": ""
+      "longName": "tenant-id"
     },
     "Framework": {
       "longName": "framework"
@@ -44,7 +40,6 @@
     },
     "skipRestore": {
       "longName": "no-restore",
-      "shortName": ""
     },
     "HttpsPort": {
       "isHidden": true
@@ -60,6 +55,9 @@
     },
     "UserSecretsId": {
       "isHidden": true
+    },
+    "SeedMethod": {
+      "longName": "seed-method"
     }
   },
   "UsageExamples": [

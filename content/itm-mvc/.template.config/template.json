@@ -101,6 +101,18 @@
           "exclude": [
             "src/Company.WebApplication1.Application.MVC/Views/Account/SignedOut.cshtml"
           ]
+        },
+        {
+          "condition": "(SeedMethod != \"OOSeed\")",
+          "exclude": [
+            "src/Company.WebApplication1.Infrastructure.DataAccess/Data/Seed/**"
+          ]
+        },
+        {
+          "condition": "(SeedMethod != \"CSVSeed\")",
+          "exclude": [
+            "src/Company.WebApplication1.Infrastructure.DataAccess/CsvSeeder/**"
+          ]
         }
       ]
     }
@@ -254,7 +266,7 @@
     },
     "NoAuth": {
       "type": "computed",
-      "value": "(!(IndividualAuth || MultiOrgAuth || SingleOrgAuth || WindowsAuth))"
+      "value": "(false)" // !(IndividualAuth || MultiOrgAuth || SingleOrgAuth || WindowsAuth)
     },
     "RequiresHttps": {
       "type": "computed",
@@ -297,7 +309,7 @@
     },
     "FrameworkIs1_1": {
       "type": "computed",
-      "value": "Framework == \"netcoreapp1.1\""
+      "value": "(Framework == \"netcoreapp1.1\")"
     },
     "copyrightYear": {
       "type": "generated",
@@ -333,6 +345,22 @@
       ],
       "defaultValue": "dotnetcli",
       "description": "The editor this template is generated for."
+    },
+    "SeedMethod": {
+      "type": "parameter",
+      "datatype": "choice",
+      "choices": [
+        {
+          "choice": "OOSeed",
+          "description": "Object Orienated seed method"
+        },
+        {
+          "choice": "CSVSeed",
+          "description": "seed from a csv file"
+        }
+      ],
+      "description": "Method for seeding the database with data.",
+      "defaultValue": "OOSeed"
     }
   },
   "primaryOutputs": [

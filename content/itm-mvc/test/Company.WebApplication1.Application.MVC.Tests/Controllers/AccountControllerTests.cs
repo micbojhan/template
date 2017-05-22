@@ -16,6 +16,8 @@ using Company.WebApplication1.Models.AccountViewModels;
 using Company.WebApplication1.Application.MVC.Tests.Helpers;
 using Xunit;
 using SignInResult = Microsoft.AspNetCore.Identity.SignInResult; //Resolves ambigious classes for SignInResult
+using Microsoft.AspNetCore.Http.Authentication;
+using System.Security.Claims;
 
 namespace Company.WebApplication1.Application.MVC.Tests.Controllers
 {
@@ -24,6 +26,8 @@ namespace Company.WebApplication1.Application.MVC.Tests.Controllers
         private readonly UserManager<ApplicationUser> _userManagerMock;
         private readonly AccountController _uut;
         private readonly SignInManager<ApplicationUser> _signInManagerMock;
+        private readonly IEmailSender _emailMock;
+        private readonly ISmsSender _smsMock;
 
         public AccountControllerTests()
         {
@@ -65,13 +69,13 @@ namespace Company.WebApplication1.Application.MVC.Tests.Controllers
             var identityOptionsMock = new IdentityCookieOptions();
             cookieOptionsMock.Value.Returns(identityOptionsMock);
 
-            var emailMock = Substitute.For<IEmailSender>();
-            var smsMock = Substitute.For<ISmsSender>();
+            _emailMock = Substitute.For<IEmailSender>();
+            _smsMock = Substitute.For<ISmsSender>();
             var loggerFactoryMock = Substitute.For<ILoggerFactory>();
             var loggerMockCtrl = Substitute.For<ILogger>();
             loggerFactoryMock.CreateLogger("").Returns(loggerMockCtrl);
 
-            _uut = new AccountController(_userManagerMock, _signInManagerMock, cookieOptionsMock, emailMock, smsMock, loggerFactoryMock).WithDefaultMocks();
+            _uut = new AccountController(_userManagerMock, _signInManagerMock, cookieOptionsMock, _emailMock, _smsMock, loggerFactoryMock).WithDefaultMocks();
         }
 
         //Login(string)
@@ -278,7 +282,7 @@ namespace Company.WebApplication1.Application.MVC.Tests.Controllers
         }
 
         [Fact]
-        public async void Login_SignInManagerPasswordSignInSuccessAndReturnUrlNorLocal_ReturnsRedirectToIndex()
+        public async void Login_SignInManagerPasswordSignInSuccessAndReturnUrlNotLocal_ReturnsRedirectToIndex()
         {
             //Arrange
             var loginViewModel = new LoginViewModel
@@ -787,6 +791,1277 @@ namespace Company.WebApplication1.Application.MVC.Tests.Controllers
 
             //Assert
             Assert.Equal("Index", result.ActionName);
+        }
+
+        //Logout
+        [Fact]
+        public async void Logout_SignInManagerSignOutCalled()
+        {
+            //Arrange
+
+            //Act
+            var result = await _uut.Logout() as RedirectToActionResult;
+
+            //Assert
+            await _signInManagerMock.Received().SignOutAsync();
+        }
+
+        [Fact]
+        public async void Logout_ReturnsRedirectToHomeController()
+        {
+            //Arrange
+
+            //Act
+            var result = await _uut.Logout() as RedirectToActionResult;
+
+            //Assert
+            Assert.Equal("Home", result.ControllerName);
+        }
+
+        [Fact]
+        public async void Logout_ReturnsRedirectToActionIndex()
+        {
+            //Arrange
+
+            //Act
+            var result = await _uut.Logout() as RedirectToActionResult;
+
+            //Assert
+            Assert.Equal("Index", result.ActionName);
+        }
+
+        //ExternalLogin
+        [Fact]
+        public void ExternalLogin_SignInManagerConfigureExternalAuthenticationPropertiesCalled()
+        {
+            //Arrange
+
+            //Act
+            var result = _uut.ExternalLogin(null);
+
+            //Assert
+            _signInManagerMock.Received().ConfigureExternalAuthenticationProperties(Arg.Any<string>(),Arg.Any<string>());
+        }
+
+        [Fact]
+        public void ExternalLogin_ChallengeResultReturned()
+        {
+            //Arrange
+
+            //Act
+            var result = _uut.ExternalLogin(null);
+
+            //Assert
+            Assert.IsType<ChallengeResult>(result);
+        }
+
+        //ExternalLoginCallback
+        [Fact]
+        public async void ExternalLoginCallback_RemoteError_ModelErrorAdded()
+        {
+            //Arrange
+
+            //Act
+            var result = await _uut.ExternalLoginCallback(remoteError: "error") as ViewResult;
+
+            //Assert
+            Assert.Equal("Error from external provider: error",result.ViewData.ModelState.Root.Errors.FirstOrDefault().ErrorMessage);
+        }
+
+        [Fact]
+        public async void ExternalLoginCallback_RemoteError_ReturnsLoginView()
+        {
+            //Arrange
+
+            //Act
+            var result = await _uut.ExternalLoginCallback(remoteError: "error") as ViewResult;
+
+            //Assert
+            Assert.Equal("Login",result.ViewName);
+        }
+
+        [Fact]
+        public async void ExternalLoginCallback_NoRemoteError_SignInManagerGetExternalLoginInfoAsyncCalled()
+        {
+            //Arrange
+
+            //Act
+            var result = await _uut.ExternalLoginCallback() as ViewResult;
+
+            //Assert
+            await _signInManagerMock.Received().GetExternalLoginInfoAsync();
+        }
+
+        [Fact]
+        public async void ExternalLoginCallback_NoRemoteErrorSignInManagerGetExternalLoginInfoAsyncNull_ReturnsRedirectToActionLogin()
+        {
+            //Arrange
+            _signInManagerMock.GetExternalLoginInfoAsync().Returns(default(ExternalLoginInfo));
+
+            //Act
+            var result = await _uut.ExternalLoginCallback() as RedirectToActionResult;
+
+            //Assert
+            Assert.Equal("Login", result.ActionName);
+        }
+
+        [Fact]
+        public async void ExternalLoginCallback_NoRemoteErrorAndReturnUrlIsLocalAndSignInManagerExternalLoginSignInAsyncSuccess_ReturnsRedirectResult()
+        {
+            //Arrange
+            var validPrincipal = new ClaimsPrincipal(new[]
+                {
+                    new ClaimsIdentity(
+                        new[] {new Claim(ClaimTypes.NameIdentifier, "MyUserId")})
+                });
+            _signInManagerMock.GetExternalLoginInfoAsync().Returns(new ExternalLoginInfo(validPrincipal, "", "", ""));
+            _signInManagerMock.ExternalLoginSignInAsync(Arg.Any<string>(), Arg.Any<string>(), Arg.Any<bool>()).Returns(SignInResult.Success);
+            _uut.Url.IsLocalUrl(Arg.Any<string>()).Returns(true);
+
+            //Act
+            var result = await _uut.ExternalLoginCallback("123");
+
+            //Assert
+            Assert.IsType<RedirectResult>(result);
+        }
+
+        [Fact]
+        public async void ExternalLoginCallback_NoRemoteErrorAndReturnUrlNotLocalAndSignInManagerExternalLoginSignInAsyncSuccess_ReturnsRedirectToHomeController()
+        {
+            //Arrange
+            var validPrincipal = new ClaimsPrincipal(new[]
+                {
+                    new ClaimsIdentity(
+                        new[] {new Claim(ClaimTypes.NameIdentifier, "MyUserId")})
+                });
+            _signInManagerMock.GetExternalLoginInfoAsync().Returns(new ExternalLoginInfo(validPrincipal, "", "", ""));
+            _signInManagerMock.ExternalLoginSignInAsync(Arg.Any<string>(), Arg.Any<string>(), Arg.Any<bool>()).Returns(SignInResult.Success);
+            _uut.Url.IsLocalUrl(Arg.Any<string>()).Returns(false);
+
+            //Act
+            var result = await _uut.ExternalLoginCallback("123") as RedirectToActionResult;
+
+            //Assert
+            Assert.Equal("Home", result.ControllerName);
+        }
+
+        [Fact]
+        public async void ExternalLoginCallback_NoRemoteErrorAndReturnUrlNotLocalAndSignInManagerExternalLoginSignInAsyncSuccess_ReturnsRedirectToActionIndex()
+        {
+            //Arrange
+            var validPrincipal = new ClaimsPrincipal(new[]
+                {
+                    new ClaimsIdentity(
+                        new[] {new Claim(ClaimTypes.NameIdentifier, "MyUserId")})
+                });
+            _signInManagerMock.GetExternalLoginInfoAsync().Returns(new ExternalLoginInfo(validPrincipal, "", "", ""));
+            _signInManagerMock.ExternalLoginSignInAsync(Arg.Any<string>(), Arg.Any<string>(), Arg.Any<bool>()).Returns(SignInResult.Success);
+            _uut.Url.IsLocalUrl(Arg.Any<string>()).Returns(false);
+
+            //Act
+            var result = await _uut.ExternalLoginCallback("123") as RedirectToActionResult;
+
+            //Assert
+            Assert.Equal("Index", result.ActionName);
+        }
+
+        [Fact]
+        public async void ExternalLoginCallback_NoRemoteErrorAndSignInManagerExternalLoginSignInAsyncRequiresTwoFactor_ReturnsRedirectToActionSendCode()
+        {
+            //Arrange
+            var validPrincipal = new ClaimsPrincipal(new[]
+                {
+                    new ClaimsIdentity(
+                        new[] {new Claim(ClaimTypes.NameIdentifier, "MyUserId")})
+                });
+            _signInManagerMock.GetExternalLoginInfoAsync().Returns(new ExternalLoginInfo(validPrincipal, "", "", ""));
+            _signInManagerMock.ExternalLoginSignInAsync(Arg.Any<string>(), Arg.Any<string>(), Arg.Any<bool>()).Returns(SignInResult.TwoFactorRequired);
+
+            //Act
+            var result = await _uut.ExternalLoginCallback() as RedirectToActionResult;
+
+            //Assert
+            Assert.Equal("SendCode", result.ActionName);
+        }
+
+        [Fact]
+        public async void ExternalLoginCallback_NoRemoteErrorAndSignInManagerExternalLoginSignInAsyncRequiresTwoFactor_ReturnsRedirectToActionWithCorrectRouteParams()
+        {
+            //Arrange
+            var validPrincipal = new ClaimsPrincipal(new[]
+                {
+                    new ClaimsIdentity(
+                        new[] {new Claim(ClaimTypes.NameIdentifier, "MyUserId")})
+                });
+            _signInManagerMock.GetExternalLoginInfoAsync().Returns(new ExternalLoginInfo(validPrincipal, "", "", ""));
+            _signInManagerMock.ExternalLoginSignInAsync(Arg.Any<string>(), Arg.Any<string>(), Arg.Any<bool>()).Returns(SignInResult.TwoFactorRequired);
+
+            //Act
+            var result = await _uut.ExternalLoginCallback("123") as RedirectToActionResult;
+
+            //Assert
+            Assert.Equal("123", result.RouteValues["ReturnUrl"]);
+        }
+
+        [Fact]
+        public async void ExternalLoginCallback_NoRemoteErrorAndSignInManagerExternalLoginSignInAsyncLockout_ReturnsLockoutView()
+        {
+            //Arrange
+            var validPrincipal = new ClaimsPrincipal(new[]
+                {
+                    new ClaimsIdentity(
+                        new[] {new Claim(ClaimTypes.NameIdentifier, "MyUserId")})
+                });
+            _signInManagerMock.GetExternalLoginInfoAsync().Returns(new ExternalLoginInfo(validPrincipal, "", "", ""));
+            _signInManagerMock.ExternalLoginSignInAsync(Arg.Any<string>(), Arg.Any<string>(), Arg.Any<bool>()).Returns(SignInResult.LockedOut);
+
+            //Act
+            var result = await _uut.ExternalLoginCallback() as ViewResult;
+
+            //Assert
+            Assert.Equal("Lockout", result.ViewName);
+        }
+
+        [Fact]
+        public async void ExternalLoginCallback_NoRemoteErrorAndSignInManagerExternalLoginSignInAsyncFailed_ReturnsExternalLoginConfirmationView()
+        {
+            //Arrange
+            var validPrincipal = new ClaimsPrincipal(new[]
+                {
+                    new ClaimsIdentity(
+                        new[] {new Claim(ClaimTypes.NameIdentifier, "MyUserId")})
+                });
+            _signInManagerMock.GetExternalLoginInfoAsync().Returns(new ExternalLoginInfo(validPrincipal, "", "", ""));
+            _signInManagerMock.ExternalLoginSignInAsync(Arg.Any<string>(), Arg.Any<string>(), Arg.Any<bool>()).Returns(SignInResult.Failed);
+
+            //Act
+            var result = await _uut.ExternalLoginCallback() as ViewResult;
+
+            //Assert
+            Assert.Equal("ExternalLoginConfirmation", result.ViewName);
+        }
+
+        //ExternalLoginConfirmation
+        [Fact]
+        public async void ExternalLoginConfirmation_ModelStateNotValid_ReturnsDefaultView()
+        {
+            //Arrange
+            _uut.ModelState.AddModelError("Error", "Error");
+
+            //Act
+            var result = await _uut.ExternalLoginConfirmation(null) as ViewResult;
+
+            //Assert
+            Assert.Null(result.ViewName);
+        }
+
+        [Fact]
+        public async void ExternalLoginConfirmation_ModelStateNotValid_ReturnsViewWithSameModel()
+        {
+            //Arrange
+            var externalLoginConfirmationViewModel = new ExternalLoginConfirmationViewModel
+            {
+                Email = "123"
+            };
+            _uut.ModelState.AddModelError("Error", "Error");
+
+            //Act
+            var result = await _uut.ExternalLoginConfirmation(externalLoginConfirmationViewModel) as ViewResult;
+            var originalViewModel = JsonConvert.SerializeObject(externalLoginConfirmationViewModel);
+            var viewModelReturnedToView = JsonConvert.SerializeObject(result.Model);
+
+            //Assert
+            Assert.Equal(originalViewModel, viewModelReturnedToView);
+        }
+
+        [Fact]
+        public async void ExternalLoginConfirmation_UserManagerCreateAsyncError_ModelErrorsAdded()
+        {
+            //Arrange
+            var externalLoginConfirmationViewModel = new ExternalLoginConfirmationViewModel
+            {
+                Email = ""
+            };
+            var validPrincipal = new ClaimsPrincipal(new[]
+                {
+                    new ClaimsIdentity(
+                        new[] {new Claim(ClaimTypes.NameIdentifier, "MyUserId")})
+                });
+            _signInManagerMock.GetExternalLoginInfoAsync().Returns(new ExternalLoginInfo(validPrincipal, "", "", ""));
+            _userManagerMock.CreateAsync(Arg.Any<ApplicationUser>())
+                .Returns(IdentityResult.Failed(new IdentityError{Description = "CreateAsyncErrorForTest"}));
+
+
+            //Act
+            var result = await _uut.ExternalLoginConfirmation(externalLoginConfirmationViewModel) as ViewResult;
+
+            //Assert
+            Assert.Equal("CreateAsyncErrorForTest", result.ViewData.ModelState.Root.Errors.FirstOrDefault().ErrorMessage);
+        }
+
+        [Fact]
+        public async void ExternalLoginConfirmation_UserManagerCreateAsyncError_DefaultViewReturned()
+        {
+            //Arrange
+            var externalLoginConfirmationViewModel = new ExternalLoginConfirmationViewModel
+            {
+                Email = ""
+            };
+            var validPrincipal = new ClaimsPrincipal(new[]
+                {
+                    new ClaimsIdentity(
+                        new[] {new Claim(ClaimTypes.NameIdentifier, "MyUserId")})
+                });
+            _signInManagerMock.GetExternalLoginInfoAsync().Returns(new ExternalLoginInfo(validPrincipal, "", "", ""));
+            _userManagerMock.CreateAsync(Arg.Any<ApplicationUser>())
+                .Returns(IdentityResult.Failed());
+
+
+            //Act
+            var result = await _uut.ExternalLoginConfirmation(externalLoginConfirmationViewModel) as ViewResult;
+
+            //Assert
+            Assert.Null(result.ViewName);
+        }
+
+        [Fact]
+        public async void ExternalLoginConfirmation_UserManagerCreateAsyncError_SignInManagerSignInNotCalled()
+        {
+            //Arrange
+            var externalLoginConfirmationViewModel = new ExternalLoginConfirmationViewModel
+            {
+                Email = ""
+            };
+            var validPrincipal = new ClaimsPrincipal(new[]
+                {
+                    new ClaimsIdentity(
+                        new[] {new Claim(ClaimTypes.NameIdentifier, "MyUserId")})
+                });
+            _signInManagerMock.GetExternalLoginInfoAsync().Returns(new ExternalLoginInfo(validPrincipal, "", "", ""));
+            _userManagerMock.CreateAsync(Arg.Any<ApplicationUser>())
+                .Returns(IdentityResult.Failed());
+
+
+            //Act
+            var result = await _uut.ExternalLoginConfirmation(externalLoginConfirmationViewModel) as ViewResult;
+
+            //Assert
+            await _signInManagerMock.DidNotReceive().SignInAsync(Arg.Any<ApplicationUser>(),Arg.Any<bool>());
+        }
+
+        [Fact]
+        public async void ExternalLoginConfirmation_UserManagerAddLoginError_ModelErrorsAdded()
+        {
+            //Arrange
+            var externalLoginConfirmationViewModel = new ExternalLoginConfirmationViewModel
+            {
+                Email = ""
+            };
+            var validPrincipal = new ClaimsPrincipal(new[]
+                {
+                    new ClaimsIdentity(
+                        new[] {new Claim(ClaimTypes.NameIdentifier, "MyUserId")})
+                });
+            _signInManagerMock.GetExternalLoginInfoAsync().Returns(new ExternalLoginInfo(validPrincipal, "", "", ""));
+            _userManagerMock.CreateAsync(Arg.Any<ApplicationUser>()).Returns(IdentityResult.Success);
+            _userManagerMock.AddLoginAsync(Arg.Any<ApplicationUser>(),Arg.Any<UserLoginInfo>())
+                .Returns(IdentityResult.Failed(new IdentityError{Description = "AddLoginAsyncErrorForTest"}));
+
+
+            //Act
+            var result = await _uut.ExternalLoginConfirmation(externalLoginConfirmationViewModel) as ViewResult;
+
+            //Assert
+            Assert.Equal("AddLoginAsyncErrorForTest", result.ViewData.ModelState.Root.Errors.FirstOrDefault().ErrorMessage);
+        }
+
+        [Fact]
+        public async void ExternalLoginConfirmation_UserManagerAddLoginError_DefaultViewReturned()
+        {
+            //Arrange
+            var externalLoginConfirmationViewModel = new ExternalLoginConfirmationViewModel
+            {
+                Email = ""
+            };
+            var validPrincipal = new ClaimsPrincipal(new[]
+                {
+                    new ClaimsIdentity(
+                        new[] {new Claim(ClaimTypes.NameIdentifier, "MyUserId")})
+                });
+            _signInManagerMock.GetExternalLoginInfoAsync().Returns(new ExternalLoginInfo(validPrincipal, "", "", ""));
+            _userManagerMock.CreateAsync(Arg.Any<ApplicationUser>()).Returns(IdentityResult.Success);
+            _userManagerMock.AddLoginAsync(Arg.Any<ApplicationUser>(),Arg.Any<UserLoginInfo>())
+                .Returns(IdentityResult.Failed());
+
+
+            //Act
+            var result = await _uut.ExternalLoginConfirmation(externalLoginConfirmationViewModel) as ViewResult;
+
+            //Assert
+            Assert.Null(result.ViewName);
+        }
+
+        [Fact]
+        public async void ExternalLoginConfirmation_UserManagerAddLoginError_SignInManagerSignInNotCalled()
+        {
+            //Arrange
+            var externalLoginConfirmationViewModel = new ExternalLoginConfirmationViewModel
+            {
+                Email = ""
+            };
+            var validPrincipal = new ClaimsPrincipal(new[]
+                {
+                    new ClaimsIdentity(
+                        new[] {new Claim(ClaimTypes.NameIdentifier, "MyUserId")})
+                });
+            _signInManagerMock.GetExternalLoginInfoAsync().Returns(new ExternalLoginInfo(validPrincipal, "", "", ""));
+            _userManagerMock.CreateAsync(Arg.Any<ApplicationUser>()).Returns(IdentityResult.Success);
+            _userManagerMock.AddLoginAsync(Arg.Any<ApplicationUser>(),Arg.Any<UserLoginInfo>())
+                .Returns(IdentityResult.Failed());
+
+
+            //Act
+            var result = await _uut.ExternalLoginConfirmation(externalLoginConfirmationViewModel) as ViewResult;
+
+            //Assert
+            await _signInManagerMock.DidNotReceive().SignInAsync(Arg.Any<ApplicationUser>(),Arg.Any<bool>());
+        }
+
+        [Fact]
+        public async void ExternalLoginConfirmation_NoErrors_SignInManagerSignInCalled()
+        {
+            //Arrange
+            var externalLoginConfirmationViewModel = new ExternalLoginConfirmationViewModel
+            {
+                Email = ""
+            };
+            var validPrincipal = new ClaimsPrincipal(new[]
+                {
+                    new ClaimsIdentity(
+                        new[] {new Claim(ClaimTypes.NameIdentifier, "MyUserId")})
+                });
+            _signInManagerMock.GetExternalLoginInfoAsync().Returns(new ExternalLoginInfo(validPrincipal, "", "", ""));
+            _userManagerMock.CreateAsync(Arg.Any<ApplicationUser>()).Returns(IdentityResult.Success);
+            _userManagerMock.AddLoginAsync(Arg.Any<ApplicationUser>(),Arg.Any<UserLoginInfo>())
+                .Returns(IdentityResult.Success);
+
+
+            //Act
+            var result = await _uut.ExternalLoginConfirmation(externalLoginConfirmationViewModel) as ViewResult;
+
+            //Assert
+            await _signInManagerMock.Received().SignInAsync(Arg.Any<ApplicationUser>(),Arg.Any<bool>());
+        }
+
+        [Fact]
+        public async void ExternalLoginConfirmation_NoErrorsReturnUrlIsLocal_ReturnsRedirectResult()
+        {
+            //Arrange
+            var externalLoginConfirmationViewModel = new ExternalLoginConfirmationViewModel
+            {
+                Email = ""
+            };
+            var validPrincipal = new ClaimsPrincipal(new[]
+                {
+                    new ClaimsIdentity(
+                        new[] {new Claim(ClaimTypes.NameIdentifier, "MyUserId")})
+                });
+            _signInManagerMock.GetExternalLoginInfoAsync().Returns(new ExternalLoginInfo(validPrincipal, "", "", ""));
+            _userManagerMock.CreateAsync(Arg.Any<ApplicationUser>()).Returns(IdentityResult.Success);
+            _userManagerMock.AddLoginAsync(Arg.Any<ApplicationUser>(),Arg.Any<UserLoginInfo>())
+                .Returns(IdentityResult.Success);
+            _uut.Url.IsLocalUrl(Arg.Any<string>()).Returns(true);
+
+
+            //Act
+            var result = await _uut.ExternalLoginConfirmation(externalLoginConfirmationViewModel, "123");
+
+            //Assert
+            Assert.IsType<RedirectResult>(result);
+        }
+
+        [Fact]
+        public async void ExternalLoginConfirmation_NoErrorsReturnUrlNotLocal_ReturnsRedirectToHomeController()
+        {
+            //Arrange
+            var externalLoginConfirmationViewModel = new ExternalLoginConfirmationViewModel
+            {
+                Email = ""
+            };
+            var validPrincipal = new ClaimsPrincipal(new[]
+                {
+                    new ClaimsIdentity(
+                        new[] {new Claim(ClaimTypes.NameIdentifier, "MyUserId")})
+                });
+            _signInManagerMock.GetExternalLoginInfoAsync().Returns(new ExternalLoginInfo(validPrincipal, "", "", ""));
+            _userManagerMock.CreateAsync(Arg.Any<ApplicationUser>()).Returns(IdentityResult.Success);
+            _userManagerMock.AddLoginAsync(Arg.Any<ApplicationUser>(),Arg.Any<UserLoginInfo>())
+                .Returns(IdentityResult.Success);
+            _uut.Url.IsLocalUrl(Arg.Any<string>()).Returns(false);
+
+
+            //Act
+            var result = await _uut.ExternalLoginConfirmation(externalLoginConfirmationViewModel, "123") as RedirectToActionResult;
+
+            //Assert
+            Assert.Equal("Home", result.ControllerName);
+        }
+
+        [Fact]
+        public async void ExternalLoginConfirmation_NoErrorsReturnUrlNotLocal_ReturnsRedirectToActionIndex()
+        {
+            //Arrange
+            var externalLoginConfirmationViewModel = new ExternalLoginConfirmationViewModel
+            {
+                Email = ""
+            };
+            var validPrincipal = new ClaimsPrincipal(new[]
+                {
+                    new ClaimsIdentity(
+                        new[] {new Claim(ClaimTypes.NameIdentifier, "MyUserId")})
+                });
+            _signInManagerMock.GetExternalLoginInfoAsync().Returns(new ExternalLoginInfo(validPrincipal, "", "", ""));
+            _userManagerMock.CreateAsync(Arg.Any<ApplicationUser>()).Returns(IdentityResult.Success);
+            _userManagerMock.AddLoginAsync(Arg.Any<ApplicationUser>(),Arg.Any<UserLoginInfo>())
+                .Returns(IdentityResult.Success);
+            _uut.Url.IsLocalUrl(Arg.Any<string>()).Returns(false);
+
+
+            //Act
+            var result = await _uut.ExternalLoginConfirmation(externalLoginConfirmationViewModel, "123") as RedirectToActionResult;
+
+            //Assert
+            Assert.Equal("Index", result.ActionName);
+        }
+
+        //ConfirmEmail
+        [Fact]
+        public async void ConfirmEmail_UserIdNull_ReturnsErrorView()
+        {
+            //Arrange
+
+            //Act
+            var result = await _uut.ConfirmEmail(null, "") as ViewResult;
+
+            //Assert
+            Assert.Equal("Error", result.ViewName);
+        }
+
+        [Fact]
+        public async void ConfirmEmail_CodeNull_ReturnsErrorView()
+        {
+            //Arrange
+
+            //Act
+            var result = await _uut.ConfirmEmail("", null) as ViewResult;
+
+            //Assert
+            Assert.Equal("Error", result.ViewName);
+        }
+
+        [Fact]
+        public async void ConfirmEmail_CodeNullAndUserIdNull_ReturnsErrorView()
+        {
+            //Arrange
+
+            //Act
+            var result = await _uut.ConfirmEmail(null, null) as ViewResult;
+
+            //Assert
+            Assert.Equal("Error", result.ViewName);
+        }
+
+        [Fact]
+        public async void ConfirmEmail_UserIsNull_ReturnsErrorView()
+        {
+            //Arrange
+            _userManagerMock.FindByIdAsync(Arg.Any<string>()).Returns(default(ApplicationUser));
+
+            //Act
+            var result = await _uut.ConfirmEmail("", "") as ViewResult;
+
+            //Assert
+            Assert.Equal("Error", result.ViewName);
+        }
+
+        [Fact]
+        public async void ConfirmEmail_UserManagerConfirmEmailFails_ReturnsErrorView()
+        {
+            //Arrange
+            _userManagerMock.FindByIdAsync(Arg.Any<string>()).Returns(new ApplicationUser());
+            _userManagerMock.ConfirmEmailAsync(Arg.Any<ApplicationUser>(), Arg.Any<string>()).Returns(IdentityResult.Failed());
+
+            //Act
+            var result = await _uut.ConfirmEmail("", "") as ViewResult;
+
+            //Assert
+            Assert.Equal("Error", result.ViewName);
+        }
+
+        [Fact]
+        public async void ConfirmEmail_UserManagerConfirmEmailSuccess_ReturnsConfirmEmailView()
+        {
+            //Arrange
+            _userManagerMock.FindByIdAsync(Arg.Any<string>()).Returns(new ApplicationUser());
+            _userManagerMock.ConfirmEmailAsync(Arg.Any<ApplicationUser>(), Arg.Any<string>()).Returns(IdentityResult.Success);
+
+            //Act
+            var result = await _uut.ConfirmEmail("", "") as ViewResult;
+
+            //Assert
+            Assert.Equal("ConfirmEmail", result.ViewName);
+        }
+
+        //ForgotPassword
+        [Fact]
+        public void ForgotPassword_ReturnsDefaultView()
+        {
+            //Arrange
+
+            //Act
+            var result = _uut.ForgotPassword() as ViewResult;
+
+            //Assert
+            Assert.Null(result.ViewName);
+        }
+
+        //ForgotPassword(model)
+        [Fact]
+        public async void ForgotPassword_ModelStateNotValid_ReturnsDefaultView()
+        {
+            //Arrange
+            _uut.ModelState.AddModelError("Error", "Error");
+
+            //Act
+            var result = await _uut.ForgotPassword(default(ForgotPasswordViewModel)) as ViewResult;
+
+            //Assert
+            Assert.Null(result.ViewName);
+        }
+
+        [Fact]
+        public async void ForgotPassword_ModelStateNotValid_ReturnsViewWithSameModel()
+        {
+            //Arrange
+            var forgotPasswordViewModel = new ForgotPasswordViewModel
+            {
+                Email = "123"
+            };
+            _uut.ModelState.AddModelError("Error", "Error");
+
+            //Act
+            var result = await _uut.ForgotPassword(forgotPasswordViewModel) as ViewResult;
+            var originalViewModel = JsonConvert.SerializeObject(forgotPasswordViewModel);
+            var viewModelReturnedToView = JsonConvert.SerializeObject(result.Model);
+
+            //Assert
+            Assert.Equal(originalViewModel, viewModelReturnedToView);
+        }
+
+        [Fact]
+        public async void ForgotPassword_UnregisteredUser_ReturnsForgotPasswordConfirmationView()
+        {
+            //Arrange
+            var forgotPasswordViewModel = new ForgotPasswordViewModel
+            {
+                Email = ""
+            };
+            _userManagerMock.FindByEmailAsync(Arg.Any<string>()).Returns(default(ApplicationUser));
+
+            //Act
+            var result = await _uut.ForgotPassword(forgotPasswordViewModel) as ViewResult;
+
+            //Assert
+            Assert.Equal("ForgotPasswordConfirmation", result.ViewName);
+        }
+
+        [Fact]
+        public async void ForgotPassword_EmailNotConfirmed_ReturnsForgotPasswordConfirmationView()
+        {
+            //Arrange
+            var forgotPasswordViewModel = new ForgotPasswordViewModel
+            {
+                Email = ""
+            };
+            _userManagerMock.FindByEmailAsync(Arg.Any<string>()).Returns(new ApplicationUser());
+            _userManagerMock.IsEmailConfirmedAsync(Arg.Any<ApplicationUser>()).Returns(false);
+
+            //Act
+            var result = await _uut.ForgotPassword(forgotPasswordViewModel) as ViewResult;
+
+            //Assert
+            Assert.Equal("ForgotPasswordConfirmation", result.ViewName);
+        }
+
+        [Fact]
+        public async void ForgotPassword_EmailNotConfirmedAndUnregisteredUser_ReturnsForgotPasswordConfirmationView()
+        {
+            //Arrange
+            var forgotPasswordViewModel = new ForgotPasswordViewModel
+            {
+                Email = ""
+            };
+            _userManagerMock.FindByEmailAsync(Arg.Any<string>()).Returns(default(ApplicationUser));
+            _userManagerMock.IsEmailConfirmedAsync(Arg.Any<ApplicationUser>()).Returns(false);
+
+            //Act
+            var result = await _uut.ForgotPassword(forgotPasswordViewModel) as ViewResult;
+
+            //Assert
+            Assert.Equal("ForgotPasswordConfirmation", result.ViewName);
+        }
+
+        //If ForgotPassword is activated on application, more tests probably needs to be added
+
+        //ForgotPasswordConfirmation
+        [Fact]
+        public void ForgotPasswordConfirmation_ReturnsDefaultView()
+        {
+            //Arrange
+
+            //Act
+            var result = _uut.ForgotPasswordConfirmation() as ViewResult;
+
+            //Assert
+            Assert.Null(result.ViewName);
+        }
+
+        //ResetPassword
+        [Fact]
+        public void ResetPassword_CodeIsNull_ReturnsErrorView()
+        {
+            //Arrange
+
+            //Act
+            var result = _uut.ResetPassword() as ViewResult;
+
+            //Assert
+            Assert.Equal("Error", result.ViewName);
+        }
+
+        [Fact]
+        public void ResetPassword_CodeIsNotNull_ReturnsdefaultView()
+        {
+            //Arrange
+
+            //Act
+            var result = _uut.ResetPassword("") as ViewResult;
+
+            //Assert
+            Assert.Null(result.ViewName);
+        }
+
+        //ResetPassword(model)
+        [Fact]
+        public async void ResetPassword_ModelStateNotValid_ReturnsDefaultView()
+        {
+            //Arrange
+            _uut.ModelState.AddModelError("Error", "Error");
+
+            //Act
+            var result = await _uut.ResetPassword(default(ResetPasswordViewModel)) as ViewResult;
+
+            //Assert
+            Assert.Null(result.ViewName);
+        }
+
+        [Fact]
+        public async void ResetPassword_ModelStateNotValid_ReturnsViewWithSameModel()
+        {
+            //Arrange
+            var resetPasswordViewModel = new ResetPasswordViewModel
+            {
+                Email = "123",
+                Password = "123",
+                ConfirmPassword = "123",
+                Code = "123"
+            };
+            _uut.ModelState.AddModelError("Error", "Error");
+
+            //Act
+            var result = await _uut.ResetPassword(resetPasswordViewModel) as ViewResult;
+            var originalViewModel = JsonConvert.SerializeObject(resetPasswordViewModel);
+            var viewModelReturnedToView = JsonConvert.SerializeObject(result.Model);
+
+            //Assert
+            Assert.Equal(originalViewModel, viewModelReturnedToView);
+        }
+
+        [Fact]
+        public async void ResetPassword_UnregisteredUser_ReturnsRedirectToResetpasswordConfirmationAction()
+        {
+            //Arrange
+            var resetPasswordViewModel = new ResetPasswordViewModel
+            {
+                Email = ""
+            };
+            _userManagerMock.FindByEmailAsync(Arg.Any<string>()).Returns(default(ApplicationUser));
+
+            //Act
+            var result = await _uut.ResetPassword(resetPasswordViewModel) as RedirectToActionResult;
+
+            //Assert
+            Assert.Equal("ResetPasswordConfirmation", result.ActionName);
+        }
+
+        [Fact]
+        public async void ResetPassword_ResetPasswordFail_ModelErrorsAdded()
+        {
+            //Arrange
+            var resetPasswordViewModel = new ResetPasswordViewModel
+            {
+                Email = "",
+                Code = "",
+                Password = ""
+            };
+            _userManagerMock.FindByEmailAsync(Arg.Any<string>()).Returns(new ApplicationUser());
+            _userManagerMock.ResetPasswordAsync(Arg.Any<ApplicationUser>(), Arg.Any<string>(), Arg.Any<string>())
+                .Returns(IdentityResult.Failed(new IdentityError{Description = "ResetPasswordAsyncErrorForTest"}));
+
+            //Act
+            var result = await _uut.ResetPassword(resetPasswordViewModel) as ViewResult;
+
+            //Assert
+            Assert.Equal("ResetPasswordAsyncErrorForTest", result.ViewData.ModelState.Root.Errors.FirstOrDefault().ErrorMessage);
+        }
+
+        [Fact]
+        public async void ResetPassword_ResetPasswordFail_DefaultViewReturned()
+        {
+            //Arrange
+            var resetPasswordViewModel = new ResetPasswordViewModel
+            {
+                Email = "",
+                Code = "",
+                Password = ""
+            };
+            _userManagerMock.FindByEmailAsync(Arg.Any<string>()).Returns(new ApplicationUser());
+            _userManagerMock.ResetPasswordAsync(Arg.Any<ApplicationUser>(), Arg.Any<string>(), Arg.Any<string>())
+                .Returns(IdentityResult.Failed());
+
+            //Act
+            var result = await _uut.ResetPassword(resetPasswordViewModel) as ViewResult;
+
+            //Assert
+            Assert.Null(result.ViewName);
+        }
+
+        [Fact]
+        public async void ResetPassword_NoErrors_ReturnsRedirectToResetpasswordConfirmationAction()
+        {
+            //Arrange
+            var resetPasswordViewModel = new ResetPasswordViewModel
+            {
+                Email = "",
+                Code = "",
+                Password = ""
+            };
+            _userManagerMock.FindByEmailAsync(Arg.Any<string>()).Returns(new ApplicationUser());
+            _userManagerMock.ResetPasswordAsync(Arg.Any<ApplicationUser>(), Arg.Any<string>(), Arg.Any<string>())
+                .Returns(IdentityResult.Success);
+
+            //Act
+            var result = await _uut.ResetPassword(resetPasswordViewModel) as RedirectToActionResult;
+
+            //Assert
+            Assert.Equal("ResetPasswordConfirmation", result.ActionName);
+        }
+
+        //ResetPasswordConfirmation
+        [Fact]
+        public void ResetPasswordConfirmation_ReturnsDefaultView()
+        {
+            //Arrange
+
+            //Act
+            var result = _uut.ResetPasswordConfirmation() as ViewResult;
+
+            //Assert
+            Assert.Null(result.ViewName);
+        }
+
+        //SendCode
+        [Fact]
+        public async void SendCode_UnregisteredUser_ReturnsErrorView()
+        {
+            //Arrange
+            _signInManagerMock.GetTwoFactorAuthenticationUserAsync().Returns(default(ApplicationUser));
+
+            //Act
+            var result = await _uut.SendCode() as ViewResult;
+
+            //Assert
+            Assert.Equal("Error", result.ViewName);
+        }
+
+        [Fact]
+        public async void SendCode_ReturnsDefaultView()
+        {
+            //Arrange
+            _signInManagerMock.GetTwoFactorAuthenticationUserAsync().Returns(new ApplicationUser());
+
+            //Act
+            var result = await _uut.SendCode() as ViewResult;
+
+            //Assert
+            Assert.Null(result.ViewName);
+        }
+
+        [Fact]
+        public async void SendCode_ReturnsViewWithSendCodeViewModel()
+        {
+            //Arrange
+            _signInManagerMock.GetTwoFactorAuthenticationUserAsync().Returns(new ApplicationUser());
+
+            //Act
+            var result = await _uut.SendCode() as ViewResult;
+
+            //Assert
+            Assert.IsType<SendCodeViewModel>(result.Model);
+        }
+
+        //SendCode(model)
+        [Fact]
+        public async void SendCode_ModelStateNotValid_DefaultViewReturned()
+        {
+            //Arrange
+            _uut.ModelState.AddModelError("Error", "Error");
+
+            //Act
+            var result = await _uut.SendCode(default(SendCodeViewModel)) as ViewResult;
+
+            //Assert
+            Assert.Null(result.ViewName);
+        }
+
+        [Fact]
+        public async void SendCode_UnregisteredUser_ErrorViewReturned()
+        {
+            //Arrange
+            _signInManagerMock.GetTwoFactorAuthenticationUserAsync().Returns(default(ApplicationUser));
+
+            //Act
+            var result = await _uut.SendCode(default(SendCodeViewModel)) as ViewResult;
+
+            //Assert
+            Assert.Equal("Error", result.ViewName);
+        }
+
+        [Fact]
+        public async void SendCode_EmptyTwoFactorToken_ErrorViewReturned()
+        {
+            //Arrange
+            var sendCodeViewModel = new SendCodeViewModel
+            {
+                SelectedProvider = ""
+            };
+            _signInManagerMock.GetTwoFactorAuthenticationUserAsync().Returns(new ApplicationUser());
+            _userManagerMock.GenerateTwoFactorTokenAsync(Arg.Any<ApplicationUser>(), Arg.Any<string>()).Returns("");
+
+            //Act
+            var result = await _uut.SendCode(sendCodeViewModel) as ViewResult;
+
+            //Assert
+            Assert.Equal("Error", result.ViewName);
+        }
+
+        [Fact]
+        public async void SendCode_SelectedProviderIsEmail_EmailSenderSendEmailCalled()
+        {
+            //Arrange
+            var sendCodeViewModel = new SendCodeViewModel
+            {
+                SelectedProvider = "Email"
+            };
+            _signInManagerMock.GetTwoFactorAuthenticationUserAsync().Returns(new ApplicationUser());
+            _userManagerMock.GenerateTwoFactorTokenAsync(Arg.Any<ApplicationUser>(), Arg.Any<string>()).Returns("1");
+            _userManagerMock.GetEmailAsync(Arg.Any<ApplicationUser>()).Returns("");
+
+            //Act
+            var result = await _uut.SendCode(sendCodeViewModel) as ViewResult;
+
+            //Assert
+            await _emailMock.Received().SendEmailAsync(Arg.Any<string>(), Arg.Any<string>(), Arg.Any<string>());
+        }
+
+        [Fact]
+        public async void SendCode_SelectedProviderIsPhone_SmsSenderSendSmsCalled()
+        {
+            //Arrange
+            var sendCodeViewModel = new SendCodeViewModel
+            {
+                SelectedProvider = "Phone"
+            };
+            _signInManagerMock.GetTwoFactorAuthenticationUserAsync().Returns(new ApplicationUser());
+            _userManagerMock.GenerateTwoFactorTokenAsync(Arg.Any<ApplicationUser>(), Arg.Any<string>()).Returns("1");
+            _userManagerMock.GetPhoneNumberAsync(Arg.Any<ApplicationUser>()).Returns("");
+
+            //Act
+            var result = await _uut.SendCode(sendCodeViewModel) as ViewResult;
+
+            //Assert
+            await _smsMock.Received().SendSmsAsync(Arg.Any<string>(), Arg.Any<string>());
+        }
+
+        [Fact]
+        public async void SendCode_ReturnsRedirectToActionVerifyCode()
+        {
+            //Arrange
+            var sendCodeViewModel = new SendCodeViewModel
+            {
+                SelectedProvider = "",
+                ReturnUrl = "",
+                RememberMe = true
+            };
+            _signInManagerMock.GetTwoFactorAuthenticationUserAsync().Returns(new ApplicationUser());
+            _userManagerMock.GenerateTwoFactorTokenAsync(Arg.Any<ApplicationUser>(), Arg.Any<string>()).Returns("1");
+
+            //Act
+            var result = await _uut.SendCode(sendCodeViewModel) as RedirectToActionResult;
+
+            //Assert
+            Assert.Equal("VerifyCode", result.ActionName);
+        }
+
+        //VerifyCode
+        [Fact]
+        public async void VerifyCode_UnregisteredUser_ReturnsErrorView()
+        {
+            //Arrange
+            _signInManagerMock.GetTwoFactorAuthenticationUserAsync().Returns(default(ApplicationUser));
+
+            //Act
+            var result = await _uut.VerifyCode("",true) as ViewResult;
+
+            //Assert
+            Assert.Equal("Error", result.ViewName);
+        }
+
+        [Fact]
+        public async void VerifyCode_ReturnsDefaultView()
+        {
+            //Arrange
+            _signInManagerMock.GetTwoFactorAuthenticationUserAsync().Returns(new ApplicationUser());
+
+            //Act
+            var result = await _uut.VerifyCode("",true) as ViewResult;
+
+            //Assert
+            Assert.Null(result.ViewName);
+        }
+
+        [Fact]
+        public async void VerifyCode_ReturnsViewWithCorrectViewModel()
+        {
+            //Arrange
+            var verifyCodeViewModel = new VerifyCodeViewModel
+            {
+                Provider = "123",
+                ReturnUrl = "123",
+                RememberMe = true
+            };
+            _signInManagerMock.GetTwoFactorAuthenticationUserAsync().Returns(new ApplicationUser());
+
+            //Act
+            var result = await _uut.VerifyCode(verifyCodeViewModel.Provider, verifyCodeViewModel.RememberMe, verifyCodeViewModel.ReturnUrl) as ViewResult;
+            var originalViewModel = JsonConvert.SerializeObject(verifyCodeViewModel);
+            var viewModelReturnedToView = JsonConvert.SerializeObject(result.Model);
+
+            //Assert
+            Assert.Equal(originalViewModel, viewModelReturnedToView);
+        }
+
+        //VerifyCode(model)
+        [Fact]
+        public async void VerifyCode_ModelStateNotValid_ReturnsDefaultView()
+        {
+            //Arrange
+            _uut.ModelState.AddModelError("Error", "Error");
+
+            //Act
+            var result = await _uut.VerifyCode(default(VerifyCodeViewModel)) as ViewResult;
+
+            //Assert
+            Assert.Null(result.ViewName);
+        }
+
+        [Fact]
+        public async void VerifyCode_ModelStateNotValid_ReturnsViewWithSameModel()
+        {
+            //Arrange
+            _uut.ModelState.AddModelError("Error", "Error");
+            var verifyCodeViewModel = new VerifyCodeViewModel
+            {
+                Provider = "123",
+                ReturnUrl = "123",
+                RememberMe = true
+            };
+
+            //Act
+            var result = await _uut.VerifyCode(verifyCodeViewModel) as ViewResult;
+            var originalViewModel = JsonConvert.SerializeObject(verifyCodeViewModel);
+            var viewModelReturnedToView = JsonConvert.SerializeObject(result.Model);
+
+            //Assert
+            Assert.Equal(originalViewModel, viewModelReturnedToView);
+        }
+
+        [Fact]
+        public async void VerifyCode_TwoFactorSignInAsyncSuccessAndReturnUrlIsLocal_ReturnsRedirectResult()
+        {
+            //Arrange
+            var verifyCodeViewModel = new VerifyCodeViewModel
+            {
+                Provider = "",
+                ReturnUrl = "123",
+                RememberMe = true
+            };
+            _signInManagerMock.TwoFactorSignInAsync(Arg.Any<string>(), Arg.Any<string>(), Arg.Any<bool>(), Arg.Any<bool>())
+                .Returns(SignInResult.Success);
+            _uut.Url.IsLocalUrl(Arg.Any<string>()).Returns(true);
+
+            //Act
+            var result = await _uut.VerifyCode(verifyCodeViewModel);
+
+            //Assert
+            Assert.IsType<RedirectResult>(result);
+        }
+
+        [Fact]
+        public async void VerifyCode_TwoFactorSignInAsyncSuccessAndReturnUrlNotLocal_ReturnsRedirectToHomeController()
+        {
+            //Arrange
+            var verifyCodeViewModel = new VerifyCodeViewModel
+            {
+                Provider = "",
+                ReturnUrl = "123",
+                RememberMe = true
+            };
+            _signInManagerMock.TwoFactorSignInAsync(Arg.Any<string>(), Arg.Any<string>(), Arg.Any<bool>(), Arg.Any<bool>())
+                .Returns(SignInResult.Success);
+            _uut.Url.IsLocalUrl(Arg.Any<string>()).Returns(false);
+
+            //Act
+            var result = await _uut.VerifyCode(verifyCodeViewModel) as RedirectToActionResult;
+
+            //Assert
+            Assert.Equal("Home", result.ControllerName);
+        }
+
+        [Fact]
+        public async void VerifyCode_TwoFactorSignInAsyncSuccessAndReturnUrlNotLocal_ReturnsRedirectToActionIndex()
+        {
+            //Arrange
+            var verifyCodeViewModel = new VerifyCodeViewModel
+            {
+                Provider = "",
+                ReturnUrl = "123",
+                RememberMe = true
+            };
+            _signInManagerMock.TwoFactorSignInAsync(Arg.Any<string>(), Arg.Any<string>(), Arg.Any<bool>(), Arg.Any<bool>())
+                .Returns(SignInResult.Success);
+            _uut.Url.IsLocalUrl(Arg.Any<string>()).Returns(false);
+
+            //Act
+            var result = await _uut.VerifyCode(verifyCodeViewModel) as RedirectToActionResult;
+
+            //Assert
+            Assert.Equal("Index", result.ActionName);
+        }
+
+        [Fact]
+        public async void VerifyCode_TwoFactorSignInAsyncLockOut_ReturnsLockedOutView()
+        {
+            //Arrange
+            var verifyCodeViewModel = new VerifyCodeViewModel
+            {
+                Provider = "",
+                ReturnUrl = "",
+                RememberMe = true
+            };
+            _signInManagerMock.TwoFactorSignInAsync(Arg.Any<string>(), Arg.Any<string>(), Arg.Any<bool>(), Arg.Any<bool>())
+                .Returns(SignInResult.LockedOut);
+
+            //Act
+            var result = await _uut.VerifyCode(verifyCodeViewModel) as ViewResult;
+
+            //Assert
+            Assert.Equal("Lockout", result.ViewName);
+        }
+
+        [Fact]
+        public async void VerifyCode_TwoFactorSignInAsyncFail_ModelErrorsAdded()
+        {
+            //Arrange
+            var verifyCodeViewModel = new VerifyCodeViewModel
+            {
+                Provider = "",
+                ReturnUrl = "",
+                RememberMe = true
+            };
+            _signInManagerMock.TwoFactorSignInAsync(Arg.Any<string>(), Arg.Any<string>(), Arg.Any<bool>(), Arg.Any<bool>())
+                .Returns(SignInResult.Failed);
+
+            //Act
+            var result = await _uut.VerifyCode(verifyCodeViewModel) as ViewResult;
+
+            //Assert
+            Assert.Equal("Invalid code.", result.ViewData.ModelState.Root.Errors.FirstOrDefault().ErrorMessage);
+        }
+
+        [Fact]
+        public async void VerifyCode_TwoFactorSignInAsyncFail_DefaultViewReturned()
+        {
+            //Arrange
+            var verifyCodeViewModel = new VerifyCodeViewModel
+            {
+                Provider = "",
+                ReturnUrl = "",
+                RememberMe = true
+            };
+            _signInManagerMock.TwoFactorSignInAsync(Arg.Any<string>(), Arg.Any<string>(), Arg.Any<bool>(), Arg.Any<bool>())
+                .Returns(SignInResult.Failed);
+
+            //Act
+            var result = await _uut.VerifyCode(verifyCodeViewModel) as ViewResult;
+
+            //Assert
+            Assert.Null(result.ViewName);
+        }
+
+        [Fact]
+        public async void VerifyCode_TwoFactorSignInAsyncFail_ViewWithSameModelReturned()
+        {
+            //Arrange
+            var verifyCodeViewModel = new VerifyCodeViewModel
+            {
+                Provider = "123",
+                ReturnUrl = "123",
+                RememberMe = true
+            };
+            _signInManagerMock.TwoFactorSignInAsync(Arg.Any<string>(), Arg.Any<string>(), Arg.Any<bool>(), Arg.Any<bool>())
+                .Returns(SignInResult.Failed);
+
+            //Act
+            var result = await _uut.VerifyCode(verifyCodeViewModel) as ViewResult;
+            var originalViewModel = JsonConvert.SerializeObject(verifyCodeViewModel);
+            var viewModelReturnedToView = JsonConvert.SerializeObject(result.Model);
+
+            //Assert
+            Assert.Equal(originalViewModel, viewModelReturnedToView);
+        }
+
+        //AccessDenied
+        [Fact]
+        public void AccessDenied_DefaultViewReturned()
+        {
+            //Arrange
+
+            //Act
+            var result = _uut.AccessDenied() as ViewResult;
+
+            //Assert
+            Assert.Null(result.ViewName);
         }
     }
 }

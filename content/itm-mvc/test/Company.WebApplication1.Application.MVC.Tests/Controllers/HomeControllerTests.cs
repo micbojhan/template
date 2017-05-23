@@ -40,6 +40,18 @@ namespace Company.WebApplication1.Application.MVC.Tests.Controllers
             Assert.Null(result.ViewName);
         }
 
+        [Fact]
+        public void About_ViewDataContainsCorrectMessage()
+        {
+            //Arrange
+
+            //Act
+            var result = _uut.About() as ViewResult;
+
+            //Assert
+            Assert.Equal("Your application description page.", result.ViewData["Message"]);
+        }
+
         //Contact
         [Fact]
         public void Contact_ReturnsDefaultView()
@@ -51,6 +63,18 @@ namespace Company.WebApplication1.Application.MVC.Tests.Controllers
 
             //Assert
             Assert.Null(result.ViewName);
+        }
+
+        [Fact]
+        public void Contact_ViewDataContainsCorrectMessage()
+        {
+            //Arrange
+
+            //Act
+            var result = _uut.Contact() as ViewResult;
+
+            //Assert
+            Assert.Equal("Your contact page.", result.ViewData["Message"]);
         }
 
         //Error

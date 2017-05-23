@@ -1051,7 +1051,6 @@ namespace Company.WebApplication1.Application.MVC.Tests.Controllers
             _userManagerMock.CreateAsync(Arg.Any<ApplicationUser>())
                 .Returns(IdentityResult.Failed(new IdentityError{Description = "CreateAsyncErrorForTest"}));
 
-
             //Act
             var result = await _uut.ExternalLoginConfirmation(externalLoginConfirmationViewModel) as ViewResult;
 
@@ -1071,7 +1070,6 @@ namespace Company.WebApplication1.Application.MVC.Tests.Controllers
             _userManagerMock.CreateAsync(Arg.Any<ApplicationUser>())
                 .Returns(IdentityResult.Failed());
 
-
             //Act
             var result = await _uut.ExternalLoginConfirmation(externalLoginConfirmationViewModel) as ViewResult;
 
@@ -1090,7 +1088,6 @@ namespace Company.WebApplication1.Application.MVC.Tests.Controllers
             _signInManagerMock.GetExternalLoginInfoAsync().Returns(new ExternalLoginInfo(new ClaimsPrincipal(), "", "", ""));
             _userManagerMock.CreateAsync(Arg.Any<ApplicationUser>())
                 .Returns(IdentityResult.Failed());
-
 
             //Act
             var result = await _uut.ExternalLoginConfirmation(externalLoginConfirmationViewModel) as ViewResult;

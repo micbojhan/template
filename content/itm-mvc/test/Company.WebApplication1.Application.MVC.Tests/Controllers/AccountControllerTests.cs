@@ -909,12 +909,7 @@ namespace Company.WebApplication1.Application.MVC.Tests.Controllers
         public async void ExternalLoginCallback_NoRemoteErrorAndReturnUrlIsLocalAndSignInManagerExternalLoginSignInAsyncSuccess_ReturnsRedirectResult()
         {
             //Arrange
-            var validPrincipal = new ClaimsPrincipal(new[]
-                {
-                    new ClaimsIdentity(
-                        new[] {new Claim(ClaimTypes.NameIdentifier, "MyUserId")})
-                });
-            _signInManagerMock.GetExternalLoginInfoAsync().Returns(new ExternalLoginInfo(validPrincipal, "", "", ""));
+            _signInManagerMock.GetExternalLoginInfoAsync().Returns(new ExternalLoginInfo(new ClaimsPrincipal(), "", "", ""));
             _signInManagerMock.ExternalLoginSignInAsync(Arg.Any<string>(), Arg.Any<string>(), Arg.Any<bool>()).Returns(SignInResult.Success);
             _uut.Url.IsLocalUrl(Arg.Any<string>()).Returns(true);
 
@@ -929,12 +924,7 @@ namespace Company.WebApplication1.Application.MVC.Tests.Controllers
         public async void ExternalLoginCallback_NoRemoteErrorAndReturnUrlNotLocalAndSignInManagerExternalLoginSignInAsyncSuccess_ReturnsRedirectToHomeController()
         {
             //Arrange
-            var validPrincipal = new ClaimsPrincipal(new[]
-                {
-                    new ClaimsIdentity(
-                        new[] {new Claim(ClaimTypes.NameIdentifier, "MyUserId")})
-                });
-            _signInManagerMock.GetExternalLoginInfoAsync().Returns(new ExternalLoginInfo(validPrincipal, "", "", ""));
+            _signInManagerMock.GetExternalLoginInfoAsync().Returns(new ExternalLoginInfo(new ClaimsPrincipal(), "", "", ""));
             _signInManagerMock.ExternalLoginSignInAsync(Arg.Any<string>(), Arg.Any<string>(), Arg.Any<bool>()).Returns(SignInResult.Success);
             _uut.Url.IsLocalUrl(Arg.Any<string>()).Returns(false);
 
@@ -949,12 +939,7 @@ namespace Company.WebApplication1.Application.MVC.Tests.Controllers
         public async void ExternalLoginCallback_NoRemoteErrorAndReturnUrlNotLocalAndSignInManagerExternalLoginSignInAsyncSuccess_ReturnsRedirectToActionIndex()
         {
             //Arrange
-            var validPrincipal = new ClaimsPrincipal(new[]
-                {
-                    new ClaimsIdentity(
-                        new[] {new Claim(ClaimTypes.NameIdentifier, "MyUserId")})
-                });
-            _signInManagerMock.GetExternalLoginInfoAsync().Returns(new ExternalLoginInfo(validPrincipal, "", "", ""));
+            _signInManagerMock.GetExternalLoginInfoAsync().Returns(new ExternalLoginInfo(new ClaimsPrincipal(), "", "", ""));
             _signInManagerMock.ExternalLoginSignInAsync(Arg.Any<string>(), Arg.Any<string>(), Arg.Any<bool>()).Returns(SignInResult.Success);
             _uut.Url.IsLocalUrl(Arg.Any<string>()).Returns(false);
 
@@ -969,12 +954,7 @@ namespace Company.WebApplication1.Application.MVC.Tests.Controllers
         public async void ExternalLoginCallback_NoRemoteErrorAndSignInManagerExternalLoginSignInAsyncRequiresTwoFactor_ReturnsRedirectToActionSendCode()
         {
             //Arrange
-            var validPrincipal = new ClaimsPrincipal(new[]
-                {
-                    new ClaimsIdentity(
-                        new[] {new Claim(ClaimTypes.NameIdentifier, "MyUserId")})
-                });
-            _signInManagerMock.GetExternalLoginInfoAsync().Returns(new ExternalLoginInfo(validPrincipal, "", "", ""));
+            _signInManagerMock.GetExternalLoginInfoAsync().Returns(new ExternalLoginInfo(new ClaimsPrincipal(), "", "", ""));
             _signInManagerMock.ExternalLoginSignInAsync(Arg.Any<string>(), Arg.Any<string>(), Arg.Any<bool>()).Returns(SignInResult.TwoFactorRequired);
 
             //Act
@@ -988,12 +968,7 @@ namespace Company.WebApplication1.Application.MVC.Tests.Controllers
         public async void ExternalLoginCallback_NoRemoteErrorAndSignInManagerExternalLoginSignInAsyncRequiresTwoFactor_ReturnsRedirectToActionWithCorrectRouteParams()
         {
             //Arrange
-            var validPrincipal = new ClaimsPrincipal(new[]
-                {
-                    new ClaimsIdentity(
-                        new[] {new Claim(ClaimTypes.NameIdentifier, "MyUserId")})
-                });
-            _signInManagerMock.GetExternalLoginInfoAsync().Returns(new ExternalLoginInfo(validPrincipal, "", "", ""));
+            _signInManagerMock.GetExternalLoginInfoAsync().Returns(new ExternalLoginInfo(new ClaimsPrincipal(), "", "", ""));
             _signInManagerMock.ExternalLoginSignInAsync(Arg.Any<string>(), Arg.Any<string>(), Arg.Any<bool>()).Returns(SignInResult.TwoFactorRequired);
 
             //Act
@@ -1007,12 +982,7 @@ namespace Company.WebApplication1.Application.MVC.Tests.Controllers
         public async void ExternalLoginCallback_NoRemoteErrorAndSignInManagerExternalLoginSignInAsyncLockout_ReturnsLockoutView()
         {
             //Arrange
-            var validPrincipal = new ClaimsPrincipal(new[]
-                {
-                    new ClaimsIdentity(
-                        new[] {new Claim(ClaimTypes.NameIdentifier, "MyUserId")})
-                });
-            _signInManagerMock.GetExternalLoginInfoAsync().Returns(new ExternalLoginInfo(validPrincipal, "", "", ""));
+            _signInManagerMock.GetExternalLoginInfoAsync().Returns(new ExternalLoginInfo(new ClaimsPrincipal(), "", "", ""));
             _signInManagerMock.ExternalLoginSignInAsync(Arg.Any<string>(), Arg.Any<string>(), Arg.Any<bool>()).Returns(SignInResult.LockedOut);
 
             //Act
@@ -1026,12 +996,7 @@ namespace Company.WebApplication1.Application.MVC.Tests.Controllers
         public async void ExternalLoginCallback_NoRemoteErrorAndSignInManagerExternalLoginSignInAsyncFailed_ReturnsExternalLoginConfirmationView()
         {
             //Arrange
-            var validPrincipal = new ClaimsPrincipal(new[]
-                {
-                    new ClaimsIdentity(
-                        new[] {new Claim(ClaimTypes.NameIdentifier, "MyUserId")})
-                });
-            _signInManagerMock.GetExternalLoginInfoAsync().Returns(new ExternalLoginInfo(validPrincipal, "", "", ""));
+            _signInManagerMock.GetExternalLoginInfoAsync().Returns(new ExternalLoginInfo(new ClaimsPrincipal(), "", "", ""));
             _signInManagerMock.ExternalLoginSignInAsync(Arg.Any<string>(), Arg.Any<string>(), Arg.Any<bool>()).Returns(SignInResult.Failed);
 
             //Act
@@ -1082,12 +1047,7 @@ namespace Company.WebApplication1.Application.MVC.Tests.Controllers
             {
                 Email = ""
             };
-            var validPrincipal = new ClaimsPrincipal(new[]
-                {
-                    new ClaimsIdentity(
-                        new[] {new Claim(ClaimTypes.NameIdentifier, "MyUserId")})
-                });
-            _signInManagerMock.GetExternalLoginInfoAsync().Returns(new ExternalLoginInfo(validPrincipal, "", "", ""));
+            _signInManagerMock.GetExternalLoginInfoAsync().Returns(new ExternalLoginInfo(new ClaimsPrincipal(), "", "", ""));
             _userManagerMock.CreateAsync(Arg.Any<ApplicationUser>())
                 .Returns(IdentityResult.Failed(new IdentityError{Description = "CreateAsyncErrorForTest"}));
 
@@ -1107,12 +1067,7 @@ namespace Company.WebApplication1.Application.MVC.Tests.Controllers
             {
                 Email = ""
             };
-            var validPrincipal = new ClaimsPrincipal(new[]
-                {
-                    new ClaimsIdentity(
-                        new[] {new Claim(ClaimTypes.NameIdentifier, "MyUserId")})
-                });
-            _signInManagerMock.GetExternalLoginInfoAsync().Returns(new ExternalLoginInfo(validPrincipal, "", "", ""));
+            _signInManagerMock.GetExternalLoginInfoAsync().Returns(new ExternalLoginInfo(new ClaimsPrincipal(), "", "", ""));
             _userManagerMock.CreateAsync(Arg.Any<ApplicationUser>())
                 .Returns(IdentityResult.Failed());
 
@@ -1132,12 +1087,7 @@ namespace Company.WebApplication1.Application.MVC.Tests.Controllers
             {
                 Email = ""
             };
-            var validPrincipal = new ClaimsPrincipal(new[]
-                {
-                    new ClaimsIdentity(
-                        new[] {new Claim(ClaimTypes.NameIdentifier, "MyUserId")})
-                });
-            _signInManagerMock.GetExternalLoginInfoAsync().Returns(new ExternalLoginInfo(validPrincipal, "", "", ""));
+            _signInManagerMock.GetExternalLoginInfoAsync().Returns(new ExternalLoginInfo(new ClaimsPrincipal(), "", "", ""));
             _userManagerMock.CreateAsync(Arg.Any<ApplicationUser>())
                 .Returns(IdentityResult.Failed());
 
@@ -1157,16 +1107,10 @@ namespace Company.WebApplication1.Application.MVC.Tests.Controllers
             {
                 Email = ""
             };
-            var validPrincipal = new ClaimsPrincipal(new[]
-                {
-                    new ClaimsIdentity(
-                        new[] {new Claim(ClaimTypes.NameIdentifier, "MyUserId")})
-                });
-            _signInManagerMock.GetExternalLoginInfoAsync().Returns(new ExternalLoginInfo(validPrincipal, "", "", ""));
+            _signInManagerMock.GetExternalLoginInfoAsync().Returns(new ExternalLoginInfo(new ClaimsPrincipal(), "", "", ""));
             _userManagerMock.CreateAsync(Arg.Any<ApplicationUser>()).Returns(IdentityResult.Success);
             _userManagerMock.AddLoginAsync(Arg.Any<ApplicationUser>(), Arg.Any<UserLoginInfo>())
                 .Returns(IdentityResult.Failed(new IdentityError{Description = "AddLoginAsyncErrorForTest"}));
-
 
             //Act
             var result = await _uut.ExternalLoginConfirmation(externalLoginConfirmationViewModel) as ViewResult;
@@ -1183,16 +1127,10 @@ namespace Company.WebApplication1.Application.MVC.Tests.Controllers
             {
                 Email = ""
             };
-            var validPrincipal = new ClaimsPrincipal(new[]
-                {
-                    new ClaimsIdentity(
-                        new[] {new Claim(ClaimTypes.NameIdentifier, "MyUserId")})
-                });
-            _signInManagerMock.GetExternalLoginInfoAsync().Returns(new ExternalLoginInfo(validPrincipal, "", "", ""));
+            _signInManagerMock.GetExternalLoginInfoAsync().Returns(new ExternalLoginInfo(new ClaimsPrincipal(), "", "", ""));
             _userManagerMock.CreateAsync(Arg.Any<ApplicationUser>()).Returns(IdentityResult.Success);
             _userManagerMock.AddLoginAsync(Arg.Any<ApplicationUser>(), Arg.Any<UserLoginInfo>())
                 .Returns(IdentityResult.Failed());
-
 
             //Act
             var result = await _uut.ExternalLoginConfirmation(externalLoginConfirmationViewModel) as ViewResult;
@@ -1209,16 +1147,10 @@ namespace Company.WebApplication1.Application.MVC.Tests.Controllers
             {
                 Email = ""
             };
-            var validPrincipal = new ClaimsPrincipal(new[]
-                {
-                    new ClaimsIdentity(
-                        new[] {new Claim(ClaimTypes.NameIdentifier, "MyUserId")})
-                });
-            _signInManagerMock.GetExternalLoginInfoAsync().Returns(new ExternalLoginInfo(validPrincipal, "", "", ""));
+            _signInManagerMock.GetExternalLoginInfoAsync().Returns(new ExternalLoginInfo(new ClaimsPrincipal(), "", "", ""));
             _userManagerMock.CreateAsync(Arg.Any<ApplicationUser>()).Returns(IdentityResult.Success);
             _userManagerMock.AddLoginAsync(Arg.Any<ApplicationUser>(), Arg.Any<UserLoginInfo>())
                 .Returns(IdentityResult.Failed());
-
 
             //Act
             var result = await _uut.ExternalLoginConfirmation(externalLoginConfirmationViewModel) as ViewResult;
@@ -1235,16 +1167,10 @@ namespace Company.WebApplication1.Application.MVC.Tests.Controllers
             {
                 Email = ""
             };
-            var validPrincipal = new ClaimsPrincipal(new[]
-                {
-                    new ClaimsIdentity(
-                        new[] {new Claim(ClaimTypes.NameIdentifier, "MyUserId")})
-                });
-            _signInManagerMock.GetExternalLoginInfoAsync().Returns(new ExternalLoginInfo(validPrincipal, "", "", ""));
+            _signInManagerMock.GetExternalLoginInfoAsync().Returns(new ExternalLoginInfo(new ClaimsPrincipal(), "", "", ""));
             _userManagerMock.CreateAsync(Arg.Any<ApplicationUser>()).Returns(IdentityResult.Success);
             _userManagerMock.AddLoginAsync(Arg.Any<ApplicationUser>(), Arg.Any<UserLoginInfo>())
                 .Returns(IdentityResult.Success);
-
 
             //Act
             var result = await _uut.ExternalLoginConfirmation(externalLoginConfirmationViewModel) as ViewResult;
@@ -1261,17 +1187,11 @@ namespace Company.WebApplication1.Application.MVC.Tests.Controllers
             {
                 Email = ""
             };
-            var validPrincipal = new ClaimsPrincipal(new[]
-                {
-                    new ClaimsIdentity(
-                        new[] {new Claim(ClaimTypes.NameIdentifier, "MyUserId")})
-                });
-            _signInManagerMock.GetExternalLoginInfoAsync().Returns(new ExternalLoginInfo(validPrincipal, "", "", ""));
+            _signInManagerMock.GetExternalLoginInfoAsync().Returns(new ExternalLoginInfo(new ClaimsPrincipal(), "", "", ""));
             _userManagerMock.CreateAsync(Arg.Any<ApplicationUser>()).Returns(IdentityResult.Success);
             _userManagerMock.AddLoginAsync(Arg.Any<ApplicationUser>(), Arg.Any<UserLoginInfo>())
                 .Returns(IdentityResult.Success);
             _uut.Url.IsLocalUrl(Arg.Any<string>()).Returns(true);
-
 
             //Act
             var result = await _uut.ExternalLoginConfirmation(externalLoginConfirmationViewModel, "123");
@@ -1288,17 +1208,11 @@ namespace Company.WebApplication1.Application.MVC.Tests.Controllers
             {
                 Email = ""
             };
-            var validPrincipal = new ClaimsPrincipal(new[]
-                {
-                    new ClaimsIdentity(
-                        new[] {new Claim(ClaimTypes.NameIdentifier, "MyUserId")})
-                });
-            _signInManagerMock.GetExternalLoginInfoAsync().Returns(new ExternalLoginInfo(validPrincipal, "", "", ""));
+            _signInManagerMock.GetExternalLoginInfoAsync().Returns(new ExternalLoginInfo(new ClaimsPrincipal(), "", "", ""));
             _userManagerMock.CreateAsync(Arg.Any<ApplicationUser>()).Returns(IdentityResult.Success);
             _userManagerMock.AddLoginAsync(Arg.Any<ApplicationUser>(), Arg.Any<UserLoginInfo>())
                 .Returns(IdentityResult.Success);
             _uut.Url.IsLocalUrl(Arg.Any<string>()).Returns(false);
-
 
             //Act
             var result = await _uut.ExternalLoginConfirmation(externalLoginConfirmationViewModel, "123") as RedirectToActionResult;
@@ -1315,17 +1229,11 @@ namespace Company.WebApplication1.Application.MVC.Tests.Controllers
             {
                 Email = ""
             };
-            var validPrincipal = new ClaimsPrincipal(new[]
-                {
-                    new ClaimsIdentity(
-                        new[] {new Claim(ClaimTypes.NameIdentifier, "MyUserId")})
-                });
-            _signInManagerMock.GetExternalLoginInfoAsync().Returns(new ExternalLoginInfo(validPrincipal, "", "", ""));
+            _signInManagerMock.GetExternalLoginInfoAsync().Returns(new ExternalLoginInfo(new ClaimsPrincipal(), "", "", ""));
             _userManagerMock.CreateAsync(Arg.Any<ApplicationUser>()).Returns(IdentityResult.Success);
             _userManagerMock.AddLoginAsync(Arg.Any<ApplicationUser>(), Arg.Any<UserLoginInfo>())
                 .Returns(IdentityResult.Success);
             _uut.Url.IsLocalUrl(Arg.Any<string>()).Returns(false);
-
 
             //Act
             var result = await _uut.ExternalLoginConfirmation(externalLoginConfirmationViewModel, "123") as RedirectToActionResult;
@@ -1511,7 +1419,7 @@ namespace Company.WebApplication1.Application.MVC.Tests.Controllers
             Assert.Equal("ForgotPasswordConfirmation", result.ViewName);
         }
 
-        //If ForgotPassword is activated on application, more tests probably needs to be added
+        //TODO: If ForgotPassword is activated on application, more tests probably needs to be added
 
         //ForgotPasswordConfirmation
         [Fact]

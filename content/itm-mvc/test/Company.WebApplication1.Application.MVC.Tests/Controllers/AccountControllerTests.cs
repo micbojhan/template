@@ -160,16 +160,10 @@ namespace Company.WebApplication1.Application.MVC.Tests.Controllers
         public async void Login_CalledWithNoReturnUrlAndModelStateValid_ViewDataContainsNullInReturnUrl()
         {
             //Arrange
-            var loginViewModel = new LoginViewModel
-            {
-                Email = "",
-                Password = "",
-                RememberMe = true
-            };
             _signInManagerMock.PasswordSignInAsync(Arg.Any<string>(), Arg.Any<string>(), Arg.Any<bool>(), Arg.Any<bool>()).Returns(SignInResult.Failed);
 
             //Act
-            var result = await _uut.Login(loginViewModel) as ViewResult;
+            var result = await _uut.Login(new LoginViewModel()) as ViewResult;
 
             //Assert
             Assert.Null(result.ViewData["ReturnUrl"]);
@@ -180,16 +174,10 @@ namespace Company.WebApplication1.Application.MVC.Tests.Controllers
         {
             //Arrange
             var returnUrl = "123";
-            var loginViewModel = new LoginViewModel
-            {
-                Email = "",
-                Password = "",
-                RememberMe = true
-            };
             _signInManagerMock.PasswordSignInAsync(Arg.Any<string>(), Arg.Any<string>(), Arg.Any<bool>(), Arg.Any<bool>()).Returns(SignInResult.Failed);
 
             //Act
-            var result = await _uut.Login(loginViewModel, returnUrl) as ViewResult;
+            var result = await _uut.Login(new LoginViewModel(), returnUrl) as ViewResult;
 
             //Assert
             Assert.Equal(returnUrl, result.ViewData["ReturnUrl"]);
@@ -215,8 +203,8 @@ namespace Company.WebApplication1.Application.MVC.Tests.Controllers
             _uut.ModelState.AddModelError("Error", "Error");
             var loginViewModel = new LoginViewModel
             {
-                Email = "",
-                Password = "",
+                Email = "123",
+                Password = "123",
                 RememberMe = true
             };
 
@@ -233,16 +221,10 @@ namespace Company.WebApplication1.Application.MVC.Tests.Controllers
         public async void Login_ModelStateValid_SignInManagerPasswordSignInCalled()
         {
             //Arrange
-            var loginViewModel = new LoginViewModel
-            {
-                Email = "",
-                Password = "",
-                RememberMe = true
-            };
             _signInManagerMock.PasswordSignInAsync(Arg.Any<string>(), Arg.Any<string>(), Arg.Any<bool>(), Arg.Any<bool>()).Returns(SignInResult.Failed);
 
             //Act
-            var result = await _uut.Login(loginViewModel) as ViewResult;
+            var result = await _uut.Login(new LoginViewModel()) as ViewResult;
 
             //Assert
             await _signInManagerMock.Received().PasswordSignInAsync(Arg.Any<string>(), Arg.Any<string>(), Arg.Any<bool>(), Arg.Any<bool>());
@@ -265,17 +247,11 @@ namespace Company.WebApplication1.Application.MVC.Tests.Controllers
         public async void Login_SignInManagerPasswordSignInSuccessAndReturnUrlNotLocal_ReturnsRedirectToHomeController()
         {
             //Arrange
-            var loginViewModel = new LoginViewModel
-            {
-                Email = "",
-                Password = "",
-                RememberMe = true
-            };
             _signInManagerMock.PasswordSignInAsync(Arg.Any<string>(), Arg.Any<string>(), Arg.Any<bool>(), Arg.Any<bool>()).Returns(SignInResult.Success);
             _uut.Url.IsLocalUrl(Arg.Any<string>()).Returns(false);
 
             //Act
-            var result = await _uut.Login(loginViewModel) as RedirectToActionResult;
+            var result = await _uut.Login(new LoginViewModel()) as RedirectToActionResult;
 
             //Assert
             Assert.Equal("Home", result.ControllerName);
@@ -285,17 +261,11 @@ namespace Company.WebApplication1.Application.MVC.Tests.Controllers
         public async void Login_SignInManagerPasswordSignInSuccessAndReturnUrlNotLocal_ReturnsRedirectToIndex()
         {
             //Arrange
-            var loginViewModel = new LoginViewModel
-            {
-                Email = "",
-                Password = "",
-                RememberMe = true
-            };
             _signInManagerMock.PasswordSignInAsync(Arg.Any<string>(), Arg.Any<string>(), Arg.Any<bool>(), Arg.Any<bool>()).Returns(SignInResult.Success);
             _uut.Url.IsLocalUrl(Arg.Any<string>()).Returns(false);
 
             //Act
-            var result = await _uut.Login(loginViewModel) as RedirectToActionResult;
+            var result = await _uut.Login(new LoginViewModel()) as RedirectToActionResult;
 
             //Assert
             Assert.Equal("Index", result.ActionName);
@@ -305,17 +275,11 @@ namespace Company.WebApplication1.Application.MVC.Tests.Controllers
         public async void Login_SignInManagerPasswordSignInSuccessAndReturnUrlIsLocal_ReturnsRedirectResult()
         {
             //Arrange
-            var loginViewModel = new LoginViewModel
-            {
-                Email = "",
-                Password = "",
-                RememberMe = true
-            };
             _signInManagerMock.PasswordSignInAsync(Arg.Any<string>(), Arg.Any<string>(), Arg.Any<bool>(), Arg.Any<bool>()).Returns(SignInResult.Success);
             _uut.Url.IsLocalUrl(Arg.Any<string>()).Returns(true);
 
             //Act
-            var result = await _uut.Login(loginViewModel, "123");
+            var result = await _uut.Login(new LoginViewModel(), "123");
 
             //Assert
             Assert.IsType<RedirectResult>(result);
@@ -325,16 +289,10 @@ namespace Company.WebApplication1.Application.MVC.Tests.Controllers
         public async void Login_SignInManagerPasswordSignInRequiresTwoFactor_ReturnsRedirectToActionSendCode()
         {
             //Arrange
-            var loginViewModel = new LoginViewModel
-            {
-                Email = "",
-                Password = "",
-                RememberMe = true
-            };
             _signInManagerMock.PasswordSignInAsync(Arg.Any<string>(), Arg.Any<string>(), Arg.Any<bool>(), Arg.Any<bool>()).Returns(SignInResult.TwoFactorRequired);
 
             //Act
-            var result = await _uut.Login(loginViewModel) as RedirectToActionResult;
+            var result = await _uut.Login(new LoginViewModel()) as RedirectToActionResult;
 
             //Assert
             Assert.Equal("SendCode", result.ActionName);
@@ -345,16 +303,10 @@ namespace Company.WebApplication1.Application.MVC.Tests.Controllers
         {
             //Arrange
             var returnUrl = "123";
-            var loginViewModel = new LoginViewModel
-            {
-                Email = "",
-                Password = "",
-                RememberMe = true
-            };
             _signInManagerMock.PasswordSignInAsync(Arg.Any<string>(), Arg.Any<string>(), Arg.Any<bool>(), Arg.Any<bool>()).Returns(SignInResult.TwoFactorRequired);
 
             //Act
-            var result = await _uut.Login(loginViewModel, returnUrl) as RedirectToActionResult;
+            var result = await _uut.Login(new LoginViewModel(), returnUrl) as RedirectToActionResult;
 
             //Assert
             Assert.Equal(returnUrl, result.RouteValues["ReturnUrl"]);
@@ -366,8 +318,6 @@ namespace Company.WebApplication1.Application.MVC.Tests.Controllers
             //Arrange
             var loginViewModel = new LoginViewModel
             {
-                Email = "",
-                Password = "",
                 RememberMe = true
             };
             _signInManagerMock.PasswordSignInAsync(Arg.Any<string>(), Arg.Any<string>(), Arg.Any<bool>(), Arg.Any<bool>()).Returns(SignInResult.TwoFactorRequired);
@@ -383,16 +333,10 @@ namespace Company.WebApplication1.Application.MVC.Tests.Controllers
         public async void Login_SignInManagerPasswordSignInLockedOut_ReturnsLockOutView()
         {
             //Arrange
-            var loginViewModel = new LoginViewModel
-            {
-                Email = "",
-                Password = "",
-                RememberMe = true
-            };
             _signInManagerMock.PasswordSignInAsync(Arg.Any<string>(), Arg.Any<string>(), Arg.Any<bool>(), Arg.Any<bool>()).Returns(SignInResult.LockedOut);
 
             //Act
-            var result = await _uut.Login(loginViewModel) as ViewResult;
+            var result = await _uut.Login(new LoginViewModel()) as ViewResult;
 
             //Assert
             Assert.Equal("Lockout", result.ViewName);
@@ -402,16 +346,10 @@ namespace Company.WebApplication1.Application.MVC.Tests.Controllers
         public async void Login_SignInManagerPasswordSignInFailed_ModelErrorAdded()
         {
             //Arrange
-            var loginViewModel = new LoginViewModel
-            {
-                Email = "",
-                Password = "",
-                RememberMe = true
-            };
             _signInManagerMock.PasswordSignInAsync(Arg.Any<string>(), Arg.Any<string>(), Arg.Any<bool>(), Arg.Any<bool>()).Returns(SignInResult.Failed);
 
             //Act
-            var result = await _uut.Login(loginViewModel) as ViewResult;
+            var result = await _uut.Login(new LoginViewModel()) as ViewResult;
 
             //Assert
             Assert.Equal("Invalid login attempt.", result.ViewData.ModelState.Root.Errors.FirstOrDefault().ErrorMessage);
@@ -421,16 +359,10 @@ namespace Company.WebApplication1.Application.MVC.Tests.Controllers
         public async void Login_SignInManagerPasswordSignInFailed_DefaultViewReturned()
         {
             //Arrange
-            var loginViewModel = new LoginViewModel
-            {
-                Email = "",
-                Password = "",
-                RememberMe = true
-            };
             _signInManagerMock.PasswordSignInAsync(Arg.Any<string>(), Arg.Any<string>(), Arg.Any<bool>(), Arg.Any<bool>()).Returns(SignInResult.Failed);
 
             //Act
-            var result = await _uut.Login(loginViewModel) as ViewResult;
+            var result = await _uut.Login(new LoginViewModel()) as ViewResult;
 
             //Assert
             Assert.Null(result.ViewName);
@@ -442,8 +374,8 @@ namespace Company.WebApplication1.Application.MVC.Tests.Controllers
             //Arrange
             var loginViewModel = new LoginViewModel
             {
-                Email = "",
-                Password = "",
+                Email = "123",
+                Password = "123",
                 RememberMe = true
             };
             _signInManagerMock.PasswordSignInAsync(Arg.Any<string>(), Arg.Any<string>(), Arg.Any<bool>(), Arg.Any<bool>()).Returns(SignInResult.Failed);
@@ -527,16 +459,10 @@ namespace Company.WebApplication1.Application.MVC.Tests.Controllers
         public async void Register_CalledWithNoReturnUrlAndModelStateValid_ViewDataContainsNullInReturnUrl()
         {
             //Arrange
-            var registerViewModel = new RegisterViewModel
-            {
-                Email = "",
-                Password = "",
-                ConfirmPassword = ""
-            };
             _userManagerMock.CreateAsync(Arg.Any<ApplicationUser>(), Arg.Any<string>()).Returns(IdentityResult.Failed());
 
             //Act
-            var result = await _uut.Register(registerViewModel) as ViewResult;
+            var result = await _uut.Register(new RegisterViewModel()) as ViewResult;
 
             //Assert
             Assert.Null(result.ViewData["ReturnUrl"]);
@@ -547,16 +473,10 @@ namespace Company.WebApplication1.Application.MVC.Tests.Controllers
         {
             //Arrange
             var returnUrl = "123";
-            var registerViewModel = new RegisterViewModel
-            {
-                Email = "",
-                Password = "",
-                ConfirmPassword = ""
-            };
             _userManagerMock.CreateAsync(Arg.Any<ApplicationUser>(), Arg.Any<string>()).Returns(IdentityResult.Failed());
 
             //Act
-            var result = await _uut.Register(registerViewModel, returnUrl) as ViewResult;
+            var result = await _uut.Register(new RegisterViewModel(), returnUrl) as ViewResult;
 
             //Assert
             Assert.Equal(returnUrl, result.ViewData["ReturnUrl"]);
@@ -582,9 +502,9 @@ namespace Company.WebApplication1.Application.MVC.Tests.Controllers
             _uut.ModelState.AddModelError("Error", "Error");
             var registerViewModel = new RegisterViewModel
             {
-                Email = "",
-                Password = "",
-                ConfirmPassword = ""
+                Email = "123",
+                Password = "123",
+                ConfirmPassword = "123"
             };
 
             //Act
@@ -600,16 +520,10 @@ namespace Company.WebApplication1.Application.MVC.Tests.Controllers
         public async void Register_UserManagerCreateAsyncCalled()
         {
             //Arrange
-            var registerViewModel = new RegisterViewModel
-            {
-                Email = "",
-                Password = "",
-                ConfirmPassword = ""
-            };
             _userManagerMock.CreateAsync(Arg.Any<ApplicationUser>(), Arg.Any<string>()).Returns(IdentityResult.Failed());
 
             //Act
-            var result = await _uut.Register(registerViewModel) as ViewResult;
+            var result = await _uut.Register(new RegisterViewModel()) as ViewResult;
 
             //Assert
             await _userManagerMock.Received().CreateAsync(Arg.Any<ApplicationUser>(), Arg.Any<string>());
@@ -632,17 +546,11 @@ namespace Company.WebApplication1.Application.MVC.Tests.Controllers
         public async void Register_UserManagerCreateAsyncFails_ModelErrorsAdded()
         {
             //Arrange
-            var registerViewModel = new RegisterViewModel
-            {
-                Email = "",
-                Password = "",
-                ConfirmPassword = ""
-            };
             _userManagerMock.CreateAsync(Arg.Any<ApplicationUser>(), Arg.Any<string>())
                 .Returns(IdentityResult.Failed(new IdentityError{Description = "CreateAsyncErrorForTest"}));
 
             //Act
-            var result = await _uut.Register(registerViewModel) as ViewResult;
+            var result = await _uut.Register(new RegisterViewModel()) as ViewResult;
 
             //Assert
             Assert.Equal("CreateAsyncErrorForTest", result.ViewData.ModelState.Root.Errors.FirstOrDefault().ErrorMessage);
@@ -652,17 +560,11 @@ namespace Company.WebApplication1.Application.MVC.Tests.Controllers
         public async void Register_UserManagerCreateAsyncFails_DefaultViewReturned()
         {
             //Arrange
-            var registerViewModel = new RegisterViewModel
-            {
-                Email = "",
-                Password = "",
-                ConfirmPassword = ""
-            };
             _userManagerMock.CreateAsync(Arg.Any<ApplicationUser>(), Arg.Any<string>())
                 .Returns(IdentityResult.Failed());
 
             //Act
-            var result = await _uut.Register(registerViewModel) as ViewResult;
+            var result = await _uut.Register(new RegisterViewModel()) as ViewResult;
 
             //Assert
             Assert.Null(result.ViewName);
@@ -674,9 +576,9 @@ namespace Company.WebApplication1.Application.MVC.Tests.Controllers
             //Arrange
             var registerViewModel = new RegisterViewModel
             {
-                Email = "",
-                Password = "",
-                ConfirmPassword = ""
+                Email = "123",
+                Password = "123",
+                ConfirmPassword = "123"
             };
             _userManagerMock.CreateAsync(Arg.Any<ApplicationUser>(), Arg.Any<string>())
                 .Returns(IdentityResult.Failed());
@@ -694,17 +596,11 @@ namespace Company.WebApplication1.Application.MVC.Tests.Controllers
         public async void Register_UserManagerCreateAsyncFails_SignInManagerSignInAsyncNotCalled()
         {
             //Arrange
-            var registerViewModel = new RegisterViewModel
-            {
-                Email = "",
-                Password = "",
-                ConfirmPassword = ""
-            };
             _userManagerMock.CreateAsync(Arg.Any<ApplicationUser>(), Arg.Any<string>())
                 .Returns(IdentityResult.Failed());
 
             //Act
-            var result = await _uut.Register(registerViewModel) as ViewResult;
+            var result = await _uut.Register(new RegisterViewModel()) as ViewResult;
 
             //Assert
             await _signInManagerMock.DidNotReceive().SignInAsync(Arg.Any<ApplicationUser>(), Arg.Any<bool>());
@@ -714,17 +610,11 @@ namespace Company.WebApplication1.Application.MVC.Tests.Controllers
         public async void Register_UserManagerCreateAsyncSuccess_SignInManagerSignInAsyncCalled()
         {
             //Arrange
-            var registerViewModel = new RegisterViewModel
-            {
-                Email = "",
-                Password = "",
-                ConfirmPassword = ""
-            };
             _userManagerMock.CreateAsync(Arg.Any<ApplicationUser>(), Arg.Any<string>())
                 .Returns(IdentityResult.Success);
 
             //Act
-            var result = await _uut.Register(registerViewModel) as RedirectToActionResult;
+            var result = await _uut.Register(new RegisterViewModel()) as RedirectToActionResult;
 
             //Assert
             await _signInManagerMock.Received().SignInAsync(Arg.Any<ApplicationUser>(), Arg.Any<bool>());
@@ -734,18 +624,12 @@ namespace Company.WebApplication1.Application.MVC.Tests.Controllers
         public async void Register_UserManagerCreateAsyncSuccessReturnUrlIsLocal_RedirectResultReturned()
         {
             //Arrange
-            var registerViewModel = new RegisterViewModel
-            {
-                Email = "",
-                Password = "",
-                ConfirmPassword = ""
-            };
             _userManagerMock.CreateAsync(Arg.Any<ApplicationUser>(), Arg.Any<string>())
                 .Returns(IdentityResult.Success);
             _uut.Url.IsLocalUrl(Arg.Any<string>()).Returns(true);
 
             //Act
-            var result = await _uut.Register(registerViewModel, "123");
+            var result = await _uut.Register(new RegisterViewModel(), "123");
 
             //Assert
             Assert.IsType<RedirectResult>(result);
@@ -755,18 +639,12 @@ namespace Company.WebApplication1.Application.MVC.Tests.Controllers
         public async void Register_UserManagerCreateAsyncSuccessReturnUrlNotLocal_ReturnsRedirectToHomeController()
         {
             //Arrange
-            var registerViewModel = new RegisterViewModel
-            {
-                Email = "",
-                Password = "",
-                ConfirmPassword = ""
-            };
             _userManagerMock.CreateAsync(Arg.Any<ApplicationUser>(), Arg.Any<string>())
                 .Returns(IdentityResult.Success);
             _uut.Url.IsLocalUrl(Arg.Any<string>()).Returns(false);
 
             //Act
-            var result = await _uut.Register(registerViewModel, "123") as RedirectToActionResult;
+            var result = await _uut.Register(new RegisterViewModel(), "123") as RedirectToActionResult;
 
             //Assert
             Assert.Equal("Home", result.ControllerName);
@@ -776,18 +654,12 @@ namespace Company.WebApplication1.Application.MVC.Tests.Controllers
         public async void Register_UserManagerCreateAsyncSuccessReturnUrlNotLocal_ReturnsRedirectToActionIndex()
         {
             //Arrange
-            var registerViewModel = new RegisterViewModel
-            {
-                Email = "",
-                Password = "",
-                ConfirmPassword = ""
-            };
             _userManagerMock.CreateAsync(Arg.Any<ApplicationUser>(), Arg.Any<string>())
                 .Returns(IdentityResult.Success);
             _uut.Url.IsLocalUrl(Arg.Any<string>()).Returns(false);
 
             //Act
-            var result = await _uut.Register(registerViewModel, "123") as RedirectToActionResult;
+            var result = await _uut.Register(new RegisterViewModel(), "123") as RedirectToActionResult;
 
             //Assert
             Assert.Equal("Index", result.ActionName);
@@ -1043,16 +915,12 @@ namespace Company.WebApplication1.Application.MVC.Tests.Controllers
         public async void ExternalLoginConfirmation_UserManagerCreateAsyncError_ModelErrorsAdded()
         {
             //Arrange
-            var externalLoginConfirmationViewModel = new ExternalLoginConfirmationViewModel
-            {
-                Email = ""
-            };
             _signInManagerMock.GetExternalLoginInfoAsync().Returns(new ExternalLoginInfo(new ClaimsPrincipal(), "", "", ""));
             _userManagerMock.CreateAsync(Arg.Any<ApplicationUser>())
                 .Returns(IdentityResult.Failed(new IdentityError{Description = "CreateAsyncErrorForTest"}));
 
             //Act
-            var result = await _uut.ExternalLoginConfirmation(externalLoginConfirmationViewModel) as ViewResult;
+            var result = await _uut.ExternalLoginConfirmation(new ExternalLoginConfirmationViewModel()) as ViewResult;
 
             //Assert
             Assert.Equal("CreateAsyncErrorForTest", result.ViewData.ModelState.Root.Errors.FirstOrDefault().ErrorMessage);
@@ -1062,16 +930,12 @@ namespace Company.WebApplication1.Application.MVC.Tests.Controllers
         public async void ExternalLoginConfirmation_UserManagerCreateAsyncError_DefaultViewReturned()
         {
             //Arrange
-            var externalLoginConfirmationViewModel = new ExternalLoginConfirmationViewModel
-            {
-                Email = ""
-            };
             _signInManagerMock.GetExternalLoginInfoAsync().Returns(new ExternalLoginInfo(new ClaimsPrincipal(), "", "", ""));
             _userManagerMock.CreateAsync(Arg.Any<ApplicationUser>())
                 .Returns(IdentityResult.Failed());
 
             //Act
-            var result = await _uut.ExternalLoginConfirmation(externalLoginConfirmationViewModel) as ViewResult;
+            var result = await _uut.ExternalLoginConfirmation(new ExternalLoginConfirmationViewModel()) as ViewResult;
 
             //Assert
             Assert.Null(result.ViewName);
@@ -1081,16 +945,12 @@ namespace Company.WebApplication1.Application.MVC.Tests.Controllers
         public async void ExternalLoginConfirmation_UserManagerCreateAsyncError_SignInManagerSignInNotCalled()
         {
             //Arrange
-            var externalLoginConfirmationViewModel = new ExternalLoginConfirmationViewModel
-            {
-                Email = ""
-            };
             _signInManagerMock.GetExternalLoginInfoAsync().Returns(new ExternalLoginInfo(new ClaimsPrincipal(), "", "", ""));
             _userManagerMock.CreateAsync(Arg.Any<ApplicationUser>())
                 .Returns(IdentityResult.Failed());
 
             //Act
-            var result = await _uut.ExternalLoginConfirmation(externalLoginConfirmationViewModel) as ViewResult;
+            var result = await _uut.ExternalLoginConfirmation(new ExternalLoginConfirmationViewModel()) as ViewResult;
 
             //Assert
             await _signInManagerMock.DidNotReceive().SignInAsync(Arg.Any<ApplicationUser>(),Arg.Any<bool>());
@@ -1100,17 +960,13 @@ namespace Company.WebApplication1.Application.MVC.Tests.Controllers
         public async void ExternalLoginConfirmation_UserManagerAddLoginError_ModelErrorsAdded()
         {
             //Arrange
-            var externalLoginConfirmationViewModel = new ExternalLoginConfirmationViewModel
-            {
-                Email = ""
-            };
             _signInManagerMock.GetExternalLoginInfoAsync().Returns(new ExternalLoginInfo(new ClaimsPrincipal(), "", "", ""));
             _userManagerMock.CreateAsync(Arg.Any<ApplicationUser>()).Returns(IdentityResult.Success);
             _userManagerMock.AddLoginAsync(Arg.Any<ApplicationUser>(), Arg.Any<UserLoginInfo>())
                 .Returns(IdentityResult.Failed(new IdentityError{Description = "AddLoginAsyncErrorForTest"}));
 
             //Act
-            var result = await _uut.ExternalLoginConfirmation(externalLoginConfirmationViewModel) as ViewResult;
+            var result = await _uut.ExternalLoginConfirmation(new ExternalLoginConfirmationViewModel()) as ViewResult;
 
             //Assert
             Assert.Equal("AddLoginAsyncErrorForTest", result.ViewData.ModelState.Root.Errors.FirstOrDefault().ErrorMessage);
@@ -1120,17 +976,13 @@ namespace Company.WebApplication1.Application.MVC.Tests.Controllers
         public async void ExternalLoginConfirmation_UserManagerAddLoginError_DefaultViewReturned()
         {
             //Arrange
-            var externalLoginConfirmationViewModel = new ExternalLoginConfirmationViewModel
-            {
-                Email = ""
-            };
             _signInManagerMock.GetExternalLoginInfoAsync().Returns(new ExternalLoginInfo(new ClaimsPrincipal(), "", "", ""));
             _userManagerMock.CreateAsync(Arg.Any<ApplicationUser>()).Returns(IdentityResult.Success);
             _userManagerMock.AddLoginAsync(Arg.Any<ApplicationUser>(), Arg.Any<UserLoginInfo>())
                 .Returns(IdentityResult.Failed());
 
             //Act
-            var result = await _uut.ExternalLoginConfirmation(externalLoginConfirmationViewModel) as ViewResult;
+            var result = await _uut.ExternalLoginConfirmation(new ExternalLoginConfirmationViewModel()) as ViewResult;
 
             //Assert
             Assert.Null(result.ViewName);
@@ -1140,17 +992,13 @@ namespace Company.WebApplication1.Application.MVC.Tests.Controllers
         public async void ExternalLoginConfirmation_UserManagerAddLoginError_SignInManagerSignInNotCalled()
         {
             //Arrange
-            var externalLoginConfirmationViewModel = new ExternalLoginConfirmationViewModel
-            {
-                Email = ""
-            };
             _signInManagerMock.GetExternalLoginInfoAsync().Returns(new ExternalLoginInfo(new ClaimsPrincipal(), "", "", ""));
             _userManagerMock.CreateAsync(Arg.Any<ApplicationUser>()).Returns(IdentityResult.Success);
             _userManagerMock.AddLoginAsync(Arg.Any<ApplicationUser>(), Arg.Any<UserLoginInfo>())
                 .Returns(IdentityResult.Failed());
 
             //Act
-            var result = await _uut.ExternalLoginConfirmation(externalLoginConfirmationViewModel) as ViewResult;
+            var result = await _uut.ExternalLoginConfirmation(new ExternalLoginConfirmationViewModel()) as ViewResult;
 
             //Assert
             await _signInManagerMock.DidNotReceive().SignInAsync(Arg.Any<ApplicationUser>(), Arg.Any<bool>());
@@ -1160,17 +1008,13 @@ namespace Company.WebApplication1.Application.MVC.Tests.Controllers
         public async void ExternalLoginConfirmation_NoErrors_SignInManagerSignInCalled()
         {
             //Arrange
-            var externalLoginConfirmationViewModel = new ExternalLoginConfirmationViewModel
-            {
-                Email = ""
-            };
             _signInManagerMock.GetExternalLoginInfoAsync().Returns(new ExternalLoginInfo(new ClaimsPrincipal(), "", "", ""));
             _userManagerMock.CreateAsync(Arg.Any<ApplicationUser>()).Returns(IdentityResult.Success);
             _userManagerMock.AddLoginAsync(Arg.Any<ApplicationUser>(), Arg.Any<UserLoginInfo>())
                 .Returns(IdentityResult.Success);
 
             //Act
-            var result = await _uut.ExternalLoginConfirmation(externalLoginConfirmationViewModel) as ViewResult;
+            var result = await _uut.ExternalLoginConfirmation(new ExternalLoginConfirmationViewModel()) as ViewResult;
 
             //Assert
             await _signInManagerMock.Received().SignInAsync(Arg.Any<ApplicationUser>(),Arg.Any<bool>());
@@ -1180,10 +1024,6 @@ namespace Company.WebApplication1.Application.MVC.Tests.Controllers
         public async void ExternalLoginConfirmation_NoErrorsReturnUrlIsLocal_ReturnsRedirectResult()
         {
             //Arrange
-            var externalLoginConfirmationViewModel = new ExternalLoginConfirmationViewModel
-            {
-                Email = ""
-            };
             _signInManagerMock.GetExternalLoginInfoAsync().Returns(new ExternalLoginInfo(new ClaimsPrincipal(), "", "", ""));
             _userManagerMock.CreateAsync(Arg.Any<ApplicationUser>()).Returns(IdentityResult.Success);
             _userManagerMock.AddLoginAsync(Arg.Any<ApplicationUser>(), Arg.Any<UserLoginInfo>())
@@ -1191,7 +1031,7 @@ namespace Company.WebApplication1.Application.MVC.Tests.Controllers
             _uut.Url.IsLocalUrl(Arg.Any<string>()).Returns(true);
 
             //Act
-            var result = await _uut.ExternalLoginConfirmation(externalLoginConfirmationViewModel, "123");
+            var result = await _uut.ExternalLoginConfirmation(new ExternalLoginConfirmationViewModel(), "123");
 
             //Assert
             Assert.IsType<RedirectResult>(result);
@@ -1201,10 +1041,6 @@ namespace Company.WebApplication1.Application.MVC.Tests.Controllers
         public async void ExternalLoginConfirmation_NoErrorsReturnUrlNotLocal_ReturnsRedirectToHomeController()
         {
             //Arrange
-            var externalLoginConfirmationViewModel = new ExternalLoginConfirmationViewModel
-            {
-                Email = ""
-            };
             _signInManagerMock.GetExternalLoginInfoAsync().Returns(new ExternalLoginInfo(new ClaimsPrincipal(), "", "", ""));
             _userManagerMock.CreateAsync(Arg.Any<ApplicationUser>()).Returns(IdentityResult.Success);
             _userManagerMock.AddLoginAsync(Arg.Any<ApplicationUser>(), Arg.Any<UserLoginInfo>())
@@ -1212,7 +1048,7 @@ namespace Company.WebApplication1.Application.MVC.Tests.Controllers
             _uut.Url.IsLocalUrl(Arg.Any<string>()).Returns(false);
 
             //Act
-            var result = await _uut.ExternalLoginConfirmation(externalLoginConfirmationViewModel, "123") as RedirectToActionResult;
+            var result = await _uut.ExternalLoginConfirmation(new ExternalLoginConfirmationViewModel(), "123") as RedirectToActionResult;
 
             //Assert
             Assert.Equal("Home", result.ControllerName);
@@ -1222,10 +1058,6 @@ namespace Company.WebApplication1.Application.MVC.Tests.Controllers
         public async void ExternalLoginConfirmation_NoErrorsReturnUrlNotLocal_ReturnsRedirectToActionIndex()
         {
             //Arrange
-            var externalLoginConfirmationViewModel = new ExternalLoginConfirmationViewModel
-            {
-                Email = ""
-            };
             _signInManagerMock.GetExternalLoginInfoAsync().Returns(new ExternalLoginInfo(new ClaimsPrincipal(), "", "", ""));
             _userManagerMock.CreateAsync(Arg.Any<ApplicationUser>()).Returns(IdentityResult.Success);
             _userManagerMock.AddLoginAsync(Arg.Any<ApplicationUser>(), Arg.Any<UserLoginInfo>())
@@ -1233,7 +1065,7 @@ namespace Company.WebApplication1.Application.MVC.Tests.Controllers
             _uut.Url.IsLocalUrl(Arg.Any<string>()).Returns(false);
 
             //Act
-            var result = await _uut.ExternalLoginConfirmation(externalLoginConfirmationViewModel, "123") as RedirectToActionResult;
+            var result = await _uut.ExternalLoginConfirmation(new ExternalLoginConfirmationViewModel(), "123") as RedirectToActionResult;
 
             //Assert
             Assert.Equal("Index", result.ActionName);
@@ -1367,14 +1199,10 @@ namespace Company.WebApplication1.Application.MVC.Tests.Controllers
         public async void ForgotPassword_UnregisteredUser_ReturnsForgotPasswordConfirmationView()
         {
             //Arrange
-            var forgotPasswordViewModel = new ForgotPasswordViewModel
-            {
-                Email = ""
-            };
             _userManagerMock.FindByEmailAsync(Arg.Any<string>()).Returns(default(ApplicationUser));
 
             //Act
-            var result = await _uut.ForgotPassword(forgotPasswordViewModel) as ViewResult;
+            var result = await _uut.ForgotPassword(new ForgotPasswordViewModel()) as ViewResult;
 
             //Assert
             Assert.Equal("ForgotPasswordConfirmation", result.ViewName);
@@ -1384,15 +1212,11 @@ namespace Company.WebApplication1.Application.MVC.Tests.Controllers
         public async void ForgotPassword_EmailNotConfirmed_ReturnsForgotPasswordConfirmationView()
         {
             //Arrange
-            var forgotPasswordViewModel = new ForgotPasswordViewModel
-            {
-                Email = ""
-            };
             _userManagerMock.FindByEmailAsync(Arg.Any<string>()).Returns(new ApplicationUser());
             _userManagerMock.IsEmailConfirmedAsync(Arg.Any<ApplicationUser>()).Returns(false);
 
             //Act
-            var result = await _uut.ForgotPassword(forgotPasswordViewModel) as ViewResult;
+            var result = await _uut.ForgotPassword(new ForgotPasswordViewModel()) as ViewResult;
 
             //Assert
             Assert.Equal("ForgotPasswordConfirmation", result.ViewName);
@@ -1402,15 +1226,11 @@ namespace Company.WebApplication1.Application.MVC.Tests.Controllers
         public async void ForgotPassword_EmailNotConfirmedAndUnregisteredUser_ReturnsForgotPasswordConfirmationView()
         {
             //Arrange
-            var forgotPasswordViewModel = new ForgotPasswordViewModel
-            {
-                Email = ""
-            };
             _userManagerMock.FindByEmailAsync(Arg.Any<string>()).Returns(default(ApplicationUser));
             _userManagerMock.IsEmailConfirmedAsync(Arg.Any<ApplicationUser>()).Returns(false);
 
             //Act
-            var result = await _uut.ForgotPassword(forgotPasswordViewModel) as ViewResult;
+            var result = await _uut.ForgotPassword(new ForgotPasswordViewModel()) as ViewResult;
 
             //Assert
             Assert.Equal("ForgotPasswordConfirmation", result.ViewName);
@@ -1496,14 +1316,10 @@ namespace Company.WebApplication1.Application.MVC.Tests.Controllers
         public async void ResetPassword_UnregisteredUser_ReturnsRedirectToResetpasswordConfirmationAction()
         {
             //Arrange
-            var resetPasswordViewModel = new ResetPasswordViewModel
-            {
-                Email = ""
-            };
             _userManagerMock.FindByEmailAsync(Arg.Any<string>()).Returns(default(ApplicationUser));
 
             //Act
-            var result = await _uut.ResetPassword(resetPasswordViewModel) as RedirectToActionResult;
+            var result = await _uut.ResetPassword(new ResetPasswordViewModel()) as RedirectToActionResult;
 
             //Assert
             Assert.Equal("ResetPasswordConfirmation", result.ActionName);
@@ -1513,18 +1329,12 @@ namespace Company.WebApplication1.Application.MVC.Tests.Controllers
         public async void ResetPassword_ResetPasswordFail_ModelErrorsAdded()
         {
             //Arrange
-            var resetPasswordViewModel = new ResetPasswordViewModel
-            {
-                Email = "",
-                Code = "",
-                Password = ""
-            };
             _userManagerMock.FindByEmailAsync(Arg.Any<string>()).Returns(new ApplicationUser());
             _userManagerMock.ResetPasswordAsync(Arg.Any<ApplicationUser>(), Arg.Any<string>(), Arg.Any<string>())
                 .Returns(IdentityResult.Failed(new IdentityError{Description = "ResetPasswordAsyncErrorForTest"}));
 
             //Act
-            var result = await _uut.ResetPassword(resetPasswordViewModel) as ViewResult;
+            var result = await _uut.ResetPassword(new ResetPasswordViewModel()) as ViewResult;
 
             //Assert
             Assert.Equal("ResetPasswordAsyncErrorForTest", result.ViewData.ModelState.Root.Errors.FirstOrDefault().ErrorMessage);
@@ -1534,18 +1344,12 @@ namespace Company.WebApplication1.Application.MVC.Tests.Controllers
         public async void ResetPassword_ResetPasswordFail_DefaultViewReturned()
         {
             //Arrange
-            var resetPasswordViewModel = new ResetPasswordViewModel
-            {
-                Email = "",
-                Code = "",
-                Password = ""
-            };
             _userManagerMock.FindByEmailAsync(Arg.Any<string>()).Returns(new ApplicationUser());
             _userManagerMock.ResetPasswordAsync(Arg.Any<ApplicationUser>(), Arg.Any<string>(), Arg.Any<string>())
                 .Returns(IdentityResult.Failed());
 
             //Act
-            var result = await _uut.ResetPassword(resetPasswordViewModel) as ViewResult;
+            var result = await _uut.ResetPassword(new ResetPasswordViewModel()) as ViewResult;
 
             //Assert
             Assert.Null(result.ViewName);
@@ -1555,18 +1359,12 @@ namespace Company.WebApplication1.Application.MVC.Tests.Controllers
         public async void ResetPassword_NoErrors_ReturnsRedirectToResetpasswordConfirmationAction()
         {
             //Arrange
-            var resetPasswordViewModel = new ResetPasswordViewModel
-            {
-                Email = "",
-                Code = "",
-                Password = ""
-            };
             _userManagerMock.FindByEmailAsync(Arg.Any<string>()).Returns(new ApplicationUser());
             _userManagerMock.ResetPasswordAsync(Arg.Any<ApplicationUser>(), Arg.Any<string>(), Arg.Any<string>())
                 .Returns(IdentityResult.Success);
 
             //Act
-            var result = await _uut.ResetPassword(resetPasswordViewModel) as RedirectToActionResult;
+            var result = await _uut.ResetPassword(new ResetPasswordViewModel()) as RedirectToActionResult;
 
             //Assert
             Assert.Equal("ResetPasswordConfirmation", result.ActionName);
@@ -1656,15 +1454,11 @@ namespace Company.WebApplication1.Application.MVC.Tests.Controllers
         public async void SendCode_EmptyTwoFactorToken_ErrorViewReturned()
         {
             //Arrange
-            var sendCodeViewModel = new SendCodeViewModel
-            {
-                SelectedProvider = ""
-            };
             _signInManagerMock.GetTwoFactorAuthenticationUserAsync().Returns(new ApplicationUser());
             _userManagerMock.GenerateTwoFactorTokenAsync(Arg.Any<ApplicationUser>(), Arg.Any<string>()).Returns("");
 
             //Act
-            var result = await _uut.SendCode(sendCodeViewModel) as ViewResult;
+            var result = await _uut.SendCode(new SendCodeViewModel()) as ViewResult;
 
             //Assert
             Assert.Equal("Error", result.ViewName);
@@ -1712,17 +1506,11 @@ namespace Company.WebApplication1.Application.MVC.Tests.Controllers
         public async void SendCode_ReturnsRedirectToActionVerifyCode()
         {
             //Arrange
-            var sendCodeViewModel = new SendCodeViewModel
-            {
-                SelectedProvider = "",
-                ReturnUrl = "",
-                RememberMe = true
-            };
             _signInManagerMock.GetTwoFactorAuthenticationUserAsync().Returns(new ApplicationUser());
             _userManagerMock.GenerateTwoFactorTokenAsync(Arg.Any<ApplicationUser>(), Arg.Any<string>()).Returns("1");
 
             //Act
-            var result = await _uut.SendCode(sendCodeViewModel) as RedirectToActionResult;
+            var result = await _uut.SendCode(new SendCodeViewModel()) as RedirectToActionResult;
 
             //Assert
             Assert.Equal("VerifyCode", result.ActionName);
@@ -1815,18 +1603,12 @@ namespace Company.WebApplication1.Application.MVC.Tests.Controllers
         public async void VerifyCode_TwoFactorSignInAsyncSuccessAndReturnUrlIsLocal_ReturnsRedirectResult()
         {
             //Arrange
-            var verifyCodeViewModel = new VerifyCodeViewModel
-            {
-                Provider = "",
-                ReturnUrl = "123",
-                RememberMe = true
-            };
             _signInManagerMock.TwoFactorSignInAsync(Arg.Any<string>(), Arg.Any<string>(), Arg.Any<bool>(), Arg.Any<bool>())
                 .Returns(SignInResult.Success);
             _uut.Url.IsLocalUrl(Arg.Any<string>()).Returns(true);
 
             //Act
-            var result = await _uut.VerifyCode(verifyCodeViewModel);
+            var result = await _uut.VerifyCode(new VerifyCodeViewModel { ReturnUrl = "123" });
 
             //Assert
             Assert.IsType<RedirectResult>(result);
@@ -1836,18 +1618,12 @@ namespace Company.WebApplication1.Application.MVC.Tests.Controllers
         public async void VerifyCode_TwoFactorSignInAsyncSuccessAndReturnUrlNotLocal_ReturnsRedirectToHomeController()
         {
             //Arrange
-            var verifyCodeViewModel = new VerifyCodeViewModel
-            {
-                Provider = "",
-                ReturnUrl = "123",
-                RememberMe = true
-            };
             _signInManagerMock.TwoFactorSignInAsync(Arg.Any<string>(), Arg.Any<string>(), Arg.Any<bool>(), Arg.Any<bool>())
                 .Returns(SignInResult.Success);
             _uut.Url.IsLocalUrl(Arg.Any<string>()).Returns(false);
 
             //Act
-            var result = await _uut.VerifyCode(verifyCodeViewModel) as RedirectToActionResult;
+            var result = await _uut.VerifyCode(new VerifyCodeViewModel()) as RedirectToActionResult;
 
             //Assert
             Assert.Equal("Home", result.ControllerName);
@@ -1857,18 +1633,12 @@ namespace Company.WebApplication1.Application.MVC.Tests.Controllers
         public async void VerifyCode_TwoFactorSignInAsyncSuccessAndReturnUrlNotLocal_ReturnsRedirectToActionIndex()
         {
             //Arrange
-            var verifyCodeViewModel = new VerifyCodeViewModel
-            {
-                Provider = "",
-                ReturnUrl = "123",
-                RememberMe = true
-            };
             _signInManagerMock.TwoFactorSignInAsync(Arg.Any<string>(), Arg.Any<string>(), Arg.Any<bool>(), Arg.Any<bool>())
                 .Returns(SignInResult.Success);
             _uut.Url.IsLocalUrl(Arg.Any<string>()).Returns(false);
 
             //Act
-            var result = await _uut.VerifyCode(verifyCodeViewModel) as RedirectToActionResult;
+            var result = await _uut.VerifyCode(new VerifyCodeViewModel()) as RedirectToActionResult;
 
             //Assert
             Assert.Equal("Index", result.ActionName);
@@ -1878,17 +1648,11 @@ namespace Company.WebApplication1.Application.MVC.Tests.Controllers
         public async void VerifyCode_TwoFactorSignInAsyncLockOut_ReturnsLockedOutView()
         {
             //Arrange
-            var verifyCodeViewModel = new VerifyCodeViewModel
-            {
-                Provider = "",
-                ReturnUrl = "",
-                RememberMe = true
-            };
             _signInManagerMock.TwoFactorSignInAsync(Arg.Any<string>(), Arg.Any<string>(), Arg.Any<bool>(), Arg.Any<bool>())
                 .Returns(SignInResult.LockedOut);
 
             //Act
-            var result = await _uut.VerifyCode(verifyCodeViewModel) as ViewResult;
+            var result = await _uut.VerifyCode(new VerifyCodeViewModel()) as ViewResult;
 
             //Assert
             Assert.Equal("Lockout", result.ViewName);
@@ -1898,17 +1662,11 @@ namespace Company.WebApplication1.Application.MVC.Tests.Controllers
         public async void VerifyCode_TwoFactorSignInAsyncFail_ModelErrorsAdded()
         {
             //Arrange
-            var verifyCodeViewModel = new VerifyCodeViewModel
-            {
-                Provider = "",
-                ReturnUrl = "",
-                RememberMe = true
-            };
             _signInManagerMock.TwoFactorSignInAsync(Arg.Any<string>(), Arg.Any<string>(), Arg.Any<bool>(), Arg.Any<bool>())
                 .Returns(SignInResult.Failed);
 
             //Act
-            var result = await _uut.VerifyCode(verifyCodeViewModel) as ViewResult;
+            var result = await _uut.VerifyCode(new VerifyCodeViewModel()) as ViewResult;
 
             //Assert
             Assert.Equal("Invalid code.", result.ViewData.ModelState.Root.Errors.FirstOrDefault().ErrorMessage);
@@ -1918,17 +1676,11 @@ namespace Company.WebApplication1.Application.MVC.Tests.Controllers
         public async void VerifyCode_TwoFactorSignInAsyncFail_DefaultViewReturned()
         {
             //Arrange
-            var verifyCodeViewModel = new VerifyCodeViewModel
-            {
-                Provider = "",
-                ReturnUrl = "",
-                RememberMe = true
-            };
             _signInManagerMock.TwoFactorSignInAsync(Arg.Any<string>(), Arg.Any<string>(), Arg.Any<bool>(), Arg.Any<bool>())
                 .Returns(SignInResult.Failed);
 
             //Act
-            var result = await _uut.VerifyCode(verifyCodeViewModel) as ViewResult;
+            var result = await _uut.VerifyCode(new VerifyCodeViewModel()) as ViewResult;
 
             //Assert
             Assert.Null(result.ViewName);

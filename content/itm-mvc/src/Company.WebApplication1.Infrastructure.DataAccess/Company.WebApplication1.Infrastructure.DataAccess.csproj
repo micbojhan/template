@@ -11,7 +11,6 @@
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Company.WebApplication1.Core.Entities\Company.WebApplication1.Core.Entities.csproj" />
-    <ProjectReference Include="..\Company.WebApplication1.Core.DomainServices\Company.WebApplication1.Core.DomainServices.csproj" />
   </ItemGroup>
   <ItemGroup Condition="'$(NoTools)' != 'True'">
     <DotNetCliToolReference Include="Microsoft.EntityFrameworkCore.Tools.DotNet" Version="1.1.0-preview4-final" Condition="'$(IndividualAuth)' == 'True'" />

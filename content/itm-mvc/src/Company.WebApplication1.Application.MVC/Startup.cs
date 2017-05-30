@@ -21,7 +21,6 @@ using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.OpenIdConnect;
 #endif
 #if (IndividualAuth)
-using Company.WebApplication1.Core.DomainServices;
 using Company.WebApplication1.Core.Query;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 #endif
@@ -88,8 +87,6 @@ namespace Company.WebApplication1.Application.MVC
             services.AddIdentity<ApplicationUser, IdentityRole>()
                 .AddEntityFrameworkStores<ApplicationDbContext>()
                 .AddDefaultTokenProviders();
-            services.AddScoped(typeof(IGenericRepository<>), typeof(GenericRepository<>));
-            services.AddScoped<IUnitOfWork, UnitOfWork>();
 #endif
             services.AddMvc();
 

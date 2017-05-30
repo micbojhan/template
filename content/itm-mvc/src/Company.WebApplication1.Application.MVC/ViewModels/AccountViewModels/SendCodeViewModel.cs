@@ -4,12 +4,16 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc.Rendering;
 
-namespace Company.WebApplication1.Models.ManageViewModels
+namespace Company.WebApplication1.ViewModels.AccountViewModels
 {
-    public class ConfigureTwoFactorViewModel
+    public class SendCodeViewModel
     {
         public string SelectedProvider { get; set; }
 
         public ICollection<SelectListItem> Providers { get; set; }
+
+        public string ReturnUrl { get; set; }
+
+        public bool RememberMe { get; set; }
     }
 }

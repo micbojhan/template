@@ -14,7 +14,7 @@ using System.Collections.Generic;
 using System.Security.Claims;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
-using Company.WebApplication1.Models.ManageViewModels;
+using Company.WebApplication1.ViewModels.ManageViewModels;
 using Microsoft.AspNetCore.Mvc.ViewFeatures;
 using Newtonsoft.Json;
 using Microsoft.AspNetCore.Http.Authentication;

@@ -71,11 +71,10 @@ namespace Company.WebApplication1.Application.MVC.Tests.Controllers
 
             _emailMock = Substitute.For<IEmailSender>();
             _smsMock = Substitute.For<ISmsSender>();
-            var loggerFactoryMock = Substitute.For<ILoggerFactory>();
-            var loggerMockCtrl = Substitute.For<ILogger>();
-            loggerFactoryMock.CreateLogger("").Returns(loggerMockCtrl);
 
-            _uut = new AccountController(_userManagerMock, _signInManagerMock, cookieOptionsMock, _emailMock, _smsMock, loggerFactoryMock).WithDefaultMocks();
+            var loggerMockCtrl = Substitute.For<ILogger<AccountController>>();
+
+            _uut = new AccountController(_userManagerMock, _signInManagerMock, cookieOptionsMock, _emailMock, _smsMock, loggerMockCtrl).WithDefaultMocks();
         }
 
         //Login(string)

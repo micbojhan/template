@@ -1,12 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Globalization;
-using System.Linq;
-using System.Threading.Tasks;
+﻿using AutoMapper;
 
 namespace Company.WebApplication1.Application.MVC.Services
 {
-    public class AutoMapperConfig : AutoMapper.Profile
+    public class AutoMapperConfig : Profile
     {
         public AutoMapperConfig()
         {

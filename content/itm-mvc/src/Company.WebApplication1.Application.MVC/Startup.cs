@@ -88,12 +88,7 @@ namespace Company.WebApplication1.Application.MVC
                 .AddDefaultTokenProviders();
 #endif
             services.AddMvc();
-
-            var config = new MapperConfiguration(cfg =>
-            {
-                cfg.AddProfile(new AutoMapperConfig());
-            });
-            services.AddSingleton<IMapper>(sp => config.CreateMapper());
+            services.AddAutoMapper();
 #if (IndividualAuth)
 
             // Add application services.

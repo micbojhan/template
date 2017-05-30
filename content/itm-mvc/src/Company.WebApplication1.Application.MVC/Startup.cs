@@ -21,7 +21,6 @@ using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.OpenIdConnect;
 #endif
 #if (IndividualAuth)
-using Company.WebApplication1.Core.Query;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 #endif
 #if (OrganizationalAuth && OrgReadAccess)
@@ -100,8 +99,6 @@ namespace Company.WebApplication1.Application.MVC
             // Add application services.
             services.AddTransient<IEmailSender, AuthMessageSender>();
             services.AddTransient<ISmsSender, AuthMessageSender>();
-
-            services.AddScoped(typeof(QueryDb<>), typeof(QueryDb<>));
             services.AddScoped<ApplicationDbContext, ApplicationDbContext>();
 #elseif (OrganizationalAuth)
 

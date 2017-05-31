@@ -202,7 +202,7 @@ namespace Company.WebApplication1.Application.MVC
             {
 #if (SeedMethod == "OOSeed")
                 var context = serviceScope.ServiceProvider.GetService<ApplicationDbContext>();
-                context.MigrateAndSeedData();
+                context.MigrateAndSeedData(app.ApplicationServices);
 #elseif (SeedMethod == "CSVSeed")
                 context.Database.Migrate();
 

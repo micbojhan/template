@@ -1,3 +1,4 @@
+using System;
 using System.Linq;
 using Company.WebApplication1.Core.Entities;
 using Microsoft.AspNetCore.Identity;
@@ -8,7 +9,7 @@ namespace Company.WebApplication1.Infrastructure.DataAccess.Data.Seed
 {
     public static class ApplicationDbContextExtensions
     {
-        public static void MigrateAndSeedData(this ApplicationDbContext context)
+        public static void MigrateAndSeedData(this ApplicationDbContext context, IServiceProvider provider)
         {
             // check that all migrations have been applied
             if (context.Database.GetPendingMigrations().Any())
@@ -20,13 +21,12 @@ namespace Company.WebApplication1.Infrastructure.DataAccess.Data.Seed
 #if (IndividualAuth)
             if (!context.Users.Any(x => x.Email == "test@test.com"))
             {
-                var userToInsert = new ApplicationUser { Email = "test@test.com", UserName = "Test Testerson", PhoneNumber = "12345678" };
-                var password = new PasswordHasher<ApplicationUser>();
-                var hashed = password.HashPassword(userToInsert, "Password@123");
-                userToInsert.PasswordHash = hashed;
+                var userToInsert = new ApplicationUser { Email = "test@test.com", UserName = "test@test.com", PhoneNumber = "12345678" };
+                var password = "Password@123";
 
-                var userStore = new UserStore<ApplicationUser>(context);
-                userStore.CreateAsync(userToInsert).Wait();
+                // locator anti-pattern - TODO if find a better way
+                var userManager = provider.GetRequiredService<UserManager<ApplicationUser>>();
+                userManager.CreateAsync(userToInsert, password).Wait();
             }
 #endif
         }

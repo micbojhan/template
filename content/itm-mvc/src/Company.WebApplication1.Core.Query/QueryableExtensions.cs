@@ -23,10 +23,10 @@ public static class QueryableExtensions
             throw new ArgumentNullException(nameof(query));
 
         if (page < 1)
-            throw new ArgumentOutOfRangeException(nameof(page));
+            throw new ArgumentOutOfRangeException(nameof(page), page, "Value must be greater than 0.");
 
         if (pageSize < 1)
-            throw new ArgumentOutOfRangeException(nameof(pageSize));
+            throw new ArgumentOutOfRangeException(nameof(pageSize), pageSize, "Value must be greater than 0.");
 
         return query
             .Skip((page - 1) * pageSize)

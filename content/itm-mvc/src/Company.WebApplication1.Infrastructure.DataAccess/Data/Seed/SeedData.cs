@@ -4,6 +4,7 @@ using Company.WebApplication1.Core.Entities;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace Company.WebApplication1.Infrastructure.DataAccess.Data.Seed
 {

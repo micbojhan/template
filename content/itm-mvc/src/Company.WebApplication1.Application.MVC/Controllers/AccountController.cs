@@ -20,7 +20,7 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Company.WebApplication1.Core.Entities;
-using Company.WebApplication1.Models.AccountViewModels;
+using Company.WebApplication1.ViewModels.AccountViewModels;
 using Company.WebApplication1.Application.MVC.Services;
 #endif
 

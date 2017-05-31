@@ -24,7 +24,7 @@ namespace Company.WebApplication1.Infrastructure.DataAccess.Data.Seed
                 var userToInsert = new ApplicationUser { Email = "test@test.com", UserName = "test@test.com", PhoneNumber = "12345678" };
                 var password = "Password@123";
 
-                // locator anti-pattern - TODO if find a better way
+                // locator anti-pattern - TODO find a better way
                 var userManager = provider.GetRequiredService<UserManager<ApplicationUser>>();
                 userManager.CreateAsync(userToInsert, password).Wait();
             }

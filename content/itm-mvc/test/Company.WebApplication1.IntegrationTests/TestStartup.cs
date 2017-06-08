@@ -21,17 +21,17 @@ namespace Company.WebApplication1.IntegrationTests
     /// A test fixture which hosts the target project (project we wish to test) in an in-memory server.
     /// </summary>
     /// <typeparam name="TStartup">Target project's startup type</typeparam>
-    public class TestFixture<TStartup> : IDisposable
+    public class TestStartup<TStartup> : IDisposable
     {
         private const string SolutionName = "Company.WebApplication1.sln";
         private readonly TestServer _server;
 
-        public TestFixture()
+        public TestStartup()
             : this(Path.Combine("src"))
         {
         }
 
-        protected TestFixture(string solutionRelativeTargetProjectParentDir)
+        protected TestStartup(string solutionRelativeTargetProjectParentDir)
         {
             var startupAssembly = typeof(TStartup).GetTypeInfo().Assembly;
             var contentRoot = GetProjectPath(solutionRelativeTargetProjectParentDir, startupAssembly);
@@ -48,6 +48,32 @@ namespace Company.WebApplication1.IntegrationTests
         }
 
         public HttpClient Client { get; }
+
+        /// <summary>
+        /// Gets the application database context.
+        /// </summary>
+        /// <remarks>
+        /// Always wrap in using statement.
+        /// </remarks>
+        /// <example>
+        /// This sample shows how to correctly use the <see cref="DbContext"/>.
+        /// <code>
+        /// using (var context = testStartupInstance.DbContext)
+        /// {
+        ///     // do work...
+        /// }
+        /// </code>
+        /// </example>
+        /// <returns>The application database context.</returns>
+        public ApplicationDbContext DbContext
+        {
+            get
+            {
+                var serviceScope = _server.Host.Services.GetRequiredService<IServiceScopeFactory>().CreateScope();
+                var context = serviceScope.ServiceProvider.GetService<ApplicationDbContext>();
+                return context;
+            }
+        }
 
         public void Dispose()
         {

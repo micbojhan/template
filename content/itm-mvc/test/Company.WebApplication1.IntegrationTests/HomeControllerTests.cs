@@ -4,13 +4,15 @@ using Xunit;
 
 namespace Company.WebApplication1.IntegrationTests
 {
-    public class HomeControllerTests : IClassFixture<TestFixture<Company.WebApplication1.Application.MVC.Startup>>
+    public class HomeControllerTests
     {
         private readonly HttpClient _client;
+        private readonly TestStartup<Company.WebApplication1.Application.MVC.Startup> _fixture;
 
-        public HomeControllerTests(TestFixture<Company.WebApplication1.Application.MVC.Startup> fixture)
+        public HomeControllerTests()
         {
-            _client = fixture.Client;
+            _fixture = new TestStartup<Company.WebApplication1.Application.MVC.Startup>();
+            _client = _fixture.Client;
         }
 
         [Fact]

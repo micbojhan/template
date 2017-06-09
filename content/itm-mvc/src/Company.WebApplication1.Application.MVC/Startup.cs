@@ -1,10 +1,4 @@
-﻿using System.Linq;
-using Company.WebApplication1.Infrastructure.DataAccess;
-#if (SeedMethod == "OOSeed")
-using Company.WebApplication1.Infrastructure.DataAccess.Data.Seed;
-#elseif (SeedMethod == "CSVSeed")
-using Company.WebApplication1.Infrastructure.DataAccess.CsvSeeder;
-#endif
+﻿using Company.WebApplication1.Infrastructure.DataAccess;
 using Microsoft.EntityFrameworkCore;
 using Company.WebApplication1.Application.MVC.Services;
 using AutoMapper;
@@ -32,13 +26,19 @@ using Microsoft.IdentityModel.Tokens;
 #if (IndividualAuth)
 using Company.WebApplication1.Core.Entities;
 #endif
+using GeekLearning.Testavior.Configuration.Startup;
 
 namespace Company.WebApplication1.Application.MVC
 {
     public class Startup
     {
-        public Startup(IHostingEnvironment env)
+        private readonly IStartupConfigurationService _externalStartupConfiguration;
+
+        public Startup(IHostingEnvironment env, IStartupConfigurationService externalStartupConfiguration = null)
         {
+            _externalStartupConfiguration = externalStartupConfiguration;
+            _externalStartupConfiguration.ConfigureEnvironment(env);
+
 #if (IndividualAuth || OrganizationalAuth)
             var builder = new ConfigurationBuilder()
                 .SetBasePath(env.ContentRootPath)
@@ -100,11 +100,15 @@ namespace Company.WebApplication1.Application.MVC
             services.AddAuthentication(
                 SharedOptions => SharedOptions.SignInScheme = CookieAuthenticationDefaults.AuthenticationScheme);
 #endif
+
+            _externalStartupConfiguration.ConfigureServices(services, Configuration);
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IHostingEnvironment env, ILoggerFactory loggerFactory)
         {
+            _externalStartupConfiguration.Configure(app, env, loggerFactory);
+
             loggerFactory.AddDebug();
             loggerFactory.AddSerilog();
 
@@ -197,20 +201,6 @@ namespace Company.WebApplication1.Application.MVC
                     name: "default",
                     template: "{controller=Home}/{action=Index}/{id?}");
             });
-
-            using(var serviceScope = app.ApplicationServices.GetRequiredService<IServiceScopeFactory>().CreateScope())
-            {
-                var context = serviceScope.ServiceProvider.GetService<ApplicationDbContext>();
-#if (SeedMethod == "OOSeed")
-                context.MigrateAndSeedData(app.ApplicationServices);
-#elseif (SeedMethod == "CSVSeed")
-                context.Database.Migrate();
-
-                if (context.Users.Any() == false)
-                    context.Users.SeedFromFile("SeedData/contacts.csv");
-                context.SaveChanges();
-#endif
-            }
         }
     }
 }

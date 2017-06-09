@@ -1,14 +1,14 @@
+using Company.WebApplication1.Application.MVC;
+using Company.WebApplication1.Core.Entities;
+using Company.WebApplication1.Infrastructure.DataAccess;
+using Company.WebApplication1.ViewModels.AccountViewModels;
+using GeekLearning.Testavior.Environment;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.Extensions.DependencyInjection;
 using System.IO;
 using System.Net.Http;
 using System.Threading.Tasks;
 using Xunit;
-using GeekLearning.Testavior.Environment;
-using Company.WebApplication1.Core.Entities;
-using Company.WebApplication1.Application.MVC;
-using Company.WebApplication1.Infrastructure.DataAccess;
-using Company.WebApplication1.ViewModels.AccountViewModels;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.AspNetCore.Identity;
 
 namespace Company.WebApplication1.IntegrationTests
 {

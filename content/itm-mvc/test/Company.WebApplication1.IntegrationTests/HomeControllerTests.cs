@@ -1,10 +1,10 @@
+using Company.WebApplication1.Application.MVC;
+using Company.WebApplication1.Infrastructure.DataAccess;
+using GeekLearning.Testavior.Environment;
+using System.IO;
 using System.Net.Http;
 using System.Threading.Tasks;
 using Xunit;
-using GeekLearning.Testavior.Environment;
-using System.IO;
-using Company.WebApplication1.Application.MVC;
-using Company.WebApplication1.Infrastructure.DataAccess;
 
 namespace Company.WebApplication1.IntegrationTests
 {

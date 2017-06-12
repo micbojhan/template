@@ -2,6 +2,7 @@
 using Microsoft.EntityFrameworkCore;
 using Company.WebApplication1.Application.MVC.Services;
 using AutoMapper;
+using Serilog;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;

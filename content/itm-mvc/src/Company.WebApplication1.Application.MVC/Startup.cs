@@ -129,20 +129,20 @@ namespace Company.WebApplication1.Application.MVC
             app.UseOpenIdConnectAuthentication(new OpenIdConnectOptions
             {
                 ClientId = Configuration["Authentication:AzureAd:ClientId"],
-#if (OrgReadAccess)
+    #if (OrgReadAccess)
                 ClientSecret = Configuration["Authentication:AzureAd:ClientSecret"],
-#endif
-#if (MultiOrgAuth)
+    #endif
+    #if (MultiOrgAuth)
                 Authority = Configuration["Authentication:AzureAd:AADInstance"] + "Common",
-#elseif (SingleOrgAuth)
+    #elseif (SingleOrgAuth)
                 Authority = Configuration["Authentication:AzureAd:AADInstance"] + Configuration["Authentication:AzureAd:TenantId"],
-#endif
+    #endif
 #endif
 #if (MultiOrgAuth)
                 CallbackPath = Configuration["Authentication:AzureAd:CallbackPath"],
-#if (OrgReadAccess)
+    #if (OrgReadAccess)
                 ResponseType = OpenIdConnectResponseType.CodeIdToken,
-#endif
+    #endif
 
                 TokenValidationParameters = new TokenValidationParameters
                 {
@@ -175,12 +175,12 @@ namespace Company.WebApplication1.Application.MVC
                     //}
                 }
 #elseif (SingleOrgAuth)
-#if (OrgReadAccess)
+    #if (OrgReadAccess)
                 CallbackPath = Configuration["Authentication:AzureAd:CallbackPath"],
                 ResponseType = OpenIdConnectResponseType.CodeIdToken
-#else
+    #else
                 CallbackPath = Configuration["Authentication:AzureAd:CallbackPath"]
-#endif
+    #endif
 #endif
 #if (OrganizationalAuth)
             });

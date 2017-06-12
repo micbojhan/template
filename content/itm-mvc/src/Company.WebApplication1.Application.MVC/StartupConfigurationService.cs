@@ -25,11 +25,11 @@ namespace Company.WebApplication1.Application.MVC
             // Add framework services.
 #if (IndividualAuth)
             services.AddDbContext<ApplicationDbContext>(options =>
-#if (UseLocalDB)
+    #if (UseLocalDB)
                 options.UseSqlServer(configuration.GetConnectionString("DefaultConnection"), b => b.MigrationsAssembly("Company.WebApplication1.Infrastructure.DataAccess")));
-#else
+    #else
                 options.UseSqlite(configuration.GetConnectionString("DefaultConnection"), b => b.MigrationsAssembly("Company.WebApplication1.Infrastructure.DataAccess")));
-#endif
+    #endif
 #endif
         }
 

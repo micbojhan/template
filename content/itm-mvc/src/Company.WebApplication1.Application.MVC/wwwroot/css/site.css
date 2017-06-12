@@ -23,7 +23,7 @@ textarea {
     line-height: 1.4;
 }
 
-/*#if (IndividualAuth)
+/*#if (IndividualAuth) */
 /* buttons and links extension to use brackets: [ click me ] */
 .btn-bracketed::before {
     display: inline-block;
@@ -37,7 +37,7 @@ textarea {
     padding-left: 0.5em;
 }
 
-#endif*/
+/*#endif */
 /* Make .svg files in the carousel display properly in older browsers */
 .carousel-inner .item img[src$=".svg"] {
     width: 100%;

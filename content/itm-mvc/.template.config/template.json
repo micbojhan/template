@@ -321,7 +321,7 @@
     "NoTools": {
       "type": "parameter",
       "datatype": "bool",
-      "defaultValue": "true"
+      "defaultValue": "false"
     },
     "skipRestore": {
       "type": "parameter",

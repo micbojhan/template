@@ -2,7 +2,6 @@
 using Microsoft.EntityFrameworkCore;
 using Company.WebApplication1.Application.MVC.Services;
 using AutoMapper;
-using Serilog;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
@@ -103,9 +102,6 @@ namespace Company.WebApplication1.Application.MVC
         public void Configure(IApplicationBuilder app, IHostingEnvironment env, ILoggerFactory loggerFactory)
         {
             _externalStartupConfiguration.Configure(app, env, loggerFactory);
-
-            loggerFactory.AddDebug();
-            loggerFactory.AddSerilog();
 
             if (env.IsDevelopment())
             {

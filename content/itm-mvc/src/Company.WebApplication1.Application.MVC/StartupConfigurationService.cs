@@ -12,6 +12,7 @@ using Company.WebApplication1.Infrastructure.DataAccess.CsvSeeder;
 using Microsoft.Extensions.Logging;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Builder;
+using Serilog;
 
 namespace Company.WebApplication1.Application.MVC
 {
@@ -34,6 +35,9 @@ namespace Company.WebApplication1.Application.MVC
 
         public override void Configure(IApplicationBuilder app, IHostingEnvironment env, ILoggerFactory loggerFactory)
         {
+            loggerFactory.AddDebug();
+            loggerFactory.AddSerilog();
+
             using(var serviceScope = app.ApplicationServices.GetRequiredService<IServiceScopeFactory>().CreateScope())
             {
                 var context = serviceScope.ServiceProvider.GetService<ApplicationDbContext>();

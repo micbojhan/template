@@ -36,6 +36,9 @@ namespace Company.WebApplication1.Application.MVC
 
         public Startup(IHostingEnvironment env, IStartupConfigurationService externalStartupConfiguration = null)
         {
+            if (externalStartupConfiguration == null) // needed when running dotnet ef
+                externalStartupConfiguration = new StartupConfigurationService();
+
             _externalStartupConfiguration = externalStartupConfiguration;
             _externalStartupConfiguration.ConfigureEnvironment(env);
 

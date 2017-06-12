@@ -10,6 +10,7 @@
     <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="1.1.2" />
   </ItemGroup>
   <ItemGroup Condition="'$(NoTools)' != 'True'">
+    <!-- Usage: dotnet ef -s ..\Company.WebApplication1.Application.MVC\ [options] [command] -->
     <DotNetCliToolReference Include="Microsoft.EntityFrameworkCore.Tools.DotNet" Version="1.0.1" Condition="'$(IndividualAuth)' == 'True'" />
   </ItemGroup>
   <ItemGroup>

@@ -35,6 +35,7 @@
   </ItemGroup>
 
   <ItemGroup Condition="'$(NoTools)' != 'True'">
+    <!-- Usage: dotnet ef -p ..\Company.WebApplication1.Infrastructure.DataAccess\ [options] [command] -->
     <DotNetCliToolReference Include="Microsoft.EntityFrameworkCore.Tools.DotNet" Version="1.0.1" Condition="'$(IndividualAuth)' == 'True'" />
     <DotNetCliToolReference Include="Microsoft.Extensions.SecretManager.Tools" Version="1.0.1" Condition="'$(IndividualAuth)' == 'True' OR '$(OrganizationalAuth)' == 'True'" />
     <DotNetCliToolReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Tools" Version="1.0.1" />

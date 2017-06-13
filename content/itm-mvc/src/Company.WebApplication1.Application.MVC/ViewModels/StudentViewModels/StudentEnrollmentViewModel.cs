@@ -10,6 +10,5 @@ namespace Company.WebApplication1.Application.MVC.ViewModels.StudentViewModels
         [Required]
         [Display(Name = "Fag")]
         public CourseViewModel Course { get; set; }
-
     }
 }

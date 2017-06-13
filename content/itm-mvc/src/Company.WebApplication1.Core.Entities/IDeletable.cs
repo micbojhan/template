@@ -2,6 +2,6 @@ namespace Company.WebApplication1.Core.Entities
 {
     public interface IDeletable
     {
-        bool IsDeleted{get; set;}
+        bool IsDeleted { get; set; }
     }
 }

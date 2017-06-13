@@ -39,6 +39,7 @@ namespace Company.WebApplication1.Core.Command
                 };
                 Student.Enrollments.Add(enrollment);
             }
+
             _dbContext.Students.Add(Student);
             _dbContext.SaveChanges();
         }

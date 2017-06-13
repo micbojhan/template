@@ -30,9 +30,7 @@ namespace Company.WebApplication1.Application.MVC.Controllers
             if (pageSize < 1) pageSize = 1;
             if (pageSize > 20) pageSize = 20;
 
-            var studentSet = _dbContext.Students;
-
-            var studentQuery = studentSet
+            var studentQuery = _dbContext.Students
                                 .Include(x => x.Enrollments)                // Eager load enrollments and courses
                                     .ThenInclude(y => y.Course)             // because EF Core doesn't support lazy loading
                                 .OrderBy(item => item.LastName)

@@ -7,17 +7,18 @@ using Company.WebApplication1.Infrastructure.DataAccess;
 
 namespace Company.WebApplication1.Core.Command
 {
-    public class AddStudentCommand : BaseCommand<ApplicationUser>
+    public class AddStudentCommand : BaseCommand<Student>
     {
-        private readonly ApplicationDbContext _dbContext;
         public Student Student;
-
         public IEnumerable<int> SelectedCoursesId { get; set; }
 
-        public AddStudentCommand(ILogger<ApplicationUser> logger, ApplicationDbContext dbContext) : base(logger)
+        private readonly ApplicationDbContext _dbContext;
+
+        public AddStudentCommand(ILogger<Student> logger, ApplicationDbContext dbContext) : base(logger)
         {
             _dbContext = dbContext;
         }
+
         protected override void RunCommand()
         {
             // Instantiate a collection for the student object

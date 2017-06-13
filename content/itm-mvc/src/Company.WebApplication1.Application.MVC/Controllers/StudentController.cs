@@ -70,10 +70,5 @@ namespace Company.WebApplication1.Application.MVC.Controllers
 
             return RedirectToAction(nameof(Index));
         }
-
-        public IActionResult Error()
-        {
-            return View();
-        }
     }
 }

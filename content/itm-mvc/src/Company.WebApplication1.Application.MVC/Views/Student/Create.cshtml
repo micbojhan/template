@@ -1,48 +1,47 @@
 @model Company.WebApplication1.Application.MVC.ViewModels.StudentViewModels.CreateStudentViewModel
 
-<div class="container">
-    <div class="row">
-        <div class="col-xs-12">
-            <h2>Opret studerende</h2>
-        </div>
+<div class="row">
+    <div class="col-xs-12">
+        <h2>Opret studerende</h2>
     </div>
-    <div class="row">
-        <div class="col-xs-12">
-            <form asp-action="Create" method="post">
-                <div class="form-horizontal">
-                    <hr>
-                    <label asp-validation-sumary="ValidationSummary.All" class="text-danger"></label>
-                    <div class="form-group">
-                        <label asp-for="FirstMidName" class="control-label col-md-2"></label>
-                        <div class="col-md-10">
-                            <input asp-for="FirstMidName" class="form-control">
-                            <span asp-validation-for="FirstMidName" class="text-danger"></span>
-                        </div>
-                    </div>
+</div>
 
-                    <div class="form-group">
-                        <label asp-for="LastName" class="control-label col-md-2"></label>
-                        <div class="col-md-10">
-                            <input asp-for="LastName" class="form-control">
-                            <span asp-validation-for="LastName" class="text-danger"></span>
-                        </div>
-                    </div>
-
-                    <div class="form-group">
-                        <label asp-for="SelectedCourseIds" class="control-label col-md-2"></label>
-                        <div class="col-md-10">
-                            <select asp-for="SelectedCourseIds" asp-items="ViewBag.AvailableCourses"></select>
-                            <span asp-validation-for="SelectedCourseIds" class="text-danger"></span>
-                        </div>
-                    </div>
-
-                    <div class="form-group">
-                        <div class="col-md-offset-2 col-md-10">
-                            <input type="submit" value="Gem" class="btn btn-success">
-                        </div>
+<div class="row">
+    <div class="col-xs-12">
+        <form asp-action="Create" method="post">
+            <div class="form-horizontal">
+                <hr>
+                <label asp-validation-sumary="ValidationSummary.All" class="text-danger"></label>
+                <div class="form-group">
+                    <label asp-for="FirstMidName" class="control-label col-md-2"></label>
+                    <div class="col-md-10">
+                        <input asp-for="FirstMidName" class="form-control">
+                        <span asp-validation-for="FirstMidName" class="text-danger"></span>
                     </div>
                 </div>
-            </form>
-        </div>
+
+                <div class="form-group">
+                    <label asp-for="LastName" class="control-label col-md-2"></label>
+                    <div class="col-md-10">
+                        <input asp-for="LastName" class="form-control">
+                        <span asp-validation-for="LastName" class="text-danger"></span>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label asp-for="SelectedCourseIds" class="control-label col-md-2"></label>
+                    <div class="col-md-10">
+                        <select asp-for="SelectedCourseIds" asp-items="ViewBag.AvailableCourses"></select>
+                        <span asp-validation-for="SelectedCourseIds" class="text-danger"></span>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <div class="col-md-offset-2 col-md-10">
+                        <input type="submit" value="Gem" class="btn btn-success">
+                    </div>
+                </div>
+            </div>
+        </form>
     </div>
 </div>

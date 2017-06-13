@@ -1,39 +1,39 @@
 @model IEnumerable<Company.WebApplication1.Application.MVC.ViewModels.StudentViewModels.StudentViewModel>
 
-<div class="container">
-    <div class="row">
-        <nav aria-label="Side navigation">
-            <ul class="pagination">
-                @if(ViewBag.page > 1)
-                {
+<div class="row">
+    <nav aria-label="Side navigation">
+        <ul class="pagination">
+            @if(ViewBag.page > 1)
+            {
+            <li>
+                <a asp-route-page="@(ViewBag.page - 1)" asp-route-pageSize="@ViewBag.pageSize" aria-label="Forrige">
+                    <span aria-hidden="true">&laquo;</span>
+                </a>
+            </li>
+            }
+            @for(var i = 1; i <= ViewBag.pageCount; ++i)
+            {
+                <li class="@(i == ViewBag.page ? "active" : "")">
+                    <a asp-route-page="@i" asp-route-pageSize="@ViewBag.pageSize">@i</a>
+                </li>
+            }
+            @if(ViewBag.page < ViewBag.pageCount)
+            {
                 <li>
-                    <a asp-route-page="@(ViewBag.page - 1)" asp-route-pageSize="@ViewBag.pageSize" aria-label="Forrige">
-                        <span aria-hidden="true">&laquo;</span>
+                    <a asp-route-page="@(ViewBag.page + 1)" asp-route-pageSize="@ViewBag.pageSize" aria-label="Næste">
+                        <span aria-hidden="true">&raquo;</span>
                     </a>
                 </li>
-                }
-                @for(var i = 1; i <= ViewBag.pageCount; ++i)
-                {
-                    <li class="@(i == ViewBag.page ? "active" : "")">
-                        <a asp-route-page="@i" asp-route-pageSize="@ViewBag.pageSize">@i</a>
-                    </li>
-                }
-                @if(ViewBag.page < ViewBag.pageCount)
-                {
-                    <li>
-                        <a asp-route-page="@(ViewBag.page + 1)" asp-route-pageSize="@ViewBag.pageSize" aria-label="Næste">
-                            <span aria-hidden="true">&raquo;</span>
-                        </a>
-                    </li>
-                }
-            </ul>
-        </nav>
-    </div>
-    <div class="row">
-        <div class="col-xs-12">
-            <h2>Studerende</h2>
-            @foreach(var student in Model)
-            {
+            }
+        </ul>
+    </nav>
+</div>
+
+<div class="row">
+    <div class="col-xs-12">
+        <h2>Studerende</h2>
+        @foreach(var student in Model)
+        {
             <!-- TODO: make some sort of box for displaying students -->
             <p><strong>Studerendes navn:</strong> @student.LastName, @student.FirstMidName</p>
             <p><strong>@Html.DisplayNameFor(model => model.EnrollmentDate):</strong> @student.EnrollmentDate</p>
@@ -48,7 +48,6 @@
                 }
             </ul>
             <br>
-            }
-        </div>
+        }
     </div>
 </div>

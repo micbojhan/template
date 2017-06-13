@@ -15,8 +15,8 @@ namespace Company.WebApplication1.Application.MVC.Controllers
 {
     public class StudentController : Controller
     {
-        ApplicationDbContext _dbContext;
-        IMapper _mapper;
+        private readonly ApplicationDbContext _dbContext;
+        private readonly IMapper _mapper;
 
         public StudentController(ApplicationDbContext dbContext, IMapper mapper)
         {

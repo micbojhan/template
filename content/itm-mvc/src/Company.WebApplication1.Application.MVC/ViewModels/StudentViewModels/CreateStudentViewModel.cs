@@ -24,6 +24,6 @@ namespace Company.WebApplication1.Application.MVC.ViewModels.StudentViewModels
         public DateTime EnrollmentDate { get; set; }
 
         [Display(Name = "Fag")]
-        public IList<int> SelectedCourseIds { get; set; } = new List<int>{1,2,3};
+        public IList<int> SelectedCourseIds { get; set; } = new List<int>();
     }
 }

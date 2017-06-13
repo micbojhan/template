@@ -22,11 +22,6 @@ namespace Company.WebApplication1.Application.MVC.Controllers
             return View();
         }
 
-        public IActionResult CodeExample()
-        {
-            return View();
-        }
-
         public IActionResult Contact()
         {
             ViewData["Message"] = "Your contact page.";

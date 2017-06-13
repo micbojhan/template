@@ -40,11 +40,11 @@ namespace Company.WebApplication1.Application.MVC.Controllers
 
             var students = studentQuery.ProjectTo<StudentViewModel>();      // Map query to viewmodel using ProjecTo, to avoid
                                                                             // getting unneeded data from database
-
-            var totalEntries = studentSet.Count();
-            ViewBag.pageAmount = Math.Ceiling(((double)totalEntries / pageSize));
+            var totalEntries = _dbContext.Students.Count();
+            ViewBag.pageCount = Math.Ceiling(((double)totalEntries / pageSize));
             ViewBag.page = page;
             ViewBag.pageSize = pageSize;
+
             return View(students);
         }
 

@@ -11,13 +11,13 @@
                     </a>
                 </li>
                 }
-                @for(var i = 1; i <= ViewBag.pageAmount; ++i)
+                @for(var i = 1; i <= ViewBag.pageCount; ++i)
                 {
                     <li class="@(i == ViewBag.page ? "active" : "")">
                         <a asp-route-page="@i" asp-route-pageSize="@ViewBag.pageSize">@i</a>
                     </li>
                 }
-                @if(ViewBag.page < ViewBag.pageAmount)
+                @if(ViewBag.page < ViewBag.pageCount)
                 {
                     <li>
                         <a asp-route-page="@(ViewBag.page + 1)" asp-route-pageSize="@ViewBag.pageSize" aria-label="Næste">

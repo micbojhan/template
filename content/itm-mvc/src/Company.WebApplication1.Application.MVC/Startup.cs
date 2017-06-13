@@ -1,13 +1,16 @@
-﻿using Company.WebApplication1.Infrastructure.DataAccess;
-using Microsoft.EntityFrameworkCore;
+﻿using AutoMapper;
 using Company.WebApplication1.Application.MVC.Services;
-using AutoMapper;
-using Serilog;
+using Company.WebApplication1.Core.Command;
+using Company.WebApplication1.Infrastructure.DataAccess;
+using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Hosting;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
-using Microsoft.AspNetCore.Builder;
-using Microsoft.AspNetCore.Hosting;
+using StructureMap;
+using System;
+using Serilog;
 #if (OrganizationalAuth)
 using Microsoft.AspNetCore.Authentication.Cookies;
 #endif
@@ -75,7 +78,7 @@ namespace Company.WebApplication1.Application.MVC
         public IConfigurationRoot Configuration { get; }
 
         // This method gets called by the runtime. Use this method to add services to the container.
-        public void ConfigureServices(IServiceCollection services)
+        public IServiceProvider ConfigureServices(IServiceCollection services)
         {
 #if (IndividualAuth)
             services.AddIdentity<ApplicationUser, IdentityRole>()
@@ -97,6 +100,8 @@ namespace Company.WebApplication1.Application.MVC
 #endif
 
             _externalStartupConfiguration.ConfigureServices(services, Configuration);
+
+            return ConfigureIoC(services);
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -193,6 +198,25 @@ namespace Company.WebApplication1.Application.MVC
                     name: "default",
                     template: "{controller=Home}/{action=Index}/{id?}");
             });
+        }
+
+        public IServiceProvider ConfigureIoC(IServiceCollection services)
+        {
+            var container = new Container();
+
+            container.Configure(config =>
+            {
+                // Register stuff in container, using the StructureMap APIs...
+                config.Scan(x =>
+                    {
+                        x.ConnectImplementationsToTypesClosing(typeof(BaseCommand<>));
+                    });
+
+                //Populate the container using the service collection
+                config.Populate(services);
+            });
+
+            return container.GetInstance<IServiceProvider>();
         }
     }
 }

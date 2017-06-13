@@ -112,6 +112,25 @@
           "exclude": [
             "src/Company.WebApplication1.Infrastructure.DataAccess/CsvSeeder/**"
           ]
+        },
+        {
+          "condition": "(!Examples)",
+          "exclude": [
+            "src/Company.WebApplication1.Application.MVC/Controllers/StudentController.cs",
+            "src/Company.WebApplication1.Application.MVC/Filters/**",
+            "src/Company.WebApplication1.Application.MVC/Validators/**",
+            "src/Company.WebApplication1.Application.MVC/ViewModels/CourseViewModels/**",
+            "src/Company.WebApplication1.Application.MVC/ViewModels/EnrollmentViewModels/**",
+            "src/Company.WebApplication1.Application.MVC/ViewModels/StudentViewModels/**",
+            "src/Company.WebApplication1.Application.MVC/Views/Student/**",
+            "src/Company.WebApplication1.Core.Command/AddStudentCommand.cs",
+            "src/Company.WebApplication1.Core.Entities/Course.cs",
+            "src/Company.WebApplication1.Core.Entities/Enrollment.cs",
+            "src/Company.WebApplication1.Core.Entities/Grade.cs",
+            "src/Company.WebApplication1.Core.Entities/IDeletable.cs",
+            "src/Company.WebApplication1.Core.Entities/Student.cs",
+            "src/Company.WebApplication1.Infrastructure.DataAccess/Migrations/*_AddedExampleModels.*"
+          ]
         }
       ]
     }
@@ -360,6 +379,12 @@
       ],
       "description": "Method for seeding the database with data.",
       "defaultValue": "OOSeed"
+    },
+    "Examples": {
+      "type": "parameter",
+      "datatype": "bool",
+      "defaultValue": "false",
+      "description": "Whether or not to generate project with example implementation of common MVC constructs"
     }
   },
   "primaryOutputs": [

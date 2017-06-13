@@ -26,9 +26,9 @@ namespace Company.WebApplication1.Application.MVC
 #if (IndividualAuth)
             services.AddDbContext<ApplicationDbContext>(options =>
     #if (UseLocalDB)
-                options.UseSqlServer(configuration.GetConnectionString("DefaultConnection"), b => b.MigrationsAssembly("Company.WebApplication1.Infrastructure.DataAccess")));
+                options.UseSqlServer(configuration.GetConnectionString("DefaultConnection"), b => b.MigrationsAssembly("Company.WebApplication1.Infrastructure.DataAccess")).EnableSensitiveDataLogging());
     #else
-                options.UseSqlite(configuration.GetConnectionString("DefaultConnection"), b => b.MigrationsAssembly("Company.WebApplication1.Infrastructure.DataAccess")));
+                options.UseSqlite(configuration.GetConnectionString("DefaultConnection"), b => b.MigrationsAssembly("Company.WebApplication1.Infrastructure.DataAccess")).EnableSensitiveDataLogging());
     #endif
 #endif
         }

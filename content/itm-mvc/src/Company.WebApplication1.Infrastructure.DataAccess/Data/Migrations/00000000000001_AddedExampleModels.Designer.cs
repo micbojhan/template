@@ -1,40 +1,39 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+﻿using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.EntityFrameworkCore.Migrations;
-using Company.WebApplication1.Infrastructure.DataAccess.Data;
+using Company.WebApplication1.Infrastructure.DataAccess;
 
 namespace Company.WebApplication1.Infrastructure.DataAccess.Data.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20170613154805_AddedExampleModels")]
+    partial class AddedExampleModels
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
             modelBuilder
-                .HasAnnotation("ProductVersion", "1.0.0-rc3")
-                .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+                .HasAnnotation("ProductVersion", "1.1.2");
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.EntityFrameworkCore.IdentityRole", b =>
                 {
-                    b.Property<string>("Id");
+                    b.Property<string>("Id")
+                        .ValueGeneratedOnAdd();
 
                     b.Property<string>("ConcurrencyStamp")
                         .IsConcurrencyToken();
 
                     b.Property<string>("Name")
-                        .HasAnnotation("MaxLength", 256);
+                        .HasMaxLength(256);
 
                     b.Property<string>("NormalizedName")
-                        .HasAnnotation("MaxLength", 256);
+                        .HasMaxLength(256);
 
                     b.HasKey("Id");
 
                     b.HasIndex("NormalizedName")
+                        .IsUnique()
                         .HasName("RoleNameIndex");
 
                     b.ToTable("AspNetRoles");
@@ -106,8 +105,6 @@ namespace Company.WebApplication1.Infrastructure.DataAccess.Data.Migrations
 
                     b.HasIndex("RoleId");
 
-                    b.HasIndex("UserId");
-
                     b.ToTable("AspNetUserRoles");
                 });
 
@@ -126,9 +123,10 @@ namespace Company.WebApplication1.Infrastructure.DataAccess.Data.Migrations
                     b.ToTable("AspNetUserTokens");
                 });
 
-            modelBuilder.Entity("Company.WebApplication1.Core.Entities.ApplicationUser", b =>
+            modelBuilder.Entity("WebApplication1.Core.Entities.ApplicationUser", b =>
                 {
-                    b.Property<string>("Id");
+                    b.Property<string>("Id")
+                        .ValueGeneratedOnAdd();
 
                     b.Property<int>("AccessFailedCount");
 
@@ -136,7 +134,7 @@ namespace Company.WebApplication1.Infrastructure.DataAccess.Data.Migrations
                         .IsConcurrencyToken();
 
                     b.Property<string>("Email")
-                        .HasAnnotation("MaxLength", 256);
+                        .HasMaxLength(256);
 
                     b.Property<bool>("EmailConfirmed");
 
@@ -145,10 +143,10 @@ namespace Company.WebApplication1.Infrastructure.DataAccess.Data.Migrations
                     b.Property<DateTimeOffset?>("LockoutEnd");
 
                     b.Property<string>("NormalizedEmail")
-                        .HasAnnotation("MaxLength", 256);
+                        .HasMaxLength(256);
 
                     b.Property<string>("NormalizedUserName")
-                        .HasAnnotation("MaxLength", 256);
+                        .HasMaxLength(256);
 
                     b.Property<string>("PasswordHash");
 
@@ -161,7 +159,7 @@ namespace Company.WebApplication1.Infrastructure.DataAccess.Data.Migrations
                     b.Property<bool>("TwoFactorEnabled");
 
                     b.Property<string>("UserName")
-                        .HasAnnotation("MaxLength", 256);
+                        .HasMaxLength(256);
 
                     b.HasKey("Id");
 
@@ -175,8 +173,7 @@ namespace Company.WebApplication1.Infrastructure.DataAccess.Data.Migrations
                     b.ToTable("AspNetUsers");
                 });
 
-#if (Examples)
-            modelBuilder.Entity("Company.WebApplication1.Core.Entities.Course", b =>
+            modelBuilder.Entity("WebApplication1.Core.Entities.Course", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd();
@@ -192,7 +189,7 @@ namespace Company.WebApplication1.Infrastructure.DataAccess.Data.Migrations
                     b.ToTable("Courses");
                 });
 
-            modelBuilder.Entity("Company.WebApplication1.Core.Entities.Enrollment", b =>
+            modelBuilder.Entity("WebApplication1.Core.Entities.Enrollment", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd();
@@ -212,7 +209,7 @@ namespace Company.WebApplication1.Infrastructure.DataAccess.Data.Migrations
                     b.ToTable("Enrollments");
                 });
 
-            modelBuilder.Entity("Company.WebApplication1.Core.Entities.Student", b =>
+            modelBuilder.Entity("WebApplication1.Core.Entities.Student", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd();
@@ -228,20 +225,6 @@ namespace Company.WebApplication1.Infrastructure.DataAccess.Data.Migrations
                     b.ToTable("Students");
                 });
 
-            modelBuilder.Entity("Company.WebApplication1.Core.Entities.Enrollment", b =>
-                {
-                    b.HasOne("WebApplication1.Core.Entities.Course", "Course")
-                        .WithMany("Enrollments")
-                        .HasForeignKey("CourseId")
-                        .OnDelete(DeleteBehavior.Cascade);
-
-                    b.HasOne("WebApplication1.Core.Entities.Student", "Student")
-                        .WithMany("Enrollments")
-                        .HasForeignKey("StudentId")
-                        .OnDelete(DeleteBehavior.Cascade);
-                });
-
-#endif
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.EntityFrameworkCore.IdentityRoleClaim<string>", b =>
                 {
                     b.HasOne("Microsoft.AspNetCore.Identity.EntityFrameworkCore.IdentityRole")
@@ -252,7 +235,7 @@ namespace Company.WebApplication1.Infrastructure.DataAccess.Data.Migrations
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.EntityFrameworkCore.IdentityUserClaim<string>", b =>
                 {
-                    b.HasOne("Company.WebApplication1.Core.Entities.ApplicationUser")
+                    b.HasOne("WebApplication1.Core.Entities.ApplicationUser")
                         .WithMany("Claims")
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade);
@@ -260,7 +243,7 @@ namespace Company.WebApplication1.Infrastructure.DataAccess.Data.Migrations
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.EntityFrameworkCore.IdentityUserLogin<string>", b =>
                 {
-                    b.HasOne("Company.WebApplication1.Core.Entities.ApplicationUser")
+                    b.HasOne("WebApplication1.Core.Entities.ApplicationUser")
                         .WithMany("Logins")
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade);
@@ -273,9 +256,22 @@ namespace Company.WebApplication1.Infrastructure.DataAccess.Data.Migrations
                         .HasForeignKey("RoleId")
                         .OnDelete(DeleteBehavior.Cascade);
 
-                    b.HasOne("Company.WebApplication1.Core.Entities.ApplicationUser")
+                    b.HasOne("WebApplication1.Core.Entities.ApplicationUser")
                         .WithMany("Roles")
                         .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade);
+                });
+
+            modelBuilder.Entity("WebApplication1.Core.Entities.Enrollment", b =>
+                {
+                    b.HasOne("WebApplication1.Core.Entities.Course", "Course")
+                        .WithMany("Enrollments")
+                        .HasForeignKey("CourseId")
+                        .OnDelete(DeleteBehavior.Cascade);
+
+                    b.HasOne("WebApplication1.Core.Entities.Student", "Student")
+                        .WithMany("Enrollments")
+                        .HasForeignKey("StudentId")
                         .OnDelete(DeleteBehavior.Cascade);
                 });
         }

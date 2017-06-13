@@ -12,7 +12,7 @@ using NSubstitute;
 using Company.WebApplication1.Application.MVC.Controllers;
 using Company.WebApplication1.Application.MVC.Services;
 using Company.WebApplication1.Core.Entities;
-using Company.WebApplication1.ViewModels.AccountViewModels;
+using Company.WebApplication1.Application.MVC.ViewModels.AccountViewModels;
 using Company.WebApplication1.Application.MVC.Tests.Helpers;
 using Xunit;
 using SignInResult = Microsoft.AspNetCore.Identity.SignInResult; //Resolves ambigious classes for SignInResult

@@ -2,7 +2,7 @@
   "symbolInfo": {
     "TargetFrameworkOverride": {
       "isHidden": "true",
-      "longName": "target-framework-override",
+      "longName": "target-framework-override"
     },
     "IncludeApplicationInsights": {
       "isHidden": "true"
@@ -39,7 +39,7 @@
       "longName": "target-editor"
     },
     "skipRestore": {
-      "longName": "no-restore",
+      "longName": "no-restore"
     },
     "HttpsPort": {
       "isHidden": true

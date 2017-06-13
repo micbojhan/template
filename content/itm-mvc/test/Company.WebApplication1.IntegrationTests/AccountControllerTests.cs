@@ -1,7 +1,7 @@
 using Company.WebApplication1.Application.MVC;
 using Company.WebApplication1.Core.Entities;
 using Company.WebApplication1.Infrastructure.DataAccess;
-using Company.WebApplication1.ViewModels.AccountViewModels;
+using Company.WebApplication1.Application.MVC.ViewModels.AccountViewModels;
 using GeekLearning.Testavior.Environment;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.DependencyInjection;

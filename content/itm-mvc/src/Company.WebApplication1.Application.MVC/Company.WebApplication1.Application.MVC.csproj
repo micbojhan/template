@@ -15,6 +15,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <PackageReference Include="BuildBundlerMinifier" Version="2.4.337" />
     <PackageReference Include="Microsoft.ApplicationInsights.AspNetCore" Version="2.0.0" Condition="'$(IncludeApplicationInsights)' == 'True'" />
     <PackageReference Include="Microsoft.AspNetCore" Version="1.1.2" />
     <PackageReference Include="Microsoft.AspNetCore.Authentication.Cookies" Version="1.1.2" Condition="'$(IndividualAuth)' == 'True' OR '$(OrganizationalAuth)' == 'True'" />
@@ -35,14 +36,14 @@
   </ItemGroup>
 
   <ItemGroup Condition="'$(NoTools)' != 'True'">
-    <DotNetCliToolReference Include="Microsoft.Extensions.SecretManager.Tools" Version="1.1.0-preview4-final" Condition="'$(IndividualAuth)' == 'True' OR '$(OrganizationalAuth)' == 'True'" />
-    <!--#if (false)
-      This package is broken, waiting on https://github.com/dotnet/corefx/issues/9788 for a fix
-      <DotNetCliToolReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Tools" Version="1.1.0-preview4-final" />
-    #endif-->
+    <!-- Usage: dotnet ef -p ..\Company.WebApplication1.Infrastructure.DataAccess\ [options] [command] -->
+    <DotNetCliToolReference Include="Microsoft.EntityFrameworkCore.Tools.DotNet" Version="1.0.1" Condition="'$(IndividualAuth)' == 'True'" />
+    <DotNetCliToolReference Include="Microsoft.Extensions.SecretManager.Tools" Version="1.0.1" Condition="'$(IndividualAuth)' == 'True' OR '$(OrganizationalAuth)' == 'True'" />
+    <DotNetCliToolReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Tools" Version="1.0.1" />
   </ItemGroup>
 
   <ItemGroup>
+    <PackageReference Include="GeekLearning.Testavior.Configuration" Version="0.3.3" />
     <PackageReference Include="AutoMapper" Version="6.0.2" />
     <PackageReference Include="AutoMapper.Extensions.Microsoft.DependencyInjection" Version="2.0.1" />
     <PackageReference Include="Serilog.Extensions.Logging" Version="1.4.0" />

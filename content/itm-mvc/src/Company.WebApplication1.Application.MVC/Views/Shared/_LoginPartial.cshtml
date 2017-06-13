@@ -13,10 +13,10 @@
 
 @if (SignInManager.IsSignedIn(User))
 @*#else
-@if (User.Identity.IsAuthenticated)
-#endif *@
+    @if (User.Identity.IsAuthenticated)
+    #endif *@
 {
-@*#if (IndividualAuth) *@
+    @*#if (IndividualAuth) *@
     <form asp-area="" asp-controller="Account" asp-action="Logout" method="post" id="logoutForm" class="navbar-right">
         <ul class="nav navbar-nav navbar-right">
             <li>
@@ -27,21 +27,22 @@
             </li>
         </ul>
     </form>
-@*#else
+    @*#else
     <ul class="nav navbar-nav navbar-right">
         <li class="navbar-text">Hello @User.Identity.Name!</li>
         <li><a asp-area="" asp-controller="Account" asp-action="SignOut">Sign Out</a></li>
     </ul>
-#endif *@
+    #endif *@
 }
 else
 {
     <ul class="nav navbar-nav navbar-right">
-@*#if (IndividualAuth) *@
+    @*#if (IndividualAuth) *@
         <li><a asp-area="" asp-controller="Account" asp-action="Register">Register</a></li>
         <li><a asp-area="" asp-controller="Account" asp-action="Login">Log in</a></li>
-@*#else
+    @*#else
         <li><a asp-area="" asp-controller="Account" asp-action="Signin">Sign in</a></li>
-#endif *@
+    #endif *@
     </ul>
 }
+@*#endif *@

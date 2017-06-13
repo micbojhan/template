@@ -9,10 +9,11 @@
     <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="1.1.1" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="1.1.2" />
   </ItemGroup>
+  <ItemGroup Condition="'$(NoTools)' != 'True'">
+    <!-- Usage: dotnet ef -s ..\Company.WebApplication1.Application.MVC\ [options] [command] -->
+    <DotNetCliToolReference Include="Microsoft.EntityFrameworkCore.Tools.DotNet" Version="1.0.1" Condition="'$(IndividualAuth)' == 'True'" />
+  </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Company.WebApplication1.Core.Entities\Company.WebApplication1.Core.Entities.csproj" />
-  </ItemGroup>
-  <ItemGroup Condition="'$(NoTools)' != 'True'">
-    <DotNetCliToolReference Include="Microsoft.EntityFrameworkCore.Tools.DotNet" Version="1.1.0-preview4-final" Condition="'$(IndividualAuth)' == 'True'" />
   </ItemGroup>
 </Project>

@@ -1,10 +1,4 @@
-﻿using System.Linq;
-using Company.WebApplication1.Infrastructure.DataAccess;
-#if (SeedMethod == "OOSeed")
-using Company.WebApplication1.Infrastructure.DataAccess.Data.Seed;
-#elseif (SeedMethod == "CSVSeed")
-using Company.WebApplication1.Infrastructure.DataAccess.CsvSeeder;
-#endif
+﻿using Company.WebApplication1.Infrastructure.DataAccess;
 using Microsoft.EntityFrameworkCore;
 using Company.WebApplication1.Application.MVC.Services;
 using AutoMapper;
@@ -32,13 +26,22 @@ using Microsoft.IdentityModel.Tokens;
 #if (IndividualAuth)
 using Company.WebApplication1.Core.Entities;
 #endif
+using GeekLearning.Testavior.Configuration.Startup;
 
 namespace Company.WebApplication1.Application.MVC
 {
     public class Startup
     {
-        public Startup(IHostingEnvironment env)
+        private readonly IStartupConfigurationService _externalStartupConfiguration;
+
+        public Startup(IHostingEnvironment env, IStartupConfigurationService externalStartupConfiguration = null)
         {
+            if (externalStartupConfiguration == null) // needed when running dotnet ef
+                externalStartupConfiguration = new StartupConfigurationService();
+
+            _externalStartupConfiguration = externalStartupConfiguration;
+            _externalStartupConfiguration.ConfigureEnvironment(env);
+
 #if (IndividualAuth || OrganizationalAuth)
             var builder = new ConfigurationBuilder()
                 .SetBasePath(env.ContentRootPath)
@@ -74,15 +77,7 @@ namespace Company.WebApplication1.Application.MVC
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            // Add framework services.
 #if (IndividualAuth)
-            services.AddDbContext<ApplicationDbContext>(options =>
-#if (UseLocalDB)
-                options.UseSqlServer(Configuration.GetConnectionString("DefaultConnection"), b => b.MigrationsAssembly("Company.WebApplication1.Infrastructure.DataAccess")));
-#else
-                options.UseSqlite(Configuration.GetConnectionString("DefaultConnection"), b => b.MigrationsAssembly("Company.WebApplication1.Infrastructure.DataAccess")));
-#endif
-
             services.AddIdentity<ApplicationUser, IdentityRole>()
                 .AddEntityFrameworkStores<ApplicationDbContext>()
                 .AddDefaultTokenProviders();
@@ -100,13 +95,14 @@ namespace Company.WebApplication1.Application.MVC
             services.AddAuthentication(
                 SharedOptions => SharedOptions.SignInScheme = CookieAuthenticationDefaults.AuthenticationScheme);
 #endif
+
+            _externalStartupConfiguration.ConfigureServices(services, Configuration);
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IHostingEnvironment env, ILoggerFactory loggerFactory)
         {
-            loggerFactory.AddDebug();
-            loggerFactory.AddSerilog();
+            _externalStartupConfiguration.Configure(app, env, loggerFactory);
 
             if (env.IsDevelopment())
             {
@@ -134,20 +130,20 @@ namespace Company.WebApplication1.Application.MVC
             app.UseOpenIdConnectAuthentication(new OpenIdConnectOptions
             {
                 ClientId = Configuration["Authentication:AzureAd:ClientId"],
-#if (OrgReadAccess)
+    #if (OrgReadAccess)
                 ClientSecret = Configuration["Authentication:AzureAd:ClientSecret"],
-#endif
-#if (MultiOrgAuth)
+    #endif
+    #if (MultiOrgAuth)
                 Authority = Configuration["Authentication:AzureAd:AADInstance"] + "Common",
-#elseif (SingleOrgAuth)
+    #elseif (SingleOrgAuth)
                 Authority = Configuration["Authentication:AzureAd:AADInstance"] + Configuration["Authentication:AzureAd:TenantId"],
-#endif
+    #endif
 #endif
 #if (MultiOrgAuth)
                 CallbackPath = Configuration["Authentication:AzureAd:CallbackPath"],
-#if (OrgReadAccess)
+    #if (OrgReadAccess)
                 ResponseType = OpenIdConnectResponseType.CodeIdToken,
-#endif
+    #endif
 
                 TokenValidationParameters = new TokenValidationParameters
                 {
@@ -180,12 +176,12 @@ namespace Company.WebApplication1.Application.MVC
                     //}
                 }
 #elseif (SingleOrgAuth)
-#if (OrgReadAccess)
+    #if (OrgReadAccess)
                 CallbackPath = Configuration["Authentication:AzureAd:CallbackPath"],
                 ResponseType = OpenIdConnectResponseType.CodeIdToken
-#else
+    #else
                 CallbackPath = Configuration["Authentication:AzureAd:CallbackPath"]
-#endif
+    #endif
 #endif
 #if (OrganizationalAuth)
             });
@@ -197,20 +193,6 @@ namespace Company.WebApplication1.Application.MVC
                     name: "default",
                     template: "{controller=Home}/{action=Index}/{id?}");
             });
-
-            using(var serviceScope = app.ApplicationServices.GetRequiredService<IServiceScopeFactory>().CreateScope())
-            {
-                var context = serviceScope.ServiceProvider.GetService<ApplicationDbContext>();
-#if (SeedMethod == "OOSeed")
-                context.MigrateAndSeedData(app.ApplicationServices);
-#elseif (SeedMethod == "CSVSeed")
-                context.Database.Migrate();
-
-                if (context.Users.Any() == false)
-                    context.Users.SeedFromFile("SeedData/contacts.csv");
-                context.SaveChanges();
-#endif
-            }
         }
     }
 }

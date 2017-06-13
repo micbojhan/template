@@ -33,16 +33,12 @@ namespace Company.WebApplication1.Application.MVC.Filters
                     if (controller == null) return;
 
                     if (controller.ViewData.Model == null)
-                    {
                         throw new NullReferenceException("View model is null, remember to provide view with an instance of the view model");
-                    }
 
                     var viewModel = controller.ViewData.Model as ISelectedCourses;
 
                     if (viewModel == null)
-                    {
                         throw new InvalidCastException($"View model doesn't not implement {nameof(ISelectedCourses)}");
-                    }
 
                     var courses = await _dbContext.Courses
                                             .Where(item => !item.IsDeleted || viewModel.SelectedCourseIds.Contains(item.Id))
@@ -51,6 +47,7 @@ namespace Company.WebApplication1.Application.MVC.Filters
 
                     controller.ViewBag.AvailableCourses = new SelectList(courses, nameof(Course.Id), nameof(Course.Title));
                 }
+
                 await next();
             }
         }

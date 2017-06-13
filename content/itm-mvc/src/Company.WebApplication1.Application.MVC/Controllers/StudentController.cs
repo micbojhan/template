@@ -59,7 +59,8 @@ namespace Company.WebApplication1.Application.MVC.Controllers
         public IActionResult Create(CreateStudentViewModel createStudentViewModel, [FromServices] AddStudentCommand addStudentCommand)
         {
             // If the supplied viewmodel isn't valid, send it back
-            if (!ModelState.IsValid) return View(createStudentViewModel);
+            if (!ModelState.IsValid)
+                return View(createStudentViewModel);
 
             var student = _mapper.Map<Student>(createStudentViewModel);
 

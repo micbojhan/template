@@ -31,8 +31,6 @@ using Company.WebApplication1.Core.Entities;
 #endif
 using GeekLearning.Testavior.Configuration.Startup;
 
-
-
 namespace Company.WebApplication1.Application.MVC
 {
     public class Startup

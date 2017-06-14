@@ -129,7 +129,7 @@
             "src/Company.WebApplication1.Core.Entities/Grade.cs",
             "src/Company.WebApplication1.Core.Entities/IDeletable.cs",
             "src/Company.WebApplication1.Core.Entities/Student.cs",
-            "src/Company.WebApplication1.Infrastructure.DataAccess/Migrations/*_AddedExampleModels.*"
+            "src/Company.WebApplication1.Infrastructure.DataAccess/Data/Migrations/*_AddedExampleModels.*"
           ]
         }
       ]

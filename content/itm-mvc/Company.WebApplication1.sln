@@ -26,6 +26,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Company.WebApplication1.Cor
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Company.WebApplication1.Infrastructure.DataAccess.Tests", "test\Company.WebApplication1.Infrastructure.DataAccess.Tests\Company.WebApplication1.Infrastructure.DataAccess.Tests.csproj", "{0C5C9445-17FC-4EAA-8FEC-3165134B1803}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Company.WebApplication1.UnitTests", "test\Company.WebApplication1.UnitTests\Company.WebApplication1.UnitTests.csproj", "{7E4EB735-8D1F-4654-A007-912D6A65BB58}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -156,6 +158,18 @@ Global
 		{0C5C9445-17FC-4EAA-8FEC-3165134B1803}.Release|x64.Build.0 = Release|Any CPU
 		{0C5C9445-17FC-4EAA-8FEC-3165134B1803}.Release|x86.ActiveCfg = Release|Any CPU
 		{0C5C9445-17FC-4EAA-8FEC-3165134B1803}.Release|x86.Build.0 = Release|Any CPU
+		{7E4EB735-8D1F-4654-A007-912D6A65BB58}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{7E4EB735-8D1F-4654-A007-912D6A65BB58}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{7E4EB735-8D1F-4654-A007-912D6A65BB58}.Debug|x64.ActiveCfg = Debug|x64
+		{7E4EB735-8D1F-4654-A007-912D6A65BB58}.Debug|x64.Build.0 = Debug|x64
+		{7E4EB735-8D1F-4654-A007-912D6A65BB58}.Debug|x86.ActiveCfg = Debug|x86
+		{7E4EB735-8D1F-4654-A007-912D6A65BB58}.Debug|x86.Build.0 = Debug|x86
+		{7E4EB735-8D1F-4654-A007-912D6A65BB58}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{7E4EB735-8D1F-4654-A007-912D6A65BB58}.Release|Any CPU.Build.0 = Release|Any CPU
+		{7E4EB735-8D1F-4654-A007-912D6A65BB58}.Release|x64.ActiveCfg = Release|x64
+		{7E4EB735-8D1F-4654-A007-912D6A65BB58}.Release|x64.Build.0 = Release|x64
+		{7E4EB735-8D1F-4654-A007-912D6A65BB58}.Release|x86.ActiveCfg = Release|x86
+		{7E4EB735-8D1F-4654-A007-912D6A65BB58}.Release|x86.Build.0 = Release|x86
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -171,5 +185,6 @@ Global
 		{449E76AA-EE3D-402A-B609-30DE67B073BE} = {662BA7AA-DE8A-46AF-A00B-90C78782F965}
 		{07AB1420-9D98-443C-AFF8-75AAE82E785F} = {662BA7AA-DE8A-46AF-A00B-90C78782F965}
 		{0C5C9445-17FC-4EAA-8FEC-3165134B1803} = {662BA7AA-DE8A-46AF-A00B-90C78782F965}
+		{7E4EB735-8D1F-4654-A007-912D6A65BB58} = {662BA7AA-DE8A-46AF-A00B-90C78782F965}
 	EndGlobalSection
 EndGlobal

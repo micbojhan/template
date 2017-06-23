@@ -13,6 +13,7 @@ using Microsoft.Extensions.Logging;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Builder;
 using Serilog;
+using Company.WebApplication1.Core.Query;
 
 namespace Company.WebApplication1.Application.MVC
 {
@@ -32,6 +33,7 @@ namespace Company.WebApplication1.Application.MVC
     #endif
                     .EnableSensitiveDataLogging());
 #endif
+            services.AddTransient<QueryDb, QueryDb>();
         }
 
         public override void Configure(IApplicationBuilder app, IHostingEnvironment env, ILoggerFactory loggerFactory)

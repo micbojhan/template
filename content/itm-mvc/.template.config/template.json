@@ -293,7 +293,7 @@
     "UseLocalDB": {
       "type": "parameter",
       "datatype": "bool",
-      "defaultValue": "false",
+      "defaultValue": "true",
       "description": "Whether or not to use LocalDB instead of SQLite"
     },
     "IncludeApplicationInsights": {

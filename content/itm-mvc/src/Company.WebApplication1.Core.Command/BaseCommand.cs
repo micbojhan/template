@@ -4,7 +4,7 @@ using Microsoft.Extensions.Logging;
 
 namespace Company.WebApplication1.Core.Command
 {
-    public abstract class BaseCommand
+    public abstract class BaseCommand<T>
     {
         protected ILogger _logger;
         protected ApplicationDbContext _dbContext;
@@ -14,14 +14,14 @@ namespace Company.WebApplication1.Core.Command
         /// </summary>
         protected abstract void RunCommand();
 
-        public BaseCommand(ILoggerFactory loggerFactory)
+        public BaseCommand(ILogger<T> logger)
         {
-            _logger = loggerFactory.CreateLogger<BaseCommand>();
+            _logger = logger;
         }
 
-        public BaseCommand(ILoggerFactory loggerFactory, ApplicationDbContext dbContext)
+        public BaseCommand(ILogger<T> logger, ApplicationDbContext dbContext)
         {
-            _logger = loggerFactory.CreateLogger<BaseCommand>();
+            _logger = logger;
             _dbContext = dbContext;
         }
 

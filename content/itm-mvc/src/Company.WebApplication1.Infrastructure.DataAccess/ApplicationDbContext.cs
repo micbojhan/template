@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using Company.WebApplication1.Core.Entities;
+using System;
 
 namespace Company.WebApplication1.Infrastructure.DataAccess
 {

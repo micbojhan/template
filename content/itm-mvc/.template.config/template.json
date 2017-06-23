@@ -110,7 +110,8 @@
         {
           "condition": "(SeedMethod != \"CSVSeed\")",
           "exclude": [
-            "src/Company.WebApplication1.Infrastructure.DataAccess/CsvSeeder/**"
+            "src/Company.WebApplication1.Infrastructure.DataAccess/CsvSeeder/**",
+            "src/Company.WebApplication1.Application.MVC/SeedData/**"
           ]
         },
         {

@@ -1,7 +1,11 @@
 # Install
 
-Install the new templating from https://github.com/dotnet/templating by cloning it and running setup.cmd. Restart of shell might be required before dotnet new3 is available.
+Install the [.NET Core SDK](https://www.microsoft.com/net/core#windowscmd).
 
-Install the itm package templates with "dotnet new3 -i [path to cloned templates directory]".
+Clone https://bitbucket.org/itmindsdk/itm-dotnet-templates.git
 
-Create a new folder with the name of the project to generate, cd into it and run "dotnet new3 itm-mvc".
+Install the itm package templates with:
+> dotnet new -i [path to cloned templates directory without trailing /]`.
+
+Create a new folder with the name of the project to generate, cd into it and run
+> dotnet new itm-mvc

@@ -1,9 +1,6 @@
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.Extensions.Logging;
 using Company.WebApplication1.Infrastructure.DataAccess;
+using Microsoft.Extensions.Logging;
 
 namespace Company.WebApplication1.Core.Command
 {
@@ -12,12 +9,10 @@ namespace Company.WebApplication1.Core.Command
         protected ILogger _logger;
         protected ApplicationDbContext _dbContext;
 
-
         /// <summary>
         /// This should contain the actual implementation of a command.
         /// </summary>
         protected abstract void RunCommand();
-
 
         public BaseCommand(ILoggerFactory loggerFactory)
         {
@@ -29,7 +24,6 @@ namespace Company.WebApplication1.Core.Command
             _logger = loggerFactory.CreateLogger<BaseCommand>();
             _dbContext = dbContext;
         }
-
 
         public void Run()
         {

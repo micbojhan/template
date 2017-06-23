@@ -1,6 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
+﻿using System.Linq;
 #if (IndividualAuth)
 using System.Security.Claims;
 #endif
@@ -20,7 +18,7 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Company.WebApplication1.Core.Entities;
-using Company.WebApplication1.Models.AccountViewModels;
+using Company.WebApplication1.Application.MVC.ViewModels.AccountViewModels;
 using Company.WebApplication1.Application.MVC.Services;
 #endif
 
@@ -79,14 +77,14 @@ namespace Company.WebApplication1.Application.MVC.Controllers
             IOptions<IdentityCookieOptions> identityCookieOptions,
             IEmailSender emailSender,
             ISmsSender smsSender,
-            ILoggerFactory loggerFactory)
+            ILogger<AccountController> logger)
         {
             _userManager = userManager;
             _signInManager = signInManager;
             _externalCookieScheme = identityCookieOptions.Value.ExternalCookieAuthenticationScheme;
             _emailSender = emailSender;
             _smsSender = smsSender;
-            _logger = loggerFactory.CreateLogger<AccountController>();
+            _logger = logger;
         }
 
         //

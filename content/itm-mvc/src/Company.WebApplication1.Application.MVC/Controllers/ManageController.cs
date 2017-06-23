@@ -8,7 +8,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Company.WebApplication1.Core.Entities;
-using Company.WebApplication1.Models.ManageViewModels;
+using Company.WebApplication1.Application.MVC.ViewModels.ManageViewModels;
 using Company.WebApplication1.Application.MVC.Services;
 
 namespace Company.WebApplication1.Application.MVC.Controllers
@@ -29,14 +29,14 @@ namespace Company.WebApplication1.Application.MVC.Controllers
           IOptions<IdentityCookieOptions> identityCookieOptions,
           IEmailSender emailSender,
           ISmsSender smsSender,
-          ILoggerFactory loggerFactory)
+          ILogger<ManageController> logger)
         {
             _userManager = userManager;
             _signInManager = signInManager;
             _externalCookieScheme = identityCookieOptions.Value.ExternalCookieAuthenticationScheme;
             _emailSender = emailSender;
             _smsSender = smsSender;
-            _logger = loggerFactory.CreateLogger<ManageController>();
+            _logger = logger;
         }
 
         //

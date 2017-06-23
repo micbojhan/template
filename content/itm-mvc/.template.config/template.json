@@ -1,6 +1,9 @@
 {
   "author": "Microsoft",
-  "classifications": ["Web", "MVC"],
+  "classifications": [
+    "Web",
+    "MVC"
+  ],
   "name": "ASP.NET Core Web App",
   "generatorVersions": "[1.0.0.0-*)",
   "groupIdentity": "ITMinds.Web.Mvc",
@@ -14,9 +17,33 @@
   },
   "sourceName": "Company.WebApplication1",
   "preferNameDirectory": true,
-  "guids": [ "53bc9b9d-9d6a-45d4-8429-2a2761773502" ],
+  "guids": [
+    "53bc9b9d-9d6a-45d4-8429-2a2761773502", // Usersecrets
+    "84614420-CD84-4090-8C5C-AE40EE5B9828", // src folder
+    "9A710AD3-0898-4540-A98D-CF4C44923102", // MVC project
+    "8BB5AA5E-CD33-4314-A910-9384285B9577", // Command project
+    "46846053-0122-4F8C-999A-FBC83B752DF7", // DataAccess project
+    "DED1A414-3FD0-4F10-A0C9-036DC1B3E601", // Entities project
+    "CCB48643-5EE0-4C46-BE65-439982C1684F", // Query project
+    "662BA7AA-DE8A-46AF-A00B-90C78782F965", // test folder
+    "429C736D-F8D0-4EB4-9FA2-EE1072638309", // Integration.Tests project
+    "3BD99B54-EFF1-4085-B3B0-0F55AD3AD5DF", // MVC.Tests project
+    "449E76AA-EE3D-402A-B609-30DE67B073BE", // Command.Tests project
+    "07AB1420-9D98-443C-AFF8-75AAE82E785F", // Query.Tests project
+    "0C5C9445-17FC-4EAA-8FEC-3165134B1803" // DataAccess.Tests project
+  ],
   "sources": [
     {
+      "exclude": [
+        ".vs/**/*",
+        ".vscode/**/*",
+        "**/[Bb]in/**",
+        "**/[Oo]bj/**",
+        ".template.config/**/*",
+        "**/*.filelist",
+        "**/*.user",
+        "**/*.lock.json"
+      ],
       "modifiers": [
         {
           "condition": "(!IndividualAuth && !OrganizationalAuth)",
@@ -24,7 +51,8 @@
             "src/Company.WebApplication1.Application.MVC/Controllers/AccountController.cs",
             "src/Company.WebApplication1.Application.MVC/Views/Account/**",
             "src/Company.WebApplication1.Application.MVC/Views/Manage/**",
-            "src/Company.WebApplication1.Application.MVC/Views/Shared/_LoginPartial.cshtml"
+            "src/Company.WebApplication1.Application.MVC/Views/Shared/_LoginPartial.cshtml",
+            "test/Company.WebApplication1.Application.MVC.Tests/Controllers/AccountControllerTests.cs"
           ]
         },
         {
@@ -58,6 +86,7 @@
             "src/Company.WebApplication1.Application.MVC/Services/**",
             "src/Company.WebApplication1.Application.MVC/Data/**",
             "src/Company.WebApplication1.Application.MVC/Models/**",
+            "test/Company.WebApplication1.Application.MVC.Tests/Controllers/ManageControllerTests.cs"
           ]
         },
         {
@@ -70,6 +99,37 @@
           "condition": "(IndividualAuth)",
           "exclude": [
             "src/Company.WebApplication1.Application.MVC/Views/Account/SignedOut.cshtml"
+          ]
+        },
+        {
+          "condition": "(SeedMethod != \"OOSeed\")",
+          "exclude": [
+            "src/Company.WebApplication1.Infrastructure.DataAccess/Data/Seed/**"
+          ]
+        },
+        {
+          "condition": "(SeedMethod != \"CSVSeed\")",
+          "exclude": [
+            "src/Company.WebApplication1.Infrastructure.DataAccess/CsvSeeder/**"
+          ]
+        },
+        {
+          "condition": "(!Examples)",
+          "exclude": [
+            "src/Company.WebApplication1.Application.MVC/Controllers/StudentController.cs",
+            "src/Company.WebApplication1.Application.MVC/Filters/**",
+            "src/Company.WebApplication1.Application.MVC/Validators/**",
+            "src/Company.WebApplication1.Application.MVC/ViewModels/CourseViewModels/**",
+            "src/Company.WebApplication1.Application.MVC/ViewModels/EnrollmentViewModels/**",
+            "src/Company.WebApplication1.Application.MVC/ViewModels/StudentViewModels/**",
+            "src/Company.WebApplication1.Application.MVC/Views/Student/**",
+            "src/Company.WebApplication1.Core.Command/AddStudentCommand.cs",
+            "src/Company.WebApplication1.Core.Entities/Course.cs",
+            "src/Company.WebApplication1.Core.Entities/Enrollment.cs",
+            "src/Company.WebApplication1.Core.Entities/Grade.cs",
+            "src/Company.WebApplication1.Core.Entities/IDeletable.cs",
+            "src/Company.WebApplication1.Core.Entities/Student.cs",
+            "src/Company.WebApplication1.Infrastructure.DataAccess/Data/Migrations/*_AddedExampleModels.*"
           ]
         }
       ]
@@ -224,7 +284,7 @@
     },
     "NoAuth": {
       "type": "computed",
-      "value": "(!(IndividualAuth || MultiOrgAuth || SingleOrgAuth || WindowsAuth))"
+      "value": "(false)" // !(IndividualAuth || MultiOrgAuth || SingleOrgAuth || WindowsAuth)
     },
     "RequiresHttps": {
       "type": "computed",
@@ -267,7 +327,7 @@
     },
     "FrameworkIs1_1": {
       "type": "computed",
-      "value": "Framework == \"netcoreapp1.1\""
+      "value": "(Framework == \"netcoreapp1.1\")"
     },
     "copyrightYear": {
       "type": "generated",
@@ -280,23 +340,67 @@
     "NoTools": {
       "type": "parameter",
       "datatype": "bool",
-      "defaultValue": "true"
+      "defaultValue": "false"
     },
     "skipRestore": {
       "type": "parameter",
       "datatype": "bool",
       "description": "If specified, skips the automatic restore of the project on create.",
       "defaultValue": "false"
+    },
+    "TargetEditor": {
+      "type": "parameter",
+      "datatype": "choice",
+      "choices": [
+        {
+          "choice": "dotnetcli",
+          "description": "DotNet CLI"
+        },
+        {
+          "choice": "vs2017",
+          "description": "Visual Studio 2017"
+        }
+      ],
+      "defaultValue": "dotnetcli",
+      "description": "The editor this template is generated for."
+    },
+    "SeedMethod": {
+      "type": "parameter",
+      "datatype": "choice",
+      "choices": [
+        {
+          "choice": "OOSeed",
+          "description": "Object Orienated seed method"
+        },
+        {
+          "choice": "CSVSeed",
+          "description": "seed from a csv file"
+        }
+      ],
+      "description": "Method for seeding the database with data.",
+      "defaultValue": "OOSeed"
+    },
+    "Examples": {
+      "type": "parameter",
+      "datatype": "bool",
+      "defaultValue": "false",
+      "description": "Whether or not to generate project with example implementation of common MVC constructs"
     }
   },
-  "primaryOutputs": [ { "path": "Company.WebApplication1.sln" } ],
+  "primaryOutputs": [
+    {
+      "path": "Company.WebApplication1.sln"
+    }
+  ],
   "defaultName": "WebApplication1",
   "postActions": [
     {
       "condition": "(!skipRestore)",
       "description": "Restore NuGet packages required by this project.",
       "manualInstructions": [
-        { "text": "Run 'dotnet restore'" }
+        {
+          "text": "Run 'dotnet restore'"
+        }
       ],
       "actionId": "210D431B-A78B-4D2F-B762-4ED3E3EA9025",
       "continueOnError": true

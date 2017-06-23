@@ -1,13 +1,14 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Company.WebApplication1.Infrastructure.DataAccess;
-using Company.WebApplication1.Infrastructure.DataAccess.CsvSeeder;
-using Company.WebApplication1.Core.Query;
-using Microsoft.EntityFrameworkCore;
+﻿using AutoMapper;
 using Company.WebApplication1.Application.MVC.Services;
-using AutoMapper;
+using Company.WebApplication1.Core.Command;
+using Company.WebApplication1.Infrastructure.DataAccess;
+using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Hosting;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
+using StructureMap;
+using System;
 using Serilog;
 #if (OrganizationalAuth)
 using Microsoft.AspNetCore.Authentication.Cookies;
@@ -15,14 +16,9 @@ using Microsoft.AspNetCore.Authentication.Cookies;
 #if (MultiOrgAuth)
 using Microsoft.AspNetCore.Authentication.OpenIdConnect;
 #endif
-using Microsoft.AspNetCore.Builder;
-using Microsoft.AspNetCore.Hosting;
 #if (IndividualAuth)
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 #endif
-using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Logging;
 #if (OrganizationalAuth && OrgReadAccess)
 using Microsoft.IdentityModel.Protocols.OpenIdConnect;
 #endif
@@ -32,13 +28,22 @@ using Microsoft.IdentityModel.Tokens;
 #if (IndividualAuth)
 using Company.WebApplication1.Core.Entities;
 #endif
+using GeekLearning.Testavior.Configuration.Startup;
 
-namespace Company.WebApplication1
+namespace Company.WebApplication1.Application.MVC
 {
     public class Startup
     {
-        public Startup(IHostingEnvironment env)
+        private readonly IStartupConfigurationService _externalStartupConfiguration;
+
+        public Startup(IHostingEnvironment env, IStartupConfigurationService externalStartupConfiguration = null)
         {
+            if (externalStartupConfiguration == null) // needed when running dotnet ef
+                externalStartupConfiguration = new StartupConfigurationService();
+
+            _externalStartupConfiguration = externalStartupConfiguration;
+            _externalStartupConfiguration.ConfigureEnvironment(env);
+
 #if (IndividualAuth || OrganizationalAuth)
             var builder = new ConfigurationBuilder()
                 .SetBasePath(env.ContentRootPath)
@@ -72,48 +77,36 @@ namespace Company.WebApplication1
         public IConfigurationRoot Configuration { get; }
 
         // This method gets called by the runtime. Use this method to add services to the container.
-        public void ConfigureServices(IServiceCollection services)
+        public IServiceProvider ConfigureServices(IServiceCollection services)
         {
-            // Add framework services.
 #if (IndividualAuth)
-            services.AddDbContext<ApplicationDbContext>(options =>
-  #if (UseLocalDB)
-                options.UseSqlServer(Configuration.GetConnectionString("DefaultConnection"), b => b.MigrationsAssembly("Company.WebApplication1.Infrastructure.DataAccess")));
-  #else
-                options.UseSqlite(Configuration.GetConnectionString("DefaultConnection"), b => b.MigrationsAssembly("Company.WebApplication1.Infrastructure.DataAccess")));
-  #endif
-
             services.AddIdentity<ApplicationUser, IdentityRole>()
                 .AddEntityFrameworkStores<ApplicationDbContext>()
                 .AddDefaultTokenProviders();
-
 #endif
             services.AddMvc();
-
-            var config = new MapperConfiguration(cfg => {
-                cfg.AddProfile(new AutoMapperConfig());
-            });
-            services.AddSingleton<IMapper>(sp => config.CreateMapper());
+            services.AddAutoMapper();
 #if (IndividualAuth)
 
             // Add application services.
             services.AddTransient<IEmailSender, AuthMessageSender>();
             services.AddTransient<ISmsSender, AuthMessageSender>();
-
-            services.AddScoped<QueryDb, QueryDb>();
             services.AddScoped<ApplicationDbContext, ApplicationDbContext>();
 #elseif (OrganizationalAuth)
 
             services.AddAuthentication(
                 SharedOptions => SharedOptions.SignInScheme = CookieAuthenticationDefaults.AuthenticationScheme);
 #endif
+
+            _externalStartupConfiguration.ConfigureServices(services, Configuration);
+
+            return ConfigureIoC(services);
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, IHostingEnvironment env, ILoggerFactory loggerFactory, ApplicationDbContext context)
+        public void Configure(IApplicationBuilder app, IHostingEnvironment env, ILoggerFactory loggerFactory)
         {
-            loggerFactory.AddDebug();
-            loggerFactory.AddSerilog();
+            _externalStartupConfiguration.Configure(app, env, loggerFactory);
 
             if (env.IsDevelopment())
             {
@@ -204,13 +197,25 @@ namespace Company.WebApplication1
                     name: "default",
                     template: "{controller=Home}/{action=Index}/{id?}");
             });
+        }
 
-            context.Database.Migrate();
+        public IServiceProvider ConfigureIoC(IServiceCollection services)
+        {
+            var container = new Container();
 
-            if (context.Users.Any() == false) {
-                context.Users.SeedFromFile("SeedData/contacts.csv");
-                context.CommitWithIdentityInsert("AspNetUsers");
-            }
+            container.Configure(config =>
+            {
+                // Register stuff in container, using the StructureMap APIs...
+                config.Scan(x =>
+                    {
+                        x.ConnectImplementationsToTypesClosing(typeof(BaseCommand<>));
+                    });
+
+                //Populate the container using the service collection
+                config.Populate(services);
+            });
+
+            return container.GetInstance<IServiceProvider>();
         }
     }
 }

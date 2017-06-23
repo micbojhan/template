@@ -1,7 +1,3 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using Company.WebApplication1.Core.Entities;
@@ -10,6 +6,12 @@ namespace Company.WebApplication1.Infrastructure.DataAccess
 {
     public class ApplicationDbContext : IdentityDbContext<ApplicationUser>
     {
+#if (Examples)
+        public DbSet<Course> Courses { get; set; }
+        public DbSet<Enrollment> Enrollments { get; set;}
+        public DbSet<Student> Students { get; set; }
+
+#endif
         public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options)
             : base(options)
         {

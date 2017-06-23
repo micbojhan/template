@@ -1,12 +1,8 @@
 using CsvHelper;
 using CsvHelper.Configuration;
 using Microsoft.EntityFrameworkCore;
-using System;
-using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
-using System.Linq;
-using System.Threading.Tasks;
 
 namespace Company.WebApplication1.Infrastructure.DataAccess.CsvSeeder
 {
@@ -16,7 +12,7 @@ namespace Company.WebApplication1.Infrastructure.DataAccess.CsvSeeder
         {
             CultureInfo = new CultureInfo("da-DK") // We force danish locale, to support consistant seed file datetime format.
         };
-        
+
         /// <summary>
         /// Seeds a DBSet from a CSV file that will be read from the specified stream
         /// </summary>

@@ -15,4 +15,4 @@ pipelines:
             - dotnet test test/Company.WebApplication1.UnitTests/Company.WebApplication1.UnitTests.csproj
             - dotnet publish src/Company.WebApplication1.Application.MVC/Company.WebApplication1.Application.MVC.csproj -c Release -o $PWD/publish-out
 
-            - bash ./pipeline/deploy-to-azure.sh publish-out
+            - bash ./pipeline/deploy-to-azure.sh azurewebapplicationname publish-out

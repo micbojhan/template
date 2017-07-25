@@ -19,10 +19,13 @@ namespace Company.WebApplication1.UnitTests
 
         public void Seed()
         {
+#if (SeedMethod == "CSVSeed")
+
             var applicationBasePath = PlatformServices.Default.Application.ApplicationBasePath;
             string seedDataDirectory = Path.Combine(applicationBasePath, "../../../../../src/Company.WebApplication1.Application.MVC/SeedData/");
 
             Users.SeedFromFile(seedDataDirectory + "/contacts.csv");
+#endif
         }
     }
 }
